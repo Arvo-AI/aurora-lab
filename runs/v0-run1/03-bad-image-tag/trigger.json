@@ -1,0 +1,15 @@
+{
+  "request": {
+    "issue_description": "KubeDeploymentRolloutStuck: deployment frontend in namespace shop has not progressed. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubeDeploymentRolloutStuck",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "a6041fc7-66a2-4715-af64-b279c0a25dc3",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "4c028ca8-db56-4dbe-ae19-4af689de70bd",
+    "status": "ok"
+  }
+}

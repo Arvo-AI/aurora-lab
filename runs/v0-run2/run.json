@@ -1,0 +1,41 @@
+{
+  "run_id": "v0-run2",
+  "aurora_commit": "87d22bafa7ea7a7c0980184a42f2d4452f3ae18a",
+  "aurora_worktree_dirty": false,
+  "aurora_branch": "HEAD",
+  "images": {
+    "aurora-lab-aurora-server-1": {
+      "image": "aurora_lab_server:87d22baf",
+      "image_id": "sha256:bd2669168458123f4ec3c276372d3d3c27094a02d406f31cf9e2ff8291ad988d"
+    },
+    "aurora-lab-celery_worker-1": {
+      "image": "aurora_lab_celery-worker:87d22baf",
+      "image_id": "sha256:67ea14b53c9af9e4a635763403a4d8e5199c3b79a8da3174228f52d042f6bb86"
+    },
+    "aurora-lab-chatbot-1": {
+      "image": "aurora_lab_chatbot:87d22baf",
+      "image_id": "sha256:2d7e0dc6483cf89eebd99419cfb264cc9bca79f8dfd4706716c600bde6c8acf2"
+    }
+  },
+  "rca_model": "bedrock/us.anthropic.claude-sonnet-5",
+  "orchestrator_enabled": "false",
+  "scenarios": [
+    "01-worker-oom",
+    "02-sidecar-oom",
+    "03-bad-image-tag",
+    "04-missing-secret",
+    "05-nginx-config-error",
+    "06-liveness-wrong-port",
+    "07-service-selector-mismatch",
+    "08-unschedulable-cpu",
+    "09-redis-pvc-pending",
+    "10-wrong-redis-host"
+  ],
+  "repeats": 2,
+  "clusters": [
+    "aurora-lab",
+    "aurora-lab-2",
+    "aurora-lab-3"
+  ],
+  "isolation": "fresh user and org per (scenario, repeat)"
+}

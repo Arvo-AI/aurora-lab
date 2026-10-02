@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+      "result": "met",
+      "evidence": "a configuration change increased the `worker` deployment's `BATCH_SIZE` environment variable from 500 (original revision, retained in ReplicaSet `worker-6cf88d4b58`) [14] to 2500 in the live spec ... at `BATCH_SIZE=2500` it consumes ~244MiB, exceeding the limit and triggering an OOM kill almost immediately after startup"
+    },
+    {
+      "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA explicitly calls the frontend 'running normally and unaffected' and scopes impact to the worker only. It never checked Services, endpoints or loadgen, so it missed the user-facing outage. It only mentions a rollback or limit increase in passing as unexecuted remediation, and gives nothing for the Service selector, so the fix does not match acceptable_fixes.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "partial",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "partial",
+    "agrees_with_judge": true,
+    "fix_acceptable": null,
+    "notes": "Agree with partial, but I would grade the fix as null rather than false: the RCA only notes that no rollback or limit increase was executed and proposes no fix. It misses the frontend selector fault and wrongly calls the frontend 'running normally and unaffected'. The timeline contradicts itself: it says 6 restarts accumulated 'until the alert at 20:48:01Z' over ~8.5 minutes, yet the rollout was at 20:47:09Z, and the 6 restarts were seen at investigation time (~20:55)."
+  },
+  "fix_from_suggestions": {
+    "result": "partial",
+    "best_suggestion": "Revert `worker` deployment `BATCH_SIZE` env var to `500`",
+    "reason": "The suggestions correctly fix the worker OOM by reverting BATCH_SIZE or raising the limit, but none of them restores the frontend Service selector to app=frontend, so the second fault (no endpoints) is left unfixed."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+        "result": "met",
+        "evidence": "a configuration change increased the `worker` deployment's `BATCH_SIZE` environment variable from 500 ... to 2500 in the live spec ... at `BATCH_SIZE=2500` it consumes ~244MiB, exceeding the limit and triggering an OOM kill almost immediately after startup"
+      },
+      {
+        "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+        "result": "missed",
+        "evidence": ""
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": false,
+    "verdict": "partial",
+    "notes": "The worker OOM diagnosis is correct and well supported. The investigator never checked Services or endpoints. It also wrongly asserted that the frontend was 'running normally and unaffected' and that 'Impact is scoped to the single-replica worker deployment', so the user-facing frontend outage was missed and the fix omits restoring the Service selector to app=frontend."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "scenario": "10-wrong-redis-host",
+  "repeat": 1,
+  "cluster": "aurora-lab-2",
+  "incident_id": "f257f706-0bba-4f84-b67d-3bfca0615ddb",
+  "user_id": "9ea70c3f-0ed7-48c9-958c-072482d1b966",
+  "org_id": "e57ff45c-0f79-4a0c-befe-792a64f62cb8",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:48:32.044025+00:00",
+  "duration_seconds": 292,
+  "tool_calls": 12,
+  "tool_errors": 1,
+  "llm_calls": 18,
+  "tokens": 221088,
+  "cost_usd": 0.227784,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"f257f706-0bba-4f84-b67d-3bfca0615ddb\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubePodCrashLooping\\\" was triggered, indicating that a pod ass"
+  }
+}

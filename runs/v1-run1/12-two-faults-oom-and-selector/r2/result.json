@@ -1,0 +1,21 @@
+{
+  "scenario": "12-two-faults-oom-and-selector",
+  "repeat": 2,
+  "cluster": "aurora-lab",
+  "incident_id": "d64978b2-b084-40ea-a286-10c9e23fbe38",
+  "user_id": "20fc023d-d23f-458e-9162-67850a295186",
+  "org_id": "7dbbde96-24cb-4d67-b2ed-4ac26a488abb",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:46:20.195617+00:00",
+  "duration_seconds": 548,
+  "tool_calls": 14,
+  "tool_errors": 1,
+  "llm_calls": 22,
+  "tokens": 314041,
+  "cost_usd": 0.324243,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"d64978b2-b084-40ea-a286-10c9e23fbe38\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping [warning] namespace=shop deployment=worker\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubePodCrashLooping"
+  }
+}

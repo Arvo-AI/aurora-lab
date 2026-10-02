@@ -1,0 +1,21 @@
+{
+  "scenario": "19-config-drift-partial-restart",
+  "repeat": 1,
+  "cluster": "aurora-lab-3",
+  "incident_id": "e8ddf167-57bc-4d45-86ed-cfaa938014c5",
+  "user_id": "48a212a3-e466-4e74-8030-866519790836",
+  "org_id": "a16b9aa4-01ac-4368-916e-18c4fa18d1d3",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:34:42.402260+00:00",
+  "duration_seconds": 280,
+  "tool_calls": 15,
+  "tool_errors": 1,
+  "llm_calls": 23,
+  "tokens": 375044,
+  "cost_usd": 0.389664,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"e8ddf167-57bc-4d45-86ed-cfaa938014c5\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"HighErrorRate [warning] namespace=shop service=frontend\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"HighErrorRate\\\" was trigge"
+  }
+}

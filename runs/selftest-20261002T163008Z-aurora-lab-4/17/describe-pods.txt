@@ -1,0 +1,482 @@
+Name:             api-f64486c4c-gsqtr
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-4-worker/192.168.148.14
+Start Time:       Fri, 02 Oct 2026 12:41:46 -0400
+Labels:           app=api
+                  pod-template-hash=f64486c4c
+Annotations:      <none>
+Status:           Running
+IP:               10.244.2.39
+IPs:
+  IP:           10.244.2.39
+Controlled By:  ReplicaSet/api-f64486c4c
+Containers:
+  api:
+    Container ID:  containerd://eec4f05175c2b3107a0957dd4fdd1ec6d02a64a0eb69c2297eb5a93368cc4434
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:0687a6bc9716edc2a6ee0fbfb0f87e7ee358b262b67c9215de91bc9b2d38ba71
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Command:
+      python
+      -u
+      /code/api.py
+    State:          Running
+      Started:      Fri, 02 Oct 2026 12:41:47 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:      50m
+      memory:   32Mi
+    Liveness:   http-get http://:8080/healthz delay=15s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:8080/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:
+      REDIS_HOST:  redis
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-76llz (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-76llz:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                    From               Message
+  ----     ------     ----                   ----               -------
+  Normal   Scheduled  3m18s                  default-scheduler  Successfully assigned shop/api-f64486c4c-gsqtr to aurora-lab-4-worker
+  Normal   Pulled     3m17s                  kubelet            spec.containers{api}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    3m17s                  kubelet            spec.containers{api}: Container created
+  Normal   Started    3m17s                  kubelet            spec.containers{api}: Container started
+  Warning  Unhealthy  3m16s (x2 over 3m17s)  kubelet            spec.containers{api}: Readiness probe failed: Get "http://10.244.2.39:8080/healthz": dial tcp 10.244.2.39:8080: connect: connection refused
+
+
+Name:             api-f64486c4c-xsmhl
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-4-worker2/192.168.148.16
+Start Time:       Fri, 02 Oct 2026 12:41:46 -0400
+Labels:           app=api
+                  pod-template-hash=f64486c4c
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.19
+IPs:
+  IP:           10.244.1.19
+Controlled By:  ReplicaSet/api-f64486c4c
+Containers:
+  api:
+    Container ID:  containerd://e6492d393500ea1a0fdd0a584369e38cba8b371032a8f787a121569499210413
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:0687a6bc9716edc2a6ee0fbfb0f87e7ee358b262b67c9215de91bc9b2d38ba71
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Command:
+      python
+      -u
+      /code/api.py
+    State:          Running
+      Started:      Fri, 02 Oct 2026 12:41:47 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:      50m
+      memory:   32Mi
+    Liveness:   http-get http://:8080/healthz delay=15s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:8080/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:
+      REDIS_HOST:  redis
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fhnhg (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-fhnhg:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                    From               Message
+  ----     ------     ----                   ----               -------
+  Normal   Scheduled  3m18s                  default-scheduler  Successfully assigned shop/api-f64486c4c-xsmhl to aurora-lab-4-worker2
+  Normal   Pulled     3m17s                  kubelet            spec.containers{api}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    3m17s                  kubelet            spec.containers{api}: Container created
+  Normal   Started    3m17s                  kubelet            spec.containers{api}: Container started
+  Warning  Unhealthy  3m16s (x2 over 3m17s)  kubelet            spec.containers{api}: Readiness probe failed: Get "http://10.244.1.19:8080/healthz": dial tcp 10.244.1.19:8080: connect: connection refused
+
+
+Name:             frontend-76d98597b9-72vjp
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-4-worker2/192.168.148.16
+Start Time:       Fri, 02 Oct 2026 12:41:46 -0400
+Labels:           app=frontend
+                  pod-template-hash=76d98597b9
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.20
+IPs:
+  IP:           10.244.1.20
+Controlled By:  ReplicaSet/frontend-76d98597b9
+Containers:
+  nginx:
+    Container ID:   containerd://87b5b130be00825fdd0bb493a99ec915ad917fa15158eb50da7ba50b62cdbfea
+    Image:          nginx:1.27-alpine
+    Image ID:       docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Fri, 02 Oct 2026 12:41:47 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-q8wrl (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  conf:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      frontend-nginx
+    Optional:  false
+  kube-api-access-q8wrl:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age    From               Message
+  ----     ------     ----   ----               -------
+  Normal   Scheduled  3m18s  default-scheduler  Successfully assigned shop/frontend-76d98597b9-72vjp to aurora-lab-4-worker2
+  Normal   Pulled     3m17s  kubelet            spec.containers{nginx}: Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    3m17s  kubelet            spec.containers{nginx}: Container created
+  Normal   Started    3m17s  kubelet            spec.containers{nginx}: Container started
+  Warning  Unhealthy  3m17s  kubelet            spec.containers{nginx}: Readiness probe failed: Get "http://10.244.1.20:80/healthz": dial tcp 10.244.1.20:80: connect: connection refused
+
+
+Name:             frontend-76d98597b9-8x6th
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-4-worker/192.168.148.14
+Start Time:       Fri, 02 Oct 2026 12:41:46 -0400
+Labels:           app=frontend
+                  pod-template-hash=76d98597b9
+Annotations:      <none>
+Status:           Running
+IP:               10.244.2.42
+IPs:
+  IP:           10.244.2.42
+Controlled By:  ReplicaSet/frontend-76d98597b9
+Containers:
+  nginx:
+    Container ID:   containerd://aaedec9810993f53dc37264eeb4a57ce5ee61a729cdd2bdaeaa0064bb5718be8
+    Image:          nginx:1.27-alpine
+    Image ID:       docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Fri, 02 Oct 2026 12:41:47 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-h96cj (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  conf:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      frontend-nginx
+    Optional:  false
+  kube-api-access-h96cj:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age    From               Message
+  ----     ------     ----   ----               -------
+  Normal   Scheduled  3m18s  default-scheduler  Successfully assigned shop/frontend-76d98597b9-8x6th to aurora-lab-4-worker
+  Normal   Pulled     3m17s  kubelet            spec.containers{nginx}: Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    3m17s  kubelet            spec.containers{nginx}: Container created
+  Normal   Started    3m17s  kubelet            spec.containers{nginx}: Container started
+  Warning  Unhealthy  3m17s  kubelet            spec.containers{nginx}: Readiness probe failed: Get "http://10.244.2.42:80/healthz": dial tcp 10.244.2.42:80: connect: connection refused
+
+
+Name:             loadgen-7c6676864-8dkb4
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-4-worker2/192.168.148.16
+Start Time:       Fri, 02 Oct 2026 12:41:46 -0400
+Labels:           app=loadgen
+                  pod-template-hash=7c6676864
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.21
+IPs:
+  IP:           10.244.1.21
+Controlled By:  ReplicaSet/loadgen-7c6676864
+Containers:
+  loadgen:
+    Container ID:  containerd://44dbf0559c5ffbd98ce0bd585f5aba3e6bd70ff4890a1b067aef255b23d02ecb
+    Image:         busybox:1.37
+    Image ID:      docker.io/library/busybox@sha256:bdf57e528e45e4433820e045b29b4597825a1c9e38353532d90a01445013f82e
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      while true; do
+        code=$(wget -q -S -O /dev/null -T 3 http://frontend/api/items 2>&1 | awk '/^  HTTP\//{print $2}' | tail -1)
+        echo "$(date -u +%FT%TZ) GET /api/items -> ${code:-timeout}"
+        sleep 2
+      done
+      
+    State:          Running
+      Started:      Fri, 02 Oct 2026 12:41:47 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  32Mi
+    Requests:
+      cpu:        10m
+      memory:     8Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-8tsgj (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-8tsgj:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  3m18s  default-scheduler  Successfully assigned shop/loadgen-7c6676864-8dkb4 to aurora-lab-4-worker2
+  Normal  Pulled     3m17s  kubelet            spec.containers{loadgen}: Container image "busybox:1.37" already present on machine and can be accessed by the pod
+  Normal  Created    3m17s  kubelet            spec.containers{loadgen}: Container created
+  Normal  Started    3m17s  kubelet            spec.containers{loadgen}: Container started
+
+
+Name:             redis-59458f55d8-zhtbl
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-4-worker/192.168.148.14
+Start Time:       Fri, 02 Oct 2026 12:41:46 -0400
+Labels:           app=redis
+                  pod-template-hash=59458f55d8
+Annotations:      <none>
+Status:           Running
+IP:               10.244.2.40
+IPs:
+  IP:           10.244.2.40
+Controlled By:  ReplicaSet/redis-59458f55d8
+Containers:
+  redis:
+    Container ID:   containerd://4f8d0848294520d90a59a70cd188c9488a0d98f25b5f0abdc768a7436ff03505
+    Image:          redis:7.4-alpine
+    Image ID:       docker.io/library/redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
+    Port:           6379/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Fri, 02 Oct 2026 12:41:47 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:        50m
+      memory:     32Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7lfbc (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-7lfbc:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  3m18s  default-scheduler  Successfully assigned shop/redis-59458f55d8-zhtbl to aurora-lab-4-worker
+  Normal  Pulled     3m17s  kubelet            spec.containers{redis}: Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+  Normal  Created    3m17s  kubelet            spec.containers{redis}: Container created
+  Normal  Started    3m17s  kubelet            spec.containers{redis}: Container started
+
+
+Name:             worker-7f586c8b6-rbplt
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-4-worker2/192.168.148.16
+Start Time:       Fri, 02 Oct 2026 12:41:56 -0400
+Labels:           app=worker
+                  pod-template-hash=7f586c8b6
+Annotations:      kubectl.kubernetes.io/restartedAt: 2026-10-02T12:41:56-04:00
+Status:           Running
+IP:               10.244.1.22
+IPs:
+  IP:           10.244.1.22
+Controlled By:  ReplicaSet/worker-7f586c8b6
+Containers:
+  worker:
+    Container ID:  containerd://cb41b0b54ce35ca46c1b0d7a32c22b39c1bfd2fbf4db0dca01d0ec67a21662bb
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:0687a6bc9716edc2a6ee0fbfb0f87e7ee358b262b67c9215de91bc9b2d38ba71
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      /code/worker.py
+    State:          Running
+      Started:      Fri, 02 Oct 2026 12:44:17 -0400
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Fri, 02 Oct 2026 12:41:56 -0400
+      Finished:     Fri, 02 Oct 2026 12:44:17 -0400
+    Ready:          True
+    Restart Count:  1
+    Limits:
+      memory:  192Mi
+    Requests:
+      cpu:     50m
+      memory:  64Mi
+    Environment:
+      BATCH_SIZE:  500
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-hv4kg (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-hv4kg:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age                 From               Message
+  ----    ------     ----                ----               -------
+  Normal  Scheduled  3m8s                default-scheduler  Successfully assigned shop/worker-7f586c8b6-rbplt to aurora-lab-4-worker2
+  Normal  Pulled     47s (x2 over 3m8s)  kubelet            spec.containers{worker}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal  Created    47s (x2 over 3m8s)  kubelet            spec.containers{worker}: Container created
+  Normal  Started    47s (x2 over 3m8s)  kubelet            spec.containers{worker}: Container started

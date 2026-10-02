@@ -1,0 +1,21 @@
+{
+  "scenario": "11-noisy-worker-svc-targetport",
+  "repeat": 1,
+  "cluster": "aurora-lab",
+  "incident_id": "bac7a66e-27fb-4356-a0c8-8ed0c67796fb",
+  "user_id": "27c74cb7-e1d0-4e81-8289-31adf65cd6ed",
+  "org_id": "9a2bd792-a208-4c31-a946-df0184767a51",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:22:22.137033+00:00",
+  "duration_seconds": 144,
+  "tool_calls": 19,
+  "tool_errors": 0,
+  "llm_calls": 32,
+  "tokens": 430147,
+  "cost_usd": 0.441335,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"bac7a66e-27fb-4356-a0c8-8ed0c67796fb\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"HighErrorRate [critical] namespace=shop service=frontend\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"HighErrorRate\\\" was trigg"
+  }
+}

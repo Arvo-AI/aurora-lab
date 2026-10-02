@@ -1,0 +1,69 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+35s         Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-4sqkt
+35s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+35s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-kzlb4
+35s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-6pchx
+35s         Normal    Scheduled           pod/api-f64486c4c-kzlb4          Successfully assigned shop/api-f64486c4c-kzlb4 to aurora-lab-worker
+35s         Normal    Scheduled           pod/api-f64486c4c-6pchx          Successfully assigned shop/api-f64486c4c-6pchx to aurora-lab-worker2
+35s         Normal    Scheduled           pod/redis-59458f55d8-4sqkt       Successfully assigned shop/redis-59458f55d8-4sqkt to aurora-lab-worker
+35s         Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+34s         Normal    Created             pod/redis-59458f55d8-4sqkt       Container created
+34s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-d72hq
+34s         Normal    Pulled              pod/frontend-76d98597b9-d72hq    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+34s         Normal    Pulled              pod/redis-59458f55d8-4sqkt       Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+34s         Normal    Scheduled           pod/worker-6cf88d4b58-5wqxx      Successfully assigned shop/worker-6cf88d4b58-5wqxx to aurora-lab-worker2
+34s         Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7786b969d6 from 0 to 1
+34s         Normal    SuccessfulCreate    replicaset/loadgen-7786b969d6    Created pod: loadgen-7786b969d6-n2dkv
+34s         Normal    Started             pod/loadgen-7786b969d6-n2dkv     Container started
+34s         Normal    Created             pod/loadgen-7786b969d6-n2dkv     Container created
+34s         Normal    Pulled              pod/loadgen-7786b969d6-n2dkv     Container image "busybox:1.37" already present on machine and can be accessed by the pod
+34s         Normal    Scheduled           pod/loadgen-7786b969d6-n2dkv     Successfully assigned shop/loadgen-7786b969d6-n2dkv to aurora-lab-worker
+34s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+34s         Normal    Pulled              pod/worker-6cf88d4b58-5wqxx      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+34s         Normal    Pulled              pod/api-f64486c4c-6pchx          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+34s         Normal    Created             pod/api-f64486c4c-6pchx          Container created
+34s         Normal    Started             pod/api-f64486c4c-6pchx          Container started
+34s         Normal    Scheduled           pod/frontend-76d98597b9-d72hq    Successfully assigned shop/frontend-76d98597b9-d72hq to aurora-lab-worker
+34s         Normal    Started             pod/redis-59458f55d8-4sqkt       Container started
+34s         Normal    Created             pod/worker-6cf88d4b58-5wqxx      Container created
+34s         Normal    Pulled              pod/api-f64486c4c-kzlb4          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+34s         Normal    Created             pod/api-f64486c4c-kzlb4          Container created
+34s         Normal    Started             pod/api-f64486c4c-kzlb4          Container started
+34s         Normal    Started             pod/frontend-76d98597b9-6hcxr    Container started
+34s         Normal    Started             pod/worker-6cf88d4b58-5wqxx      Container started
+34s         Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-5wqxx
+34s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-6hcxr
+34s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+34s         Warning   Unhealthy           pod/frontend-76d98597b9-d72hq    Readiness probe failed: Get "http://10.244.1.11:80/healthz": dial tcp 10.244.1.11:80: connect: connection refused
+34s         Normal    Started             pod/frontend-76d98597b9-d72hq    Container started
+34s         Normal    Created             pod/frontend-76d98597b9-d72hq    Container created
+34s         Normal    Scheduled           pod/frontend-76d98597b9-6hcxr    Successfully assigned shop/frontend-76d98597b9-6hcxr to aurora-lab-worker2
+34s         Normal    Pulled              pod/frontend-76d98597b9-6hcxr    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+34s         Normal    Created             pod/frontend-76d98597b9-6hcxr    Container created
+33s         Warning   Unhealthy           pod/api-f64486c4c-kzlb4          Readiness probe failed: Get "http://10.244.1.10:8080/healthz": dial tcp 10.244.1.10:8080: connect: connection refused
+33s         Warning   Unhealthy           pod/api-f64486c4c-6pchx          Readiness probe failed: Get "http://10.244.2.10:8080/healthz": dial tcp 10.244.2.10:8080: connect: connection refused
+26s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-7d4b6f6f7d from 0 to 1
+26s         Normal    SuccessfulCreate    replicaset/api-7d4b6f6f7d        Created pod: api-7d4b6f6f7d-psxcn
+26s         Normal    Scheduled           pod/api-7d4b6f6f7d-psxcn         Successfully assigned shop/api-7d4b6f6f7d-psxcn to aurora-lab-worker2
+25s         Normal    Pulled              pod/api-7d4b6f6f7d-psxcn         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+25s         Normal    Created             pod/api-7d4b6f6f7d-psxcn         Container created
+25s         Normal    Started             pod/api-7d4b6f6f7d-psxcn         Container started
+25s         Warning   Unhealthy           pod/api-7d4b6f6f7d-psxcn         Readiness probe failed: Get "http://10.244.2.13:8080/healthz": dial tcp 10.244.2.13:8080: connect: connection refused
+24s         Normal    Started             pod/api-7d4b6f6f7d-shmgk         Container started
+24s         Normal    SuccessfulCreate    replicaset/api-7d4b6f6f7d        Created pod: api-7d4b6f6f7d-shmgk
+24s         Warning   Unhealthy           pod/api-7d4b6f6f7d-shmgk         Readiness probe failed: Get "http://10.244.1.13:8080/healthz": dial tcp 10.244.1.13:8080: connect: connection refused
+24s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-f64486c4c from 2 to 1
+24s         Normal    SuccessfulDelete    replicaset/api-f64486c4c         Deleted pod: api-f64486c4c-6pchx
+24s         Normal    Killing             pod/api-f64486c4c-6pchx          Stopping container api
+24s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-7d4b6f6f7d from 1 to 2
+24s         Normal    Created             pod/api-7d4b6f6f7d-shmgk         Container created
+24s         Normal    Pulled              pod/api-7d4b6f6f7d-shmgk         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+24s         Normal    Scheduled           pod/api-7d4b6f6f7d-shmgk         Successfully assigned shop/api-7d4b6f6f7d-shmgk to aurora-lab-worker
+12s         Normal    Created             pod/api-7d4b6f6f7d-psxcn         Container created
+12s         Normal    Started             pod/api-7d4b6f6f7d-psxcn         Container started
+12s         Normal    Pulled              pod/api-7d4b6f6f7d-psxcn         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+11s         Warning   BackOff             pod/api-7d4b6f6f7d-psxcn         Back-off restarting failed container log-shipper in pod api-7d4b6f6f7d-psxcn_shop(9701a8a2-5584-49d4-878c-0efce0368c01)
+11s         Normal    Pulled              pod/api-7d4b6f6f7d-shmgk         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+11s         Normal    Created             pod/api-7d4b6f6f7d-shmgk         Container created
+11s         Normal    Started             pod/api-7d4b6f6f7d-shmgk         Container started
+10s         Warning   BackOff             pod/api-7d4b6f6f7d-shmgk         Back-off restarting failed container log-shipper in pod api-7d4b6f6f7d-shmgk_shop(b28f062c-9901-4af3-b5fb-ee2fa4201807)

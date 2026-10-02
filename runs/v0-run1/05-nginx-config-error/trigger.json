@@ -1,0 +1,15 @@
+{
+  "request": {
+    "issue_description": "KubePodCrashLooping: a frontend pod in namespace shop is restarting after a config change. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodCrashLooping",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "6da158a5-b061-4094-ae30-7bea0f31332f",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "6fe38b83-6ed0-4dca-9301-470c43143c0a",
+    "status": "ok"
+  }
+}

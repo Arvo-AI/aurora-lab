@@ -1,0 +1,16 @@
+2026-10-01T16:53:49Z GET /api/items -> server
+2026-10-01T16:53:51Z GET /api/items -> server
+2026-10-01T16:53:53Z GET /api/items -> 200
+2026-10-01T16:53:55Z GET /api/items -> 200
+2026-10-01T16:53:57Z GET /api/items -> 200
+2026-10-01T16:53:59Z GET /api/items -> 200
+2026-10-01T16:54:01Z GET /api/items -> 200
+2026-10-01T16:54:03Z GET /api/items -> 200
+2026-10-01T16:54:05Z GET /api/items -> 200
+2026-10-01T16:54:07Z GET /api/items -> 200
+2026-10-01T16:54:09Z GET /api/items -> 200
+2026-10-01T16:54:11Z GET /api/items -> 200
+2026-10-01T16:54:13Z GET /api/items -> 200
+2026-10-01T16:54:15Z GET /api/items -> 200
+2026-10-01T16:54:17Z GET /api/items -> 200
+2026-10-01T16:54:19Z GET /api/items -> 200

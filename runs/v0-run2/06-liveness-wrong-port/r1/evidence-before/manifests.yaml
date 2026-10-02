@@ -1,0 +1,640 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "2"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"api","namespace":"shop"},"spec":{"replicas":2,"selector":{"matchLabels":{"app":"api"}},"template":{"metadata":{"labels":{"app":"api"}},"spec":{"containers":[{"command":["python","-u","/code/api.py"],"env":[{"name":"REDIS_HOST","value":"redis"}],"image":"python:3.12-alpine","livenessProbe":{"httpGet":{"path":"/healthz","port":8080},"initialDelaySeconds":15,"periodSeconds":10},"name":"api","ports":[{"containerPort":8080}],"readinessProbe":{"httpGet":{"path":"/healthz","port":8080},"periodSeconds":5},"resources":{"limits":{"memory":"128Mi"},"requests":{"cpu":"50m","memory":"32Mi"}},"volumeMounts":[{"mountPath":"/code","name":"code"}]}],"volumes":[{"configMap":{"name":"api-code"},"name":"code"}]}}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    generation: 2
+    name: api
+    namespace: shop
+    resourceVersion: "2969"
+    uid: 504161e2-f354-4813-a90c-9bee52fad6f7
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 2
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: api
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: api
+      spec:
+        containers:
+        - command:
+          - python
+          - -u
+          - /code/api.py
+          env:
+          - name: REDIS_HOST
+            value: redis
+          image: python:3.12-alpine
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: api
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 32Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /code
+            name: code
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: api-code
+          name: code
+  status:
+    availableReplicas: 2
+    conditions:
+    - lastTransitionTime: "2026-10-02T16:30:31Z"
+      lastUpdateTime: "2026-10-02T16:30:41Z"
+      message: ReplicaSet "api-c7b987b4d" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2026-10-02T16:31:51Z"
+      lastUpdateTime: "2026-10-02T16:31:51Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 2
+    readyReplicas: 2
+    replicas: 2
+    terminatingReplicas: 0
+    updatedReplicas: 2
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"frontend","namespace":"shop"},"spec":{"replicas":2,"selector":{"matchLabels":{"app":"frontend"}},"template":{"metadata":{"labels":{"app":"frontend"}},"spec":{"containers":[{"image":"nginx:1.27-alpine","name":"nginx","ports":[{"containerPort":80}],"readinessProbe":{"httpGet":{"path":"/healthz","port":80},"periodSeconds":5},"resources":{"limits":{"memory":"64Mi"},"requests":{"cpu":"50m","memory":"16Mi"}},"volumeMounts":[{"mountPath":"/etc/nginx/conf.d","name":"conf"}]}],"volumes":[{"configMap":{"name":"frontend-nginx"},"name":"conf"}]}}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    generation: 1
+    name: frontend
+    namespace: shop
+    resourceVersion: "2723"
+    uid: df66a6a7-5d1c-4f6c-bc43-be2c5dae5806
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 2
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: frontend
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: frontend
+      spec:
+        containers:
+        - image: nginx:1.27-alpine
+          imagePullPolicy: IfNotPresent
+          name: nginx
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 80
+              scheme: HTTP
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 64Mi
+            requests:
+              cpu: 50m
+              memory: 16Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /etc/nginx/conf.d
+            name: conf
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: frontend-nginx
+          name: conf
+  status:
+    availableReplicas: 2
+    conditions:
+    - lastTransitionTime: "2026-10-02T16:30:38Z"
+      lastUpdateTime: "2026-10-02T16:30:38Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-10-02T16:30:31Z"
+      lastUpdateTime: "2026-10-02T16:30:38Z"
+      message: ReplicaSet "frontend-76d98597b9" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 2
+    replicas: 2
+    terminatingReplicas: 0
+    updatedReplicas: 2
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"loadgen","namespace":"shop"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"loadgen"}},"template":{"metadata":{"labels":{"app":"loadgen"}},"spec":{"containers":[{"command":["sh","-c","while true; do\n  code=$(wget -q -S -O /dev/null -T 3 http://frontend/api/items 2\u003e\u00261 | awk '/^  HTTP\\//{print $2}' | tail -1)\n  echo \"$(date -u +%FT%TZ) GET /api/items -\u003e ${code:-timeout}\"\n  sleep 2\ndone\n"],"image":"busybox:1.37","name":"loadgen","resources":{"limits":{"memory":"32Mi"},"requests":{"cpu":"10m","memory":"8Mi"}}}]}}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    generation: 1
+    name: loadgen
+    namespace: shop
+    resourceVersion: "2676"
+    uid: c4d94993-ec12-4b7e-856e-102d996e58cd
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: loadgen
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: loadgen
+      spec:
+        containers:
+        - command:
+          - sh
+          - -c
+          - |
+            while true; do
+              code=$(wget -q -S -O /dev/null -T 3 http://frontend/api/items 2>&1 | awk '/^  HTTP\//{print $2}' | tail -1)
+              echo "$(date -u +%FT%TZ) GET /api/items -> ${code:-timeout}"
+              sleep 2
+            done
+          image: busybox:1.37
+          imagePullPolicy: IfNotPresent
+          name: loadgen
+          resources:
+            limits:
+              memory: 32Mi
+            requests:
+              cpu: 10m
+              memory: 8Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-10-02T16:30:32Z"
+      lastUpdateTime: "2026-10-02T16:30:32Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-10-02T16:30:31Z"
+      lastUpdateTime: "2026-10-02T16:30:32Z"
+      message: ReplicaSet "loadgen-7c6676864" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    terminatingReplicas: 0
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"redis","namespace":"shop"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"redis"}},"template":{"metadata":{"labels":{"app":"redis"}},"spec":{"containers":[{"image":"redis:7.4-alpine","name":"redis","ports":[{"containerPort":6379}],"resources":{"limits":{"memory":"128Mi"},"requests":{"cpu":"50m","memory":"32Mi"}}}]}}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    generation: 1
+    name: redis
+    namespace: shop
+    resourceVersion: "2692"
+    uid: 6c05e12a-f5a7-4ae2-a10f-a5281a6a7169
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: redis
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: redis
+      spec:
+        containers:
+        - image: redis:7.4-alpine
+          imagePullPolicy: IfNotPresent
+          name: redis
+          ports:
+          - containerPort: 6379
+            protocol: TCP
+          resources:
+            limits:
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 32Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-10-02T16:30:33Z"
+      lastUpdateTime: "2026-10-02T16:30:33Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-10-02T16:30:31Z"
+      lastUpdateTime: "2026-10-02T16:30:33Z"
+      message: ReplicaSet "redis-59458f55d8" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    terminatingReplicas: 0
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"worker","namespace":"shop"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"worker"}},"template":{"metadata":{"labels":{"app":"worker"}},"spec":{"containers":[{"command":["python","-u","/code/worker.py"],"env":[{"name":"BATCH_SIZE","value":"500"}],"image":"python:3.12-alpine","name":"worker","resources":{"limits":{"memory":"192Mi"},"requests":{"cpu":"50m","memory":"64Mi"}},"volumeMounts":[{"mountPath":"/code","name":"code"}]}],"volumes":[{"configMap":{"name":"api-code"},"name":"code"}]}}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    generation: 1
+    name: worker
+    namespace: shop
+    resourceVersion: "2695"
+    uid: 8d51ced4-42f1-4e2a-a5b5-d95ed9a0e8f4
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: worker
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: worker
+      spec:
+        containers:
+        - command:
+          - python
+          - -u
+          - /code/worker.py
+          env:
+          - name: BATCH_SIZE
+            value: "500"
+          image: python:3.12-alpine
+          imagePullPolicy: IfNotPresent
+          name: worker
+          resources:
+            limits:
+              memory: 192Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /code
+            name: code
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: api-code
+          name: code
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-10-02T16:30:33Z"
+      lastUpdateTime: "2026-10-02T16:30:33Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-10-02T16:30:31Z"
+      lastUpdateTime: "2026-10-02T16:30:33Z"
+      message: ReplicaSet "worker-6cf88d4b58" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    terminatingReplicas: 0
+    updatedReplicas: 1
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"api","namespace":"shop"},"spec":{"ports":[{"port":8080,"targetPort":8080}],"selector":{"app":"api"}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    name: api
+    namespace: shop
+    resourceVersion: "2570"
+    uid: acfd0e2d-feb6-4dea-a143-94eb51b093d9
+  spec:
+    clusterIP: 10.96.159.61
+    clusterIPs:
+    - 10.96.159.61
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: api
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"frontend","namespace":"shop"},"spec":{"ports":[{"port":80,"targetPort":80}],"selector":{"app":"frontend"}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    name: frontend
+    namespace: shop
+    resourceVersion: "2611"
+    uid: 6a6ae536-ca49-41c1-bb79-200ba0cd79c5
+  spec:
+    clusterIP: 10.96.8.71
+    clusterIPs:
+    - 10.96.8.71
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+    selector:
+      app: frontend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"redis","namespace":"shop"},"spec":{"ports":[{"port":6379,"targetPort":6379}],"selector":{"app":"redis"}}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    name: redis
+    namespace: shop
+    resourceVersion: "2557"
+    uid: 8e9ef176-1a4b-432a-8c0a-95cc39c92fb5
+  spec:
+    clusterIP: 10.96.250.95
+    clusterIPs:
+    - 10.96.250.95
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: redis
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  data:
+    api.py: |
+      import json, os, socket, sys, time
+      from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+      REDIS_HOST = os.environ["REDIS_HOST"]
+      PORT = int(os.environ.get("PORT", "8080"))
+
+      def redis_ping():
+          with socket.create_connection((REDIS_HOST, 6379), timeout=2) as s:
+              s.sendall(b"PING\r\n")
+              return s.recv(64).startswith(b"+PONG")
+
+      for attempt in range(1, 6):
+          try:
+              redis_ping()
+              print(f"connected to redis at {REDIS_HOST}:6379", flush=True)
+              break
+          except OSError as e:
+              print(f"redis connection failed (attempt {attempt}/5): {e}", flush=True)
+              time.sleep(2)
+      else:
+          print("giving up: redis unavailable", flush=True)
+          sys.exit(1)
+
+      class H(BaseHTTPRequestHandler):
+          def do_GET(self):
+              if self.path == "/healthz":
+                  return self._send(200, {"status": "ok"})
+              try:
+                  redis_ping()
+                  self._send(200, {"items": ["kettle", "mug", "teapot"]})
+              except OSError as e:
+                  print(f"request failed: redis error: {e}", flush=True)
+                  self._send(503, {"error": "backend unavailable"})
+
+          def _send(self, code, body):
+              data = json.dumps(body).encode()
+              self.send_response(code)
+              self.send_header("Content-Type", "application/json")
+              self.send_header("Content-Length", str(len(data)))
+              self.end_headers()
+              self.wfile.write(data)
+
+          def log_message(self, fmt, *args):
+              print("%s %s" % (self.address_string(), fmt % args), flush=True)
+
+      print(f"api listening on :{PORT}", flush=True)
+      ThreadingHTTPServer(("", PORT), H).serve_forever()
+    worker.py: |
+      import os, time
+      batch = int(os.environ.get("BATCH_SIZE", "500"))
+      print(f"worker started, batch size {batch}", flush=True)
+      while True:
+          # Each queued item holds about 100 KiB while the batch is processed.
+          buf = [bytearray(100 * 1024) for _ in range(batch)]
+          print(f"processed batch of {len(buf)} items", flush=True)
+          del buf
+          time.sleep(5)
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","data":{"api.py":"import json, os, socket, sys, time\nfrom http.server import BaseHTTPRequestHandler, ThreadingHTTPServer\n\nREDIS_HOST = os.environ[\"REDIS_HOST\"]\nPORT = int(os.environ.get(\"PORT\", \"8080\"))\n\ndef redis_ping():\n    with socket.create_connection((REDIS_HOST, 6379), timeout=2) as s:\n        s.sendall(b\"PING\\r\\n\")\n        return s.recv(64).startswith(b\"+PONG\")\n\nfor attempt in range(1, 6):\n    try:\n        redis_ping()\n        print(f\"connected to redis at {REDIS_HOST}:6379\", flush=True)\n        break\n    except OSError as e:\n        print(f\"redis connection failed (attempt {attempt}/5): {e}\", flush=True)\n        time.sleep(2)\nelse:\n    print(\"giving up: redis unavailable\", flush=True)\n    sys.exit(1)\n\nclass H(BaseHTTPRequestHandler):\n    def do_GET(self):\n        if self.path == \"/healthz\":\n            return self._send(200, {\"status\": \"ok\"})\n        try:\n            redis_ping()\n            self._send(200, {\"items\": [\"kettle\", \"mug\", \"teapot\"]})\n        except OSError as e:\n            print(f\"request failed: redis error: {e}\", flush=True)\n            self._send(503, {\"error\": \"backend unavailable\"})\n\n    def _send(self, code, body):\n        data = json.dumps(body).encode()\n        self.send_response(code)\n        self.send_header(\"Content-Type\", \"application/json\")\n        self.send_header(\"Content-Length\", str(len(data)))\n        self.end_headers()\n        self.wfile.write(data)\n\n    def log_message(self, fmt, *args):\n        print(\"%s %s\" % (self.address_string(), fmt % args), flush=True)\n\nprint(f\"api listening on :{PORT}\", flush=True)\nThreadingHTTPServer((\"\", PORT), H).serve_forever()\n","worker.py":"import os, time\nbatch = int(os.environ.get(\"BATCH_SIZE\", \"500\"))\nprint(f\"worker started, batch size {batch}\", flush=True)\nwhile True:\n    # Each queued item holds about 100 KiB while the batch is processed.\n    buf = [bytearray(100 * 1024) for _ in range(batch)]\n    print(f\"processed batch of {len(buf)} items\", flush=True)\n    del buf\n    time.sleep(5)\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"api-code","namespace":"shop"}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    name: api-code
+    namespace: shop
+    resourceVersion: "2549"
+    uid: aeb95a61-1199-4f88-8680-b9d5de08436d
+- apiVersion: v1
+  data:
+    default.conf: |
+      upstream api {
+          server api:8080;
+      }
+      server {
+          listen 80;
+          location /healthz { return 200 "ok\n"; }
+          location /api/ {
+              proxy_pass http://api/;
+              proxy_connect_timeout 2s;
+          }
+          location / { return 200 "shop frontend\n"; }
+      }
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","data":{"default.conf":"upstream api {\n    server api:8080;\n}\nserver {\n    listen 80;\n    location /healthz { return 200 \"ok\\n\"; }\n    location /api/ {\n        proxy_pass http://api/;\n        proxy_connect_timeout 2s;\n    }\n    location / { return 200 \"shop frontend\\n\"; }\n}\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"frontend-nginx","namespace":"shop"}}
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    name: frontend-nginx
+    namespace: shop
+    resourceVersion: "2550"
+    uid: 581b5a13-f243-44ce-bec2-392fede975cf
+- apiVersion: v1
+  data:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDBTCCAe2gAwIBAgIIbyqAY3wwQGYwDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczAeFw0yNjEwMDIxNjEzMDVaFw0zNjA5MjkxNjE4MDVaMBUx
+      EzARBgNVBAMTCmt1YmVybmV0ZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQDX1N8AVODWGTIKcVgIKJ3kYd0Cpbp8x3Ya2gthCnc/kbbG920yVPLws/Um
+      kngsxqEQzQEo9as9+AobfnOqD+q1p2OewmQZZvDW03FsAZ/QFZwpKlKsC4UHpCSE
+      MNGVXU5FA1nNtL59ikyrgFLoRInW6oLSa+fC3ocTbQouKciCrXFuQwgj+N22imYf
+      YUEMSanEyTDo7H/TrzvyDCH4OJ2JnPGobi3zM+b8IVEe+bScJ3BN4jhQl/JZdczo
+      4tUzueUMKUT14OY/9aiLR809gtMsS8Gudee0YpQzqfBgpDhvUFNuNBpmBBLYB5lQ
+      rTwBOy7TMeclxueo7Ov0tTgEGFHjAgMBAAGjWTBXMA4GA1UdDwEB/wQEAwICpDAP
+      BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBQaMBVVJ1QY6eFXr4eg0uU5+SFqfjAV
+      BgNVHREEDjAMggprdWJlcm5ldGVzMA0GCSqGSIb3DQEBCwUAA4IBAQCB70kGkfc5
+      Pciam00pDCbr5G5ewU7r/VhtDNl86ok2U1PTy6KSwz9tC1IjiLA3SyO/MPoktOm0
+      /zpdKlzh9ZJFQCHbaPsRKzKbHkLHGYkuE6rMfTTaJdU/U5qLSCdTszDTuhTia6ky
+      iq2JNDBn+xDWWI+B9nWCwmkTauvZQNDLcbwQvhBXNfJu4Eu1uymbAXdJhMl37a2j
+      VyA5ae5amN1y5/fnqt8Ezjx2Nr0iqMXIDe1D9Rw9F885S8xqFEOXIQsV8B7jp8t/
+      Ggj1AZ81jwQIpe8mdl6Ub6JiQMEC8/Dz5W6KAUcTJW+/qfEmQSW7SDUNvgPHHKZd
+      Ww/Z5wUSTyCK
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubernetes.io/description: Contains a CA bundle that can be used to verify the
+        kube-apiserver when using internal endpoints such as the internal service
+        IP or kubernetes.default.svc. No other usage is guaranteed across distributions
+        of Kubernetes clusters.
+    creationTimestamp: "2026-10-02T16:30:31Z"
+    name: kube-root-ca.crt
+    namespace: shop
+    resourceVersion: "2551"
+    uid: d065c076-45dc-454e-a582-688b8f0b3b0f
+kind: List
+metadata:
+  resourceVersion: ""

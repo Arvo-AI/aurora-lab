@@ -1,0 +1,1 @@
+Error from server (BadRequest): container "api" in pod "api-77b4b6956f-gvnkn" is waiting to start: PodInitializing

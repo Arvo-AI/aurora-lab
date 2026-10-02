@@ -1,0 +1,21 @@
+{
+  "scenario": "13-networkpolicy-blocks-redis",
+  "repeat": 1,
+  "cluster": "aurora-lab-3",
+  "incident_id": "620b6ba1-5f59-45a7-820f-f4056e893046",
+  "user_id": "6d150968-d099-4b06-aeb0-37ce8693acad",
+  "org_id": "5e63aa67-e0d8-4a1b-899a-c3cfd3413515",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:23:02.140250+00:00",
+  "duration_seconds": 202,
+  "tool_calls": 25,
+  "tool_errors": 0,
+  "llm_calls": 38,
+  "tokens": 672136,
+  "cost_usd": 0.686726,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"620b6ba1-5f59-45a7-820f-f4056e893046\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"HighErrorRate [critical] namespace=shop service=frontend\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"A critical alert titled \\\"HighErrorRate\\\" w"
+  }
+}

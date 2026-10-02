@@ -1,0 +1,21 @@
+{
+  "scenario": "06-liveness-wrong-port",
+  "repeat": 1,
+  "cluster": "aurora-lab-3",
+  "incident_id": "2cb5e51f-a00a-4380-834d-0b8b1d9bfeeb",
+  "user_id": "69648f71-11b5-4ec3-99f6-ddda2fbc92df",
+  "org_id": "6301c3be-24eb-4fb5-8dc9-8d28d6050596",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:29:46.959660+00:00",
+  "duration_seconds": 123,
+  "tool_calls": 14,
+  "tool_errors": 1,
+  "llm_calls": 21,
+  "tokens": 338632,
+  "cost_usd": 0.34945,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [], \"total\": 0}"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "scenario": "09-redis-pvc-pending",
+  "incident_id": "3ca04657-ad36-4730-aa98-6a2f4a6e0a81",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T15:22:36.826424+00:00",
+  "duration_seconds": 886,
+  "tool_calls": 45,
+  "tool_errors": 1,
+  "llm_calls": 54,
+  "tokens": 2516310,
+  "cost_usd": 2.611195
+}

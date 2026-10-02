@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "The api Service has no endpoints",
+      "result": "met",
+      "evidence": "the Service had no matching backend endpoints, as confirmed by `kubectl get endpoints api -n shop` returning `<none>` and the associated EndpointSlice showing `endpoints: null` [10, 15, 17]."
+    },
+    {
+      "item": "Its selector (app=api-v2) does not match the pod labels (app=api)",
+      "result": "met",
+      "evidence": "The root cause was a label/selector mismatch on the `api` Service in the `shop` namespace: the Deployment and its pods are labeled `app=api` [13, 18]... Intentional targeting of a separate `api-v2` workload by the Service selector \u2014 no pods exist with label `app=api-v2` [19]"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA never states outright that the Service selector is `app=api-v2`; this is only implied by the Ruled Out line about the selector targeting `api-v2`. The fix is likewise only referenced as 'the proposed selector patch' and is not spelled out as setting the selector back to `app=api`, so a reviewer may want to confirm both points.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "correct",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "partial",
+    "agrees_with_judge": false,
+    "fix_acceptable": true,
+    "notes": "I disagree with the judge: item 2 is only partial. The root cause never states the selector value; it says only 'the Service had no matching backend endpoints' and 'the selector configuration itself does not currently align with the running pods'. The app=api-v2 value appears only indirectly in a Ruled Out bullet, even though the timeline shows Aurora read 'selector: app: api-v2'. The fix ('proposed selector patch') is vague but accepted."
+  },
+  "fix_from_suggestions": {
+    "result": "acceptable",
+    "best_suggestion": "Patch `api` Service selector to match pod labels `app=api`",
+    "reason": "The suggestion sets the Service selector back to app=api, which matches the acceptable fix and restores endpoints, so it fixes the root cause."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The api Service has no endpoints",
+        "result": "met",
+        "evidence": "The Service had no matching backend endpoints, as confirmed by `kubectl get endpoints api -n shop` returning `<none>` and the associated EndpointSlice showing `endpoints: null`"
+      },
+      {
+        "item": "Its selector (app=api-v2) does not match the pod labels (app=api)",
+        "result": "met",
+        "evidence": "The `api` Service's selector (`app: api-v2`) does not match any pod's labels (`app: api`), so the Service has zero endpoints."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "The formal report paragraph only implies the api-v2 selector, but the last chat message and next steps state it explicitly. The explanation that the single early 200 came from a window 'before the mismatch took effect' is speculative and unverified, but it does not affect the root cause."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}

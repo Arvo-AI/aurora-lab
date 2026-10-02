@@ -1,0 +1,21 @@
+{
+  "scenario": "09-redis-pvc-pending",
+  "repeat": 1,
+  "cluster": "aurora-lab-2",
+  "incident_id": "9be7183c-84d1-43e8-9ca1-426efacf4f71",
+  "user_id": "d5f83286-64e6-45c3-b3df-67ee4ec51f6f",
+  "org_id": "b29b5133-89b7-4016-9743-e35df44c315f",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T21:17:10.929547+00:00",
+  "duration_seconds": 195,
+  "tool_calls": 20,
+  "tool_errors": 0,
+  "llm_calls": 32,
+  "tokens": 454963,
+  "cost_usd": 0.472086,
+  "isolation": {
+    "list_incidents_calls": 2,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [], \"total\": 0}"
+  }
+}

@@ -1,0 +1,28 @@
+clientVersion:
+  buildDate: "2026-03-18T18:30:07Z"
+  compiler: gc
+  gitCommit: 6c1cd99aef09161ddb07b8ade6c9564e9b9bfe27
+  gitTreeState: clean
+  gitVersion: v1.35.3
+  goVersion: go1.26.1
+  major: "1"
+  minor: "35"
+  platform: darwin/arm64
+kustomizeVersion: v5.7.1
+serverVersion:
+  buildDate: "2026-08-26T10:44:25Z"
+  compiler: gc
+  emulationMajor: "1"
+  emulationMinor: "37"
+  gitCommit: f54c212e3a2f75d674b717a9b29052b20b60aefc
+  gitTreeState: clean
+  gitVersion: v1.37.0
+  goVersion: go1.26.6
+  major: "1"
+  minCompatibilityMajor: "1"
+  minCompatibilityMinor: "36"
+  minor: "37"
+  platform: linux/arm64
+
+Warning: version difference between client (1.35) and server (1.37) exceeds the supported minor version skew of +/-1
+kind v0.33.0 go1.27.1 darwin/arm64

@@ -1,0 +1,16 @@
+Name:          redis-data
+Namespace:     shop
+StorageClass:  fast-ssd
+Status:        Pending
+Volume:        
+Labels:        <none>
+Annotations:   <none>
+Finalizers:    [kubernetes.io/pvc-protection]
+Capacity:      
+Access Modes:  
+VolumeMode:    Filesystem
+Used By:       redis-5fff65475c-qnp9w
+Events:
+  Type     Reason              Age                    From                         Message
+  ----     ------              ----                   ----                         -------
+  Warning  ProvisioningFailed  2m23s (x3 over 2m49s)  persistentvolume-controller  storageclass.storage.k8s.io "fast-ssd" not found

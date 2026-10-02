@@ -1,0 +1,15 @@
+{
+  "request": {
+    "issue_description": "KubePodNotReady: worker pod in namespace shop has been Pending for over 5 minutes. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodNotReady",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "76c116ba-67bd-4c05-b336-2a4fcc539631",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "93d42235-771e-428b-b69a-e7170a365fb2",
+    "status": "ok"
+  }
+}

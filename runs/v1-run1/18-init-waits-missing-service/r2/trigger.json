@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api: Rollout of deployment shop/api is not progressing for longer than 15 minutes. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "34afbc75-5e32-4bef-881e-db03cfc04e31",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "1c7b41d3-03c4-4c05-bf39-1096b8fb2459",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab",
+  "user_id": "80dfff35-ea0c-43c9-92fd-4ee01d25a3fb",
+  "org_id": "9e1fb190-59ec-403e-8c3f-0036ad6edf2b",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-323e1795fe5945f9",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T21:07:18.037394+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-control-plane:6443",
+      "updated_at": "2026-10-02T21:07:18.037394+00:00"
+    }
+  ]
+}

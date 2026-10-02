@@ -1,0 +1,237 @@
+Name:                   api
+Namespace:              shop
+CreationTimestamp:      Fri, 02 Oct 2026 10:39:07 -0400
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=api
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=api
+  Containers:
+   api:
+    Image:      python:3.12-alpine
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Command:
+      python
+      -u
+      /code/api.py
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:      50m
+      memory:   32Mi
+    Liveness:   http-get http://:8080/healthz delay=15s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:8080/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:
+      REDIS_HOST:  redis
+    Mounts:
+      /code from code (rw)
+  Volumes:
+   code:
+    Type:          ConfigMap (a volume populated by a ConfigMap)
+    Name:          api-code
+    Optional:      false
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   api-f64486c4c (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  59s   deployment-controller  Scaled up replica set api-f64486c4c from 0 to 2
+
+
+Name:                   frontend
+Namespace:              shop
+CreationTimestamp:      Fri, 02 Oct 2026 10:39:07 -0400
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=frontend
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=frontend
+  Containers:
+   nginx:
+    Image:      nginx:1.27-alpine
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+  Volumes:
+   conf:
+    Type:          ConfigMap (a volume populated by a ConfigMap)
+    Name:          frontend-nginx
+    Optional:      false
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      True    MinimumReplicasAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   frontend-76d98597b9 (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  59s   deployment-controller  Scaled up replica set frontend-76d98597b9 from 0 to 2
+
+
+Name:                   loadgen
+Namespace:              shop
+CreationTimestamp:      Fri, 02 Oct 2026 10:39:07 -0400
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=loadgen
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=loadgen
+  Containers:
+   loadgen:
+    Image:      busybox:1.37
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      sh
+      -c
+      while true; do
+        code=$(wget -q -S -O /dev/null -T 3 http://frontend/api/items 2>&1 | awk '/^  HTTP\//{print $2}' | tail -1)
+        echo "$(date -u +%FT%TZ) GET /api/items -> ${code:-timeout}"
+        sleep 2
+      done
+      
+    Limits:
+      memory:  32Mi
+    Requests:
+      cpu:         10m
+      memory:      8Mi
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   loadgen-7c6676864 (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  59s   deployment-controller  Scaled up replica set loadgen-7c6676864 from 0 to 1
+
+
+Name:                   redis
+Namespace:              shop
+CreationTimestamp:      Fri, 02 Oct 2026 10:39:07 -0400
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=redis
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=redis
+  Containers:
+   redis:
+    Image:      redis:7.4-alpine
+    Port:       6379/TCP
+    Host Port:  0/TCP
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:         50m
+      memory:      32Mi
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   redis-59458f55d8 (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  59s   deployment-controller  Scaled up replica set redis-59458f55d8 from 0 to 1
+
+
+Name:                   worker
+Namespace:              shop
+CreationTimestamp:      Fri, 02 Oct 2026 10:39:07 -0400
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 2
+Selector:               app=worker
+Replicas:               1 desired | 1 updated | 1 total | 0 available | 1 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=worker
+  Containers:
+   worker:
+    Image:      python:3.12-alpine
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      python
+      -u
+      /code/worker.py
+    Limits:
+      memory:  192Mi
+    Requests:
+      cpu:     50m
+      memory:  64Mi
+    Environment:
+      BATCH_SIZE:  2500
+    Mounts:
+      /code from code (rw)
+  Volumes:
+   code:
+    Type:          ConfigMap (a volume populated by a ConfigMap)
+    Name:          api-code
+    Optional:      false
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Progressing    True    NewReplicaSetAvailable
+  Available      False   MinimumReplicasUnavailable
+OldReplicaSets:  worker-6cf88d4b58 (0/0 replicas created)
+NewReplicaSet:   worker-86f68b9bf6 (1/1 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  59s   deployment-controller  Scaled up replica set worker-6cf88d4b58 from 0 to 1
+  Normal  ScalingReplicaSet  50s   deployment-controller  Scaled up replica set worker-86f68b9bf6 from 0 to 1
+  Normal  ScalingReplicaSet  50s   deployment-controller  Scaled down replica set worker-6cf88d4b58 from 1 to 0

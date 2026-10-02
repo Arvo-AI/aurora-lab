@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "HighErrorRate: frontend /api/ requests in namespace shop are failing with 5xx; all pods are Running. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "HighErrorRate",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "dab38ea7-1b38-4cfb-9603-ce80129e23a9",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "b6f63987-d32a-41d4-8190-fde4e319d5b4",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab",
+  "user_id": "2f8cdb6e-6e8d-42be-8b10-c07d19be63db",
+  "org_id": "4c3c9a10-91bf-472e-bac3-852f86b925ca",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-bf223c2bda6f7755",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T17:04:43.279310+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-control-plane:6443",
+      "updated_at": "2026-10-02T17:04:43.279310+00:00"
+    }
+  ]
+}

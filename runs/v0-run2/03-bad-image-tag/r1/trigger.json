@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "KubeDeploymentRolloutStuck: deployment frontend in namespace shop has not progressed. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubeDeploymentRolloutStuck",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "453e87cd-5a5b-47ff-a17d-4d69ddbd1395",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "7bb1ea64-9cc0-4b26-800b-0badbaeecef4",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab-3",
+  "user_id": "6cd12efa-1e1a-4960-812a-4bd0b3f39833",
+  "org_id": "81aaff7e-89a2-41f1-a034-3505f38dcfdf",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-872662861d1cc5a6",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T16:26:45.794867+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-3-control-plane:6443",
+      "updated_at": "2026-10-02T16:26:45.794867+00:00"
+    }
+  ]
+}

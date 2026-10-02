@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "Only one of the two frontend pods fails (502/504, it cannot connect to its upstream), the other serves normally",
+      "result": "met",
+      "evidence": "One of two frontend replicas (`g5zrg`) continuously returned 504s to `/api/items` callers for the duration of the observed window [7], while the other replica (`kt2jr`) recovered within ~6 seconds of a single startup failure [8]."
+    },
+    {
+      "item": "The cause is the frontend-nginx ConfigMap upstream changed to api:8000; only the restarted pod has loaded it, the other still runs the old config",
+      "result": "partial",
+      "evidence": "The `frontend-nginx` ConfigMap defines the upstream as `server api:8000` [13], but the `api` ClusterIP service is actually exposed on port `8080` [6]. ... This discrepancy was not fully reconciled \u2014 the live nginx configuration inside the running pod could not be inspected to confirm which port it was actually using"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "partial",
+  "notes": "The RCA correctly ties the ConfigMap's api:8000 to the failing pod. It never says the ConfigMap was edited, or that the healthy pod still runs the old api:8080 config from memory because nginx only reads its config at start. It recommends no fix, and it leaves the api backend open as a possible contributing factor without asserting it as the cause.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "partial",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "partial",
+    "agrees_with_judge": true,
+    "fix_acceptable": null,
+    "notes": "Agree with partial. The RCA ties the failing pod to upstream api:8000 and notes the other pod uses 8080, but it never concludes that the ConfigMap was edited and only the recreated pod (9s younger) loaded it. The evidence for that was available: the pod age gap, and a ConfigMap resourceVersion that differed from the last-applied one. It hedges ('most likely', 'not fully reconciled') and leaves api backend unavailability open as a possible contributor without evidence. No fix is stated."
+  },
+  "fix_from_suggestions": {
+    "result": "acceptable",
+    "best_suggestion": "Patch `frontend-nginx` ConfigMap to point upstream at `api:8080` and roll restart `frontend`",
+    "reason": "It reverts the ConfigMap upstream to api:8080 and restarts the frontend deployment, which matches the acceptable fix and addresses the root cause."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "Only one of the two frontend pods fails (502/504, it cannot connect to its upstream), the other serves normally",
+        "result": "met",
+        "evidence": "One of two frontend replicas (`g5zrg`) continuously returned 504s to `/api/items` callers for the duration of the observed window [7], while the other replica (`kt2jr`) recovered within ~6 seconds of a single startup failure [8]."
+      },
+      {
+        "item": "The cause is the frontend-nginx ConfigMap upstream changed to api:8000; only the restarted pod has loaded it, the other still runs the old config",
+        "result": "partial",
+        "evidence": "The `frontend-nginx` ConfigMap defines the upstream as `server api:8000` [13], but the `api` ClusterIP service is actually exposed on port `8080` [6]. ... This discrepancy was not fully reconciled \u2014 the live nginx configuration inside the running pod could not be inspected to confirm which port it was actually using at the time of each failure"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "partial",
+    "notes": "The RCA correctly finds the api:8000 vs 8080 port mismatch in the ConfigMap. It never explains the split as one pod reloading the edited ConfigMap while the other still runs the old config from memory, and it leaves the discrepancy explicitly unreconciled. It also hedges on backend unavailability as a possible contributing factor, but does not assert it as the cause."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}

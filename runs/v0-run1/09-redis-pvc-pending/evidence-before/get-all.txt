@@ -1,0 +1,43 @@
+NAME                            READY   STATUS             RESTARTS      AGE   IP            NODE                 NOMINATED NODE   READINESS GATES
+pod/api-69c49c687f-bjcbd        0/1     CrashLoopBackOff   2 (15s ago)   60s   10.244.1.90   aurora-lab-worker    <none>           <none>
+pod/api-f64486c4c-k9fwq         1/1     Running            0             69s   10.244.1.87   aurora-lab-worker    <none>           <none>
+pod/api-f64486c4c-njl95         1/1     Running            0             69s   10.244.2.91   aurora-lab-worker2   <none>           <none>
+pod/frontend-76d98597b9-7jd2f   1/1     Running            0             69s   10.244.1.88   aurora-lab-worker    <none>           <none>
+pod/frontend-76d98597b9-8c6sk   1/1     Running            0             69s   10.244.2.93   aurora-lab-worker2   <none>           <none>
+pod/loadgen-7c6676864-x5ptq     1/1     Running            0             69s   10.244.1.89   aurora-lab-worker    <none>           <none>
+pod/redis-5fff65475c-4dg65      0/1     Pending            0             60s   <none>        <none>               <none>           <none>
+pod/worker-6cf88d4b58-5nhwg     1/1     Running            0             69s   10.244.2.92   aurora-lab-worker2   <none>           <none>
+
+NAME               TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/api        ClusterIP   10.96.45.81    <none>        8080/TCP   69s   app=api
+service/frontend   ClusterIP   10.96.125.54   <none>        80/TCP     69s   app=frontend
+service/redis      ClusterIP   10.96.65.11    <none>        6379/TCP   69s   app=redis
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES               SELECTOR
+deployment.apps/api        2/2     1            2           69s   api          python:3.12-alpine   app=api
+deployment.apps/frontend   2/2     2            2           69s   nginx        nginx:1.27-alpine    app=frontend
+deployment.apps/loadgen    1/1     1            1           69s   loadgen      busybox:1.37         app=loadgen
+deployment.apps/redis      0/1     1            0           69s   redis        redis:7.4-alpine     app=redis
+deployment.apps/worker     1/1     1            1           69s   worker       python:3.12-alpine   app=worker
+
+NAME                                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES               SELECTOR
+replicaset.apps/api-69c49c687f        1         1         0       60s   api          python:3.12-alpine   app=api,pod-template-hash=69c49c687f
+replicaset.apps/api-f64486c4c         2         2         2       69s   api          python:3.12-alpine   app=api,pod-template-hash=f64486c4c
+replicaset.apps/frontend-76d98597b9   2         2         2       69s   nginx        nginx:1.27-alpine    app=frontend,pod-template-hash=76d98597b9
+replicaset.apps/loadgen-7c6676864     1         1         1       69s   loadgen      busybox:1.37         app=loadgen,pod-template-hash=7c6676864
+replicaset.apps/redis-59458f55d8      0         0         0       69s   redis        redis:7.4-alpine     app=redis,pod-template-hash=59458f55d8
+replicaset.apps/redis-5fff65475c      1         1         0       60s   redis        redis:7.4-alpine     app=redis,pod-template-hash=5fff65475c
+replicaset.apps/worker-6cf88d4b58     1         1         1       69s   worker       python:3.12-alpine   app=worker,pod-template-hash=6cf88d4b58
+
+NAME                               STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/redis-data   Pending                                      fast-ssd       <unset>                 60s   Filesystem
+
+NAME                                            ADDRESSTYPE   PORTS     ENDPOINTS                             AGE
+endpointslice.discovery.k8s.io/api-f7hl4        IPv4          8080      10.244.1.87,10.244.2.91,10.244.1.90   69s
+endpointslice.discovery.k8s.io/frontend-5l58z   IPv4          80        10.244.1.88,10.244.2.93               69s
+endpointslice.discovery.k8s.io/redis-q6cqc      IPv4          <unset>   <unset>                               69s
+
+NAME                         DATA   AGE
+configmap/api-code           2      69s
+configmap/frontend-nginx     1      69s
+configmap/kube-root-ca.crt   1      69s

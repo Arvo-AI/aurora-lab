@@ -1,0 +1,21 @@
+{
+  "scenario": "19-config-drift-partial-restart",
+  "repeat": 2,
+  "cluster": "aurora-lab-3",
+  "incident_id": "48ced9a4-b862-42d6-8974-f91f833dd3f1",
+  "user_id": "26ddebc5-9976-46e4-82fa-b8a28e871023",
+  "org_id": "df503483-a225-442d-be89-f8558ef95b96",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T21:07:09.442331+00:00",
+  "duration_seconds": 253,
+  "tool_calls": 28,
+  "tool_errors": 4,
+  "llm_calls": 39,
+  "tokens": 820098,
+  "cost_usd": 0.839121,
+  "isolation": {
+    "list_incidents_calls": 2,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [], \"total\": 0}"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "scenario": "09-redis-pvc-pending",
+  "repeat": 1,
+  "cluster": "aurora-lab-3",
+  "incident_id": "bd0e56d3-4164-4a00-a296-a9c0872cfc8c",
+  "user_id": "add2744b-0a7f-495d-a02b-157d194e2ffa",
+  "org_id": "59d59bec-9a81-4e05-85f4-e1e012365a71",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:36:26.276041+00:00",
+  "duration_seconds": 406,
+  "tool_calls": 14,
+  "tool_errors": 0,
+  "llm_calls": 22,
+  "tokens": 291611,
+  "cost_usd": 0.302429,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"bd0e56d3-4164-4a00-a296-a9c0872cfc8c\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"A high-severity alert titled \\\"KubePodCrashLooping\\\" was triggered for the \\\"sho"
+  }
+}

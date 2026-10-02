@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "Every node in the cluster has only 10 allocatable CPUs [7, 8], so no node could ever satisfy this request, producing the FailedScheduling event \"0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu\" [6]."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "met",
+      "evidence": "the new pod template requested cpu: \"64\" (64 whole CPU cores) instead of a millicore value [6, 9]. Every node in the cluster has only 10 allocatable CPUs [7, 8], so no node could ever satisfy this request"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The fix is only implied, not stated as a recommendation. The RCA says manual intervention is needed 'to correct the resource request or roll back the deployment' and lists `kubectl set resources` / `rollout undo` as viable. A rollback restores the original 50m request, so this was counted as acceptable. The taint appears only inside the quoted scheduler event and is not presented as a cause.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "correct",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": true,
+    "notes": "Both items are met, and the RCA says to 'correct the resource request or roll back the deployment'. There are minor slips: worker pods 'serving traffic', and '1/2 ready replicas' for a 1-replica Deployment."
+  },
+  "fix_from_suggestions": {
+    "result": "acceptable",
+    "best_suggestion": "Correct oversized `cpu` request on `worker` Deployment",
+    "reason": "It lowers the worker CPU request from 64 cores back to 50m, which removes the unschedulable request that is the root cause and lets the pending pod schedule."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+        "result": "met",
+        "evidence": "Every node in the cluster has only 10 allocatable CPUs [7, 8], so no node could ever satisfy this request, producing the FailedScheduling event \"0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu\" [6]."
+      },
+      {
+        "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+        "result": "met",
+        "evidence": "the new pod template requested cpu: \"64\" (64 whole CPU cores) instead of a millicore value [6, 9]. Every node in the cluster has only 10 allocatable CPUs [7, 8], so no node could ever satisfy this request"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "The taint on the control-plane node is mentioned only as a side detail, not as the cause. The claim that the change was an out-of-band edit, based on the last-applied-configuration annotation, is an inference and should be checked against how the fault was injected. The report also contains a garbled figure ('310m/300m')."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}

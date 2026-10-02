@@ -1,0 +1,40 @@
+12:26:04 01-worker-oom r1 [aurora-lab]: incident bc4d029c-a97e-4122-ad51-dec5c43b56c4
+12:26:22 02-sidecar-oom r1 [aurora-lab-2]: incident a7a6a03c-bdc2-45ef-bc52-affcf84d344a
+12:26:45 03-bad-image-tag r1 [aurora-lab-3]: incident 453e87cd-5a5b-47ff-a17d-4d69ddbd1395
+12:28:51 01-worker-oom r1 [aurora-lab]: complete in 91s, 12 tool calls, $0.248943, foreign incidents 0
+12:29:22 02-sidecar-oom r1 [aurora-lab-2]: complete in 82s, 10 tool calls, $0.188745, foreign incidents 0
+12:29:46 03-bad-image-tag r1 [aurora-lab-3]: complete in 101s, 13 tool calls, $0.244937, foreign incidents 0
+12:30:33 04-missing-secret r1 [aurora-lab]: incident 4ce9ef40-db87-410b-bac8-bf6ff0fca362
+12:31:05 05-nginx-config-error r1 [aurora-lab-2]: incident e379c0c6-837c-48fb-ba5e-20a14fc97f29
+12:32:40 06-liveness-wrong-port r1 [aurora-lab-3]: incident 2cb5e51f-a00a-4380-834d-0b8b1d9bfeeb
+12:34:21 05-nginx-config-error r1 [aurora-lab-2]: complete in 120s, 13 tool calls, $0.27232, foreign incidents 0
+12:36:00 07-service-selector-mismatch r1 [aurora-lab-2]: incident f267a6f0-59cb-4104-8387-38820f7d77a8
+12:36:04 04-missing-secret r1 [aurora-lab]: complete in 194s, 18 tool calls, $0.481489, foreign incidents 0
+12:36:26 06-liveness-wrong-port r1 [aurora-lab-3]: complete in 123s, 14 tool calls, $0.34945, foreign incidents 0
+12:37:43 08-unschedulable-cpu r1 [aurora-lab]: incident 2a991d19-7268-4c69-b77c-6d5252f6ac2f
+12:38:22 09-redis-pvc-pending r1 [aurora-lab-3]: incident bd0e56d3-4164-4a00-a296-a9c0872cfc8c
+12:48:32 07-service-selector-mismatch r1 [aurora-lab-2]: complete in 175s, 22 tool calls, $0.522465, foreign incidents 0
+12:50:26 10-wrong-redis-host r1 [aurora-lab-2]: incident f257f706-0bba-4f84-b67d-3bfca0615ddb
+12:50:45 08-unschedulable-cpu r1 [aurora-lab]: complete in 362s, 14 tool calls, $0.345238, foreign incidents 0
+12:52:27 01-worker-oom r2 [aurora-lab]: incident 730efeb5-2a64-4969-9537-58f51b1d972e
+12:53:23 09-redis-pvc-pending r1 [aurora-lab-3]: complete in 406s, 14 tool calls, $0.302429, foreign incidents 0
+12:55:13 02-sidecar-oom r2 [aurora-lab-3]: incident caf74a91-86fc-4964-8253-6a5743f57703
+12:56:41 10-wrong-redis-host r1 [aurora-lab-2]: complete in 292s, 12 tool calls, $0.227784, foreign incidents 0
+12:57:28 01-worker-oom r2 [aurora-lab]: complete in 228s, 14 tool calls, $0.34874, foreign incidents 0
+12:57:59 02-sidecar-oom r2 [aurora-lab-3]: complete in 98s, 12 tool calls, $0.301869, foreign incidents 0
+12:58:24 03-bad-image-tag r2 [aurora-lab-2]: incident f54a8df3-1f08-4558-87ba-62972054b180
+12:59:18 04-missing-secret r2 [aurora-lab]: incident 9a6991d1-82d3-466d-a81d-49182ed6c67d
+12:59:43 05-nginx-config-error r2 [aurora-lab-3]: incident d5178d5d-c446-426c-8b73-c4ad76bf4ffa
+13:00:54 03-bad-image-tag r2 [aurora-lab-2]: complete in 77s, 11 tool calls, $0.189905, foreign incidents 0
+13:03:03 04-missing-secret r2 [aurora-lab]: complete in 133s, 17 tool calls, $0.352698, foreign incidents 0
+13:03:28 05-nginx-config-error r2 [aurora-lab-3]: complete in 152s, 16 tool calls, $0.363298, foreign incidents 0
+13:03:47 06-liveness-wrong-port r2 [aurora-lab-2]: incident ba041f13-5d03-42c7-9b78-66925da0dc83
+13:04:43 07-service-selector-mismatch r2 [aurora-lab]: incident dab38ea7-1b38-4cfb-9603-ce80129e23a9
+13:05:07 08-unschedulable-cpu r2 [aurora-lab-3]: incident 3bc36ca1-9fb2-4860-af9d-87477603ec7c
+13:07:48 06-liveness-wrong-port r2 [aurora-lab-2]: complete in 87s, 12 tool calls, $0.283933, foreign incidents 0
+13:08:23 08-unschedulable-cpu r2 [aurora-lab-3]: complete in 89s, 10 tool calls, $0.210104, foreign incidents 0
+13:08:58 07-service-selector-mismatch r2 [aurora-lab]: complete in 138s, 15 tool calls, $0.397561, foreign incidents 0
+13:09:42 09-redis-pvc-pending r2 [aurora-lab-2]: incident d3a2bbc3-90b1-4eb8-b117-89f48f7b8638
+13:10:15 10-wrong-redis-host r2 [aurora-lab-3]: incident 2523f06b-06fd-43fd-8e2c-4d35c84e5f75
+13:14:13 09-redis-pvc-pending r2 [aurora-lab-2]: complete in 155s, 19 tool calls, $0.468522, foreign incidents 0
+13:14:30 10-wrong-redis-host r2 [aurora-lab-3]: complete in 197s, 16 tool calls, $0.338899, foreign incidents 0

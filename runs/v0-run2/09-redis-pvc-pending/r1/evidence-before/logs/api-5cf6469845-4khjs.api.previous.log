@@ -1,0 +1,6 @@
+redis connection failed (attempt 1/5): [Errno 111] Connection refused
+redis connection failed (attempt 2/5): [Errno 111] Connection refused
+redis connection failed (attempt 3/5): [Errno 111] Connection refused
+redis connection failed (attempt 4/5): [Errno 111] Connection refused
+redis connection failed (attempt 5/5): [Errno 111] Connection refused
+giving up: redis unavailable

@@ -1,0 +1,18 @@
+{
+  "run_id": "v0-run1",
+  "aurora_commit": "87d22bafa7ea7a7c0980184a42f2d4452f3ae18a",
+  "rca_model": "bedrock/us.anthropic.claude-sonnet-5",
+  "orchestrator_enabled": "false",
+  "scenarios": [
+    "01-worker-oom",
+    "02-sidecar-oom",
+    "03-bad-image-tag",
+    "04-missing-secret",
+    "05-nginx-config-error",
+    "06-liveness-wrong-port",
+    "07-service-selector-mismatch",
+    "08-unschedulable-cpu",
+    "09-redis-pvc-pending",
+    "10-wrong-redis-host"
+  ]
+}

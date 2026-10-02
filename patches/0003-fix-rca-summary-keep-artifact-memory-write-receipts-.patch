@@ -1,0 +1,132 @@
+From b509eaee4f77d35436747672654677f1a3c5982e Mon Sep 17 00:00:00 2001
+From: Benjamin Gervais <lab@aurora-lab.local>
+Date: Fri, 2 Oct 2026 12:41:12 -0400
+Subject: [PATCH 3/3] fix(rca-summary): keep artifact/memory write receipts out
+ of citations
+
+The summary prompt lists only the 30 most recent citations
+(summarization.py citations[-30:]). Every tool message counted, including
+the agent's own write_artifact / append_to_memory calls, whose output is a
+save receipt or an error. In lab run 09-redis-pvc-pending ~25
+write_artifact retries at the end of the run pushed the early kubectl
+PVC/StorageClass results out of that window, and the report listed the
+PVC under "Not Checked" for lack of numbered evidence.
+
+Treat artifact/memory writes as non-evidence, like write_findings. Reads
+(read_artifact, read_memory) stay citable.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ server/chat/background/citation_extractor.py  | 11 +++
+ .../test_citations_artifact_writes.py         | 72 +++++++++++++++++++
+ 2 files changed, 83 insertions(+)
+ create mode 100644 server/tests/chat/background/test_citations_artifact_writes.py
+
+diff --git a/server/chat/background/citation_extractor.py b/server/chat/background/citation_extractor.py
+index 54d1bf5f..14cfe7c2 100644
+--- a/server/chat/background/citation_extractor.py
++++ b/server/chat/background/citation_extractor.py
+@@ -112,11 +112,22 @@ _TOOL_NAME_MAPPING: Dict[str, str] = {
+ 
+ # Internal coordination tools that show up as tool messages but aren't real
+ # evidence — filter them out of citations entirely.
++#
++# The agent's own writes to artifacts/memory are bookkeeping, not evidence:
++# their output is a save receipt ("Artifact saved (version 15).") or an error.
++# Left in, they also crowd out real evidence, because the summary prompt only
++# shows the most recent citations: a run that ended with ~25 write_artifact
++# retries pushed every earlier kubectl result out of that window, and the
++# report then listed already-checked resources under "Not Checked".
+ _NON_EVIDENCE_TOOLS = frozenset({
+     "dispatch_subagent",
+     "write_findings",
+     "load_skill",
+     "trigger_rca",
++    "write_artifact",
++    "write_memory",
++    "append_to_memory",
++    "edit_memory",
+ })
+ 
+ # Keys that mark a tool response as carrying real data (not just a status
+diff --git a/server/tests/chat/background/test_citations_artifact_writes.py b/server/tests/chat/background/test_citations_artifact_writes.py
+new file mode 100644
+index 00000000..95171e6d
+--- /dev/null
++++ b/server/tests/chat/background/test_citations_artifact_writes.py
+@@ -0,0 +1,72 @@
++"""Evidence gathered early in an RCA must survive into the summary prompt even
++when the agent ends the run with many artifact/memory writes.
++
++Reproduces the v0 lab run 09-redis-pvc-pending: the PVC/StorageClass checks ran
++early, then ~25 write_artifact retries followed. The summary prompt only lists
++the most recent citations, so the writes pushed the PVC evidence out and the
++report filed the PVC under "Not Checked". Messages are in the serialized
++llm_context_history shape CitationExtractor parses.
++"""
++
++import json
++
++from chat.background.citation_extractor import CitationExtractor
++from chat.background.summarization import _build_summary_prompt_with_chat
++
++PVC_OUTPUT = (
++    "NAME         STATUS    VOLUME   CAPACITY   STORAGECLASS\n"
++    "redis-data   Pending                       fast-ssd"
++)
++
++
++def _call(i, name, args, content):
++    tc_id = f"tc-{i}"
++    return [
++        {"role": "ai", "tool_calls": [{"id": tc_id, "name": name, "args": args}]},
++        {"role": "tool", "tool_call_id": tc_id, "name": name, "content": content},
++    ]
++
++
++def _kubectl(i, cmd, out):
++    return _call(i, "on_prem_kubectl", {"command": cmd, "cluster_id": "c1"},
++                 json.dumps({"success": True, "final_command": f"kubectl {cmd}", "chat_output": out}))
++
++
++def _messages():
++    msgs = []
++    msgs += _kubectl(1, "get pods -n shop", "api-69c49c687f-bjcbd 0/1 CrashLoopBackOff")
++    msgs += _kubectl(2, "get pvc,pv -n shop", PVC_OUTPUT)
++    msgs += _kubectl(3, "get storageclass", "standard (default) rancher.io/local-path")
++    msgs += _call(4, "read_artifact", {"title": "Incident Index"},
++                  json.dumps({"status": "ok", "content": "- [INC 61ae] prior entry"}))
++    msgs += _call(5, "append_to_memory", {"title": "shop", "content": "note"},
++                  json.dumps({"status": "ok", "message": "Appended to learned/shop"}))
++    for i in range(6, 36):
++        msgs += _call(i, "write_artifact", {"title": "Incident Index"},
++                      "Error invoking tool 'write_artifact' with kwargs {'title': 'Incident Index'} "
++                      "with error:\n content: Field required\n Please fix the error and try again.")
++    msgs += _call(36, "write_artifact", {"title": "Incident Index", "content": "x"},
++                  json.dumps({"status": "ok", "message": "Artifact saved (version 19).", "version": 19}))
++    return msgs
++
++
++def test_write_receipts_are_not_citations():
++    citations = CitationExtractor()._parse_tool_messages(_messages())
++    names = [c.tool_name for c in citations]
++    assert "write_artifact" not in names and "append_to_memory" not in names
++    assert [c.index for c in citations] == list(range(1, len(citations) + 1))
++    assert any(c.command == "get pvc,pv -n shop" and "fast-ssd" in c.output for c in citations)
++    # Reads still count: the prior-incident index is real context.
++    assert "read_artifact" in names
++
++
++def test_early_pvc_evidence_reaches_summary_prompt():
++    citations = CitationExtractor()._parse_tool_messages(_messages())
++    prompt = _build_summary_prompt_with_chat(
++        source_type="alertmanager", alert_title="KubePodCrashLooping", severity="high",
++        service="shop", triggered_at="2026-10-02T15:24:29Z", citations=citations,
++    )
++    pvc = next(c for c in citations if c.command == "get pvc,pv -n shop")
++    assert f"[{pvc.index}] {pvc.tool_name} - get pvc,pv -n shop" in prompt
++    assert "redis-data   Pending" in prompt
++    assert "Artifact saved" not in prompt
+-- 
+2.50.1 (Apple Git-155)
+

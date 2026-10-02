@@ -1,0 +1,12 @@
+{
+  "scenario": "01-worker-oom",
+  "incident_id": "61ae775a-8449-4625-ab4f-07faf8321aec",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T14:29:56.387488+00:00",
+  "duration_seconds": 120,
+  "tool_calls": 14,
+  "tool_errors": 2,
+  "llm_calls": 22,
+  "tokens": 370545,
+  "cost_usd": 0.380935
+}

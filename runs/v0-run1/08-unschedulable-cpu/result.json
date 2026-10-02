@@ -1,0 +1,12 @@
+{
+  "scenario": "08-unschedulable-cpu",
+  "incident_id": "76c116ba-67bd-4c05-b336-2a4fcc539631",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T15:17:00.212159+00:00",
+  "duration_seconds": 156,
+  "tool_calls": 14,
+  "tool_errors": 1,
+  "llm_calls": 21,
+  "tokens": 444873,
+  "cost_usd": 0.455867
+}

@@ -1,0 +1,1 @@
+Error from server (BadRequest): container "nginx" in pod "frontend-7b6c998456-vqcpc" is waiting to start: trying and failing to pull image

@@ -1,0 +1,21 @@
+{
+  "scenario": "07-service-selector-mismatch",
+  "repeat": 2,
+  "cluster": "aurora-lab",
+  "incident_id": "dab38ea7-1b38-4cfb-9603-ce80129e23a9",
+  "user_id": "2f8cdb6e-6e8d-42be-8b10-c07d19be63db",
+  "org_id": "4c3c9a10-91bf-472e-bac3-852f86b925ca",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T17:03:03.707437+00:00",
+  "duration_seconds": 138,
+  "tool_calls": 15,
+  "tool_errors": 0,
+  "llm_calls": 28,
+  "tokens": 385946,
+  "cost_usd": 0.397561,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [], \"total\": 0}"
+  }
+}

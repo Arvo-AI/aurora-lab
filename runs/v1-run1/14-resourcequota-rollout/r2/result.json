@@ -1,0 +1,21 @@
+{
+  "scenario": "14-resourcequota-rollout",
+  "repeat": 2,
+  "cluster": "aurora-lab-2",
+  "incident_id": "e2ffe184-9701-4fe5-a5ab-22c91672c9b1",
+  "user_id": "f66ae603-c33b-47bd-8c5f-e9dbf78212e8",
+  "org_id": "b323f42e-493b-4e4e-8e1d-89a5ff443c35",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:58:59.944339+00:00",
+  "duration_seconds": 144,
+  "tool_calls": 19,
+  "tool_errors": 2,
+  "llm_calls": 29,
+  "tokens": 376768,
+  "cost_usd": 0.38973,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"e2ffe184-9701-4fe5-a5ab-22c91672c9b1\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubeDeploymentR"
+  }
+}

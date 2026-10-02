@@ -1,0 +1,15 @@
+{
+  "request": {
+    "issue_description": "KubePodCrashLooping: pod worker in namespace shop is restarting repeatedly. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodCrashLooping",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "e7f021d0-4769-4839-b092-48a9a7ee76de",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "ae432279-f020-409f-8e64-1c5f097da31c",
+    "status": "ok"
+  }
+}

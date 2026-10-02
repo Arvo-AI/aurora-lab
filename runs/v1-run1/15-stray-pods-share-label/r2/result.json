@@ -1,0 +1,21 @@
+{
+  "scenario": "15-stray-pods-share-label",
+  "repeat": 2,
+  "cluster": "aurora-lab",
+  "incident_id": "0cb85d2e-ffe1-4f80-af3c-48d4c03c3a1f",
+  "user_id": "942eb127-7202-4bf4-8931-57d1f06c9abd",
+  "org_id": "8202f860-d133-4523-8e95-2ea40b9a0083",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T21:00:17.688365+00:00",
+  "duration_seconds": 118,
+  "tool_calls": 17,
+  "tool_errors": 0,
+  "llm_calls": 28,
+  "tokens": 341727,
+  "cost_usd": 0.35377,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"0cb85d2e-ffe1-4f80-af3c-48d4c03c3a1f\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"HighErrorRate [warning] namespace=shop service=frontend\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"HighErrorRate\\\" was trigge"
+  }
+}

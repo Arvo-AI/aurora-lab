@@ -1,0 +1,31 @@
+connected to redis at redis:6379
+api listening on :8080
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.53 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.49 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.49 "GET /items HTTP/1.0" 200 -
+10.244.2.49 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.53 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.49 "GET /items HTTP/1.0" 200 -
+10.244.2.49 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.49 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.49 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.53 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.53 "GET /items HTTP/1.0" 200 -
+10.244.1.53 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.53 "GET /items HTTP/1.0" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.53 "GET /items HTTP/1.0" 200 -

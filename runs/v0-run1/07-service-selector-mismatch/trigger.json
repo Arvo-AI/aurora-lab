@@ -1,0 +1,15 @@
+{
+  "request": {
+    "issue_description": "HighErrorRate: frontend /api/ requests in namespace shop are failing with 5xx; all pods are Running. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "HighErrorRate",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "b6e5638e-d926-4ce3-8341-4366d137ecb2",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "ffca6061-f9f4-42d6-8185-fce2e0301847",
+    "status": "ok"
+  }
+}

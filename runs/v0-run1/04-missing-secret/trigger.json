@@ -1,0 +1,15 @@
+{
+  "request": {
+    "issue_description": "KubeDeploymentRolloutStuck: deployment api in namespace shop has not progressed; new pods not starting. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubeDeploymentRolloutStuck",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "5c165690-968e-474f-ab97-2ad5f44677e7",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "b2187689-c1b2-4b60-97cd-d32edf8e726e",
+    "status": "ok"
+  }
+}

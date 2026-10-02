@@ -1,0 +1,50 @@
+01-worker-oom: incident e7f021d0-4769-4839-b092-48a9a7ee76de
+01-worker-oom: complete in 95s, 11 tool calls, $0.291675
+02-sidecar-oom: incident e68e36c8-22de-4e87-ac86-4fbbe30c369d
+02-sidecar-oom: complete in 136s, 15 tool calls, $0.385476
+03-bad-image-tag: incident a6041fc7-66a2-4715-af64-b279c0a25dc3
+03-bad-image-tag: complete in 136s, 15 tool calls, $0.356831
+04-missing-secret: incident 5c165690-968e-474f-ab97-2ad5f44677e7
+04-missing-secret: complete in 206s, 24 tool calls, $0.577747
+05-nginx-config-error: incident 6da158a5-b061-4094-ae30-7bea0f31332f
+05-nginx-config-error: complete in 168s, 15 tool calls, $0.319868
+06-liveness-wrong-port: incident a28a7b3f-b10d-4590-bbf0-b0883532e594
+06-liveness-wrong-port: complete in 157s, 15 tool calls, $0.486347
+07-service-selector-mismatch: incident b6e5638e-d926-4ce3-8341-4366d137ecb2
+07-service-selector-mismatch: complete in 126s, 19 tool calls, $0.437084
+08-unschedulable-cpu: incident 76c116ba-67bd-4c05-b336-2a4fcc539631
+08-unschedulable-cpu: complete in 156s, 14 tool calls, $0.455867
+09-redis-pvc-pending: incident 3ca04657-ad36-4730-aa98-6a2f4a6e0a81
+09-redis-pvc-pending: complete in 886s, 45 tool calls, $2.611195
+10-wrong-redis-host: incident 6da5d7f9-7a0d-4829-8f85-8bba42c26076
+10-wrong-redis-host: complete in 147s, 17 tool calls, $0.388101
+01-worker-oom: correct
+02-sidecar-oom: correct
+03-bad-image-tag: correct
+04-missing-secret: correct
+05-nginx-config-error: correct
+06-liveness-wrong-port: correct
+07-service-selector-mismatch: correct
+08-unschedulable-cpu: correct
+09-redis-pvc-pending: partial
+10-wrong-redis-host: correct
+# Lab run v0-run1
+
+Aurora commit `87d22bafa7`, RCA model `bedrock/us.anthropic.claude-sonnet-5`, orchestrator false. Judge `us.anthropic.claude-opus-5-5`.
+
+Totals: correct 9, partial 1
+
+| Scenario | Verdict | Time | Tool calls | Cost |
+|---|---|---|---|---|
+| 01-worker-oom | correct (judge) | 95s | 11 | $0.29 |
+| 02-sidecar-oom | correct (judge) | 136s | 15 | $0.39 |
+| 03-bad-image-tag | correct (judge) | 136s | 15 | $0.36 |
+| 04-missing-secret | correct (judge) | 206s | 24 | $0.58 |
+| 05-nginx-config-error | correct (judge) | 168s | 15 | $0.32 |
+| 06-liveness-wrong-port | correct (judge) | 157s | 15 | $0.49 |
+| 07-service-selector-mismatch | correct (judge) | 126s | 19 | $0.44 |
+| 08-unschedulable-cpu | correct (judge) | 156s | 14 | $0.46 |
+| 09-redis-pvc-pending | partial (judge) | 886s | 45 | $2.61 |
+| 10-wrong-redis-host | correct (judge) | 147s | 17 | $0.39 |
+
+Verdicts marked (judge) have not been reviewed by a person yet.

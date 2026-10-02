@@ -1,0 +1,24 @@
+worker started, batch size 500
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+ERROR metrics: push to pushgateway:9091 failed: [Errno -2] Name does not resolve (will retry next batch)
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+ERROR metrics: push to pushgateway:9091 failed: [Errno -2] Name does not resolve (will retry next batch)
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items
+ERROR metrics: push to pushgateway:9091 failed: [Errno -2] Name does not resolve (will retry next batch)
+WARNING py.warnings: DeprecationWarning: StrictRedis is deprecated and will be removed in redis-py 6.0, use Redis
+processed batch of 500 items

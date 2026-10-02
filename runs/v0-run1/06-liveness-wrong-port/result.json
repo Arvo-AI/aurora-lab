@@ -1,0 +1,12 @@
+{
+  "scenario": "06-liveness-wrong-port",
+  "incident_id": "a28a7b3f-b10d-4590-bbf0-b0883532e594",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T15:05:18.968210+00:00",
+  "duration_seconds": 157,
+  "tool_calls": 15,
+  "tool_errors": 1,
+  "llm_calls": 22,
+  "tokens": 472263,
+  "cost_usd": 0.486347
+}

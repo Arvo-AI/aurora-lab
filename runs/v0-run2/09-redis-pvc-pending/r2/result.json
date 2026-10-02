@@ -1,0 +1,21 @@
+{
+  "scenario": "09-redis-pvc-pending",
+  "repeat": 2,
+  "cluster": "aurora-lab-2",
+  "incident_id": "d3a2bbc3-90b1-4eb8-b117-89f48f7b8638",
+  "user_id": "f48a3e88-4e9f-4f07-a055-23d1364706c8",
+  "org_id": "b8d7b1a6-5b40-4ff4-b951-0b380b128452",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T17:07:48.505902+00:00",
+  "duration_seconds": 155,
+  "tool_calls": 19,
+  "tool_errors": 2,
+  "llm_calls": 27,
+  "tokens": 453150,
+  "cost_usd": 0.468522,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"d3a2bbc3-90b1-4eb8-b117-89f48f7b8638\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubePodCrashLooping\\\" was triggered, indicating that a pod ass"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "scenario": "04-missing-secret",
+  "incident_id": "5c165690-968e-474f-ab97-2ad5f44677e7",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T14:52:52.901335+00:00",
+  "duration_seconds": 206,
+  "tool_calls": 24,
+  "tool_errors": 2,
+  "llm_calls": 29,
+  "tokens": 560194,
+  "cost_usd": 0.577747
+}

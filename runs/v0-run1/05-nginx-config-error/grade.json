@@ -1,0 +1,46 @@
+{
+  "must_identify": [
+    {
+      "item": "nginx fails to start with an [emerg] unknown directive error",
+      "result": "met",
+      "evidence": "the directive `proxy_conect_timeout` (missing the \"n\" in \"connect\") is invalid, causing nginx to fail config validation at startup with `unknown directive \"proxy_conect_timeout\" in /etc/nginx/conf.d/default.conf:9`"
+    },
+    {
+      "item": "The bad directive is proxy_conect_timeout in the frontend-nginx ConfigMap",
+      "result": "met",
+      "evidence": "The root cause was a syntax error in the `frontend-nginx` ConfigMap: the directive `proxy_conect_timeout` (missing the \"n\" in \"connect\") is invalid"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA never recommends a fix. It only implies one by ruling out a Deployment rollback, so check whether a missing remediation step matters for scoring. It also wrongly calls `rollout history` a mutating operation, and its inference of a 'deliberate kubectl apply' from the last-applied annotation goes beyond the evidence.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": null,
+    "notes": "Both items are met. No fix is recommended; the RCA only rules out a Deployment rollback. Its claim that the typo 'was applied intentionally via kubectl apply' is an overconfident inference."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "nginx fails to start with an [emerg] unknown directive error",
+        "result": "met",
+        "evidence": "The root cause was a syntax error in the `frontend-nginx` ConfigMap: the directive `proxy_conect_timeout` (missing the \"n\" in \"connect\") is invalid, causing nginx to fail config validation at startup with `unknown directive \"proxy_conect_timeout\" in /etc/nginx/conf.d/default.conf:9`"
+      },
+      {
+        "item": "The bad directive is proxy_conect_timeout in the frontend-nginx ConfigMap",
+        "result": "met",
+        "evidence": "The ConfigMap `frontend-nginx` (mounted at `/etc/nginx/conf.d`) contains a typo: `proxy_conect_timeout` instead of `proxy_connect_timeout`."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "The fix corrects the directive but relies on the CrashLoopBackOff retry rather than an explicit restart, which matches the intent of the acceptable fix. Minor inaccuracies a reviewer should note: the report asserts the change came via kubectl apply rather than an edit, and it says resourceVersion 13224 is 'newer' than 13235, which is backwards."
+  }
+}

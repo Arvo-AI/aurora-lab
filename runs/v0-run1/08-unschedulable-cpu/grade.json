@@ -1,0 +1,46 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "As a result, the scheduler could not place the revision-2 pod, producing the `FailedScheduling: 0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu` condition observed on the pod [6], matching the alert exactly."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "met",
+      "evidence": "Because the field was not suffixed with `m`, the value was interpreted as 64 whole CPU cores rather than 64 millicores \u2014 a roughly 1,280x increase. All three cluster nodes report only 10 allocatable CPUs each"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA presents the fix only in the 'Not Checked' section: a patch reverting requests.cpu to 50m was validated but not applied. It explicitly rules out the control-plane taint as the primary cause. Its framing of the cause as a missing 'm' suffix or a live-edit drift is speculation, but the core cause matches the ground truth: a 64-core request exceeding allocatable CPU.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": true,
+    "notes": "Both items are met, and the RCA states the fix as 'The patch to revert requests.cpu to 50m was validated'. The idea that a missing 'm' suffix caused it ('interpreted as 64 whole CPU cores rather than 64 millicores') is invented; the ground truth is a deliberate change from 50m to 64."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+        "result": "met",
+        "evidence": "As a result, the scheduler could not place the revision-2 pod, producing the `FailedScheduling: 0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu` condition observed on the pod [6], matching the alert exactly."
+      },
+      {
+        "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+        "result": "met",
+        "evidence": "Because the field was not suffixed with `m`, the value was interpreted as 64 whole CPU cores rather than 64 millicores \u2014 a roughly 1,280x increase. All three cluster nodes report only 10 allocatable CPUs each"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "The RCA explicitly rules out the control-plane taint as the cause, and its fix reverts the request to 50m. It adds unverified claims that the change was an untracked live edit and possibly a missing 'm' suffix. These are speculative but do not affect the core diagnosis."
+  }
+}

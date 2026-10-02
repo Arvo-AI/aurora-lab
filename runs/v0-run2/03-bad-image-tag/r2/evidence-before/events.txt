@@ -1,0 +1,52 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+57s         Normal    Created             pod/frontend-76d98597b9-7r9pp    Container created
+57s         Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-dwzs5
+57s         Normal    Created             pod/api-f64486c4c-c268h          Container created
+57s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+57s         Normal    Scheduled           pod/api-f64486c4c-llxd8          Successfully assigned shop/api-f64486c4c-llxd8 to aurora-lab-2-worker
+57s         Normal    Pulled              pod/api-f64486c4c-llxd8          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+57s         Normal    Created             pod/api-f64486c4c-llxd8          Container created
+57s         Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-mrqpr
+57s         Normal    Created             pod/worker-6cf88d4b58-mrqpr      Container created
+57s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-c268h
+57s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-llxd8
+57s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+57s         Normal    Scheduled           pod/frontend-76d98597b9-7r9pp    Successfully assigned shop/frontend-76d98597b9-7r9pp to aurora-lab-2-worker
+57s         Normal    Pulled              pod/frontend-76d98597b9-7r9pp    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+57s         Normal    Pulled              pod/api-f64486c4c-c268h          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+57s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+57s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-7r9pp
+57s         Normal    Scheduled           pod/frontend-76d98597b9-8vtzc    Successfully assigned shop/frontend-76d98597b9-8vtzc to aurora-lab-2-worker2
+57s         Normal    Pulled              pod/frontend-76d98597b9-8vtzc    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+57s         Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+57s         Normal    Pulled              pod/worker-6cf88d4b58-mrqpr      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+57s         Normal    Created             pod/redis-59458f55d8-dwzs5       Container created
+57s         Normal    Scheduled           pod/worker-6cf88d4b58-mrqpr      Successfully assigned shop/worker-6cf88d4b58-mrqpr to aurora-lab-2-worker2
+57s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-8vtzc
+57s         Normal    Pulled              pod/redis-59458f55d8-dwzs5       Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+57s         Normal    Scheduled           pod/redis-59458f55d8-dwzs5       Successfully assigned shop/redis-59458f55d8-dwzs5 to aurora-lab-2-worker2
+57s         Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7c6676864 from 0 to 1
+57s         Normal    SuccessfulCreate    replicaset/loadgen-7c6676864     Created pod: loadgen-7c6676864-ggjbd
+57s         Normal    Scheduled           pod/api-f64486c4c-c268h          Successfully assigned shop/api-f64486c4c-c268h to aurora-lab-2-worker2
+57s         Normal    Scheduled           pod/loadgen-7c6676864-ggjbd      Successfully assigned shop/loadgen-7c6676864-ggjbd to aurora-lab-2-worker
+56s         Normal    Created             pod/loadgen-7c6676864-ggjbd      Container created
+56s         Warning   Unhealthy           pod/frontend-76d98597b9-8vtzc    Readiness probe failed: Get "http://10.244.2.28:80/healthz": dial tcp 10.244.2.28:80: connect: connection refused
+56s         Normal    Started             pod/api-f64486c4c-c268h          Container started
+56s         Normal    Started             pod/api-f64486c4c-llxd8          Container started
+56s         Normal    Pulled              pod/loadgen-7c6676864-ggjbd      Container image "busybox:1.37" already present on machine and can be accessed by the pod
+56s         Normal    Started             pod/worker-6cf88d4b58-mrqpr      Container started
+56s         Normal    Started             pod/loadgen-7c6676864-ggjbd      Container started
+56s         Warning   Unhealthy           pod/api-f64486c4c-llxd8          Readiness probe failed: Get "http://10.244.1.19:8080/healthz": dial tcp 10.244.1.19:8080: connect: connection refused
+56s         Normal    Started             pod/frontend-76d98597b9-7r9pp    Container started
+56s         Warning   Unhealthy           pod/frontend-76d98597b9-7r9pp    Readiness probe failed: Get "http://10.244.1.20:80/healthz": dial tcp 10.244.1.20:80: connect: connection refused
+56s         Normal    Created             pod/frontend-76d98597b9-8vtzc    Container created
+56s         Normal    Started             pod/frontend-76d98597b9-8vtzc    Container started
+56s         Normal    Started             pod/redis-59458f55d8-dwzs5       Container started
+51s         Normal    SuccessfulCreate    replicaset/frontend-7b6c998456   Created pod: frontend-7b6c998456-vqcpc
+51s         Normal    Scheduled           pod/frontend-7b6c998456-vqcpc    Successfully assigned shop/frontend-7b6c998456-vqcpc to aurora-lab-2-worker
+51s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-7b6c998456 from 0 to 1
+22s         Normal    BackOff             pod/frontend-7b6c998456-vqcpc    Back-off pulling image "nginx:1.27-alpne"
+22s         Warning   Failed              pod/frontend-7b6c998456-vqcpc    Error: ImagePullBackOff
+10s         Normal    Pulling             pod/frontend-7b6c998456-vqcpc    Pulling image "nginx:1.27-alpne"
+9s          Warning   Failed              pod/frontend-7b6c998456-vqcpc    Failed to pull image "nginx:1.27-alpne": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/nginx:1.27-alpne": failed to resolve reference "docker.io/library/nginx:1.27-alpne": docker.io/library/nginx:1.27-alpne: not found
+9s          Warning   Failed              pod/frontend-7b6c998456-vqcpc    Error: ErrImagePull

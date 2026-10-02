@@ -1,0 +1,21 @@
+{
+  "scenario": "02-sidecar-oom",
+  "repeat": 2,
+  "cluster": "aurora-lab-3",
+  "incident_id": "caf74a91-86fc-4964-8253-6a5743f57703",
+  "user_id": "d01f7180-e87f-44fc-adb4-970c8690135a",
+  "org_id": "fe2e3907-7915-4466-9054-893cf2911842",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:53:23.858424+00:00",
+  "duration_seconds": 98,
+  "tool_calls": 12,
+  "tool_errors": 1,
+  "llm_calls": 23,
+  "tokens": 293495,
+  "cost_usd": 0.301869,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"caf74a91-86fc-4964-8253-6a5743f57703\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"A high-severity alert titled \\\"KubePodCrashLooping\\\" was triggered, originating "
+  }
+}

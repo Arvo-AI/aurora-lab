@@ -1,0 +1,21 @@
+{
+  "scenario": "16-dns-search-domain",
+  "repeat": 2,
+  "cluster": "aurora-lab-3",
+  "incident_id": "578c8766-8858-4343-a7df-9f0959dd29a5",
+  "user_id": "f21b1964-632e-46cb-b7a1-f5b9dc030197",
+  "org_id": "37864986-9a23-4c72-926d-0eaf8c3bc432",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T21:00:33.078039+00:00",
+  "duration_seconds": 205,
+  "tool_calls": 24,
+  "tool_errors": 2,
+  "llm_calls": 33,
+  "tokens": 544026,
+  "cost_usd": 0.56062,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [], \"total\": 0}"
+  }
+}

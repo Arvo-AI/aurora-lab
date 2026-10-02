@@ -1,0 +1,21 @@
+{
+  "scenario": "05-nginx-config-error",
+  "repeat": 2,
+  "cluster": "aurora-lab-3",
+  "incident_id": "d5178d5d-c446-426c-8b73-c4ad76bf4ffa",
+  "user_id": "ea361294-5f60-4778-96d2-410b53db1d4b",
+  "org_id": "58149207-3ebb-49f3-9773-6d642f486bd2",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:57:59.311784+00:00",
+  "duration_seconds": 152,
+  "tool_calls": 16,
+  "tool_errors": 1,
+  "llm_calls": 26,
+  "tokens": 351438,
+  "cost_usd": 0.363298,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"d5178d5d-c446-426c-8b73-c4ad76bf4ffa\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"A high-severity alert titled \\\"KubePodCrashLooping\\\" was triggered, originating "
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "scenario": "12-two-faults-oom-and-selector",
+  "repeat": 1,
+  "cluster": "aurora-lab-2",
+  "incident_id": "b31d62dd-6225-463f-8f82-2a8ab4aecf89",
+  "user_id": "55b43793-aaa1-4708-9337-4ffd4bf8a707",
+  "org_id": "42478acc-d7eb-413c-a359-02b46ce7d825",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:22:42.138450+00:00",
+  "duration_seconds": 140,
+  "tool_calls": 18,
+  "tool_errors": 1,
+  "llm_calls": 29,
+  "tokens": 350861,
+  "cost_usd": 0.363446,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [], \"total\": 0}"
+  }
+}

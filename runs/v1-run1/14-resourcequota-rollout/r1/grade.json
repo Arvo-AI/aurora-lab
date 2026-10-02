@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "The new ReplicaSet cannot create pods (FailedCreate) because the ResourceQuota compute-resources requests.memory limit is exhausted",
+      "result": "met",
+      "evidence": "Because the quota had zero headroom, every attempt by the new ReplicaSet to create its surge pod was rejected by quota admission control, producing repeated FailedCreate events on `api-57f65dc5db` [7, 8] and permanently stalling the rollout."
+    },
+    {
+      "item": "It is a stuck rollout with the old pods still serving, not an outage and not a pod crash",
+      "result": "met",
+      "evidence": "Impact was limited to the rollout itself: the new revision could not progress past 0/1, while the existing 2/2 `api` pods on the old ReplicaSet remained available throughout, so end-user-facing capacity was not reduced [5, 6, 9]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA gives no remediation (it does not recommend raising the quota, freeing requests, or using maxSurge 0), so the fix was not graded. Minor inaccuracies a reviewer may want to check: the alert is described as high-severity when it is warning, and the timeline puts quota creation (20:28:16Z) two seconds after the rollout start (20:28:14Z).",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "correct",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": null,
+    "notes": "Agree with the judge. Quota exhaustion (200Mi/200Mi), FailedCreate on the new ReplicaSet and the old pods still serving are all directly evidenced. The timeline says the rollout began 'shortly after' the quota at 20:28:14Z, before the quota's 20:28:16Z timestamp; restartedAt was actually 20:28:16Z. 'High-severity' matches Aurora's incident record (severity high), so I do not count it as an error. No fix is stated."
+  },
+  "fix_from_suggestions": {
+    "result": "acceptable",
+    "best_suggestion": "Raise `ResourceQuota` memory headroom in `shop` namespace",
+    "reason": "Raising the compute-resources quota's requests.memory from 200Mi to 256Mi leaves room for the 32Mi surge pod, which removes the root cause, and the maxSurge 0 / maxUnavailable 1 stopgap is also a listed acceptable fix."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The new ReplicaSet cannot create pods (FailedCreate) because the ResourceQuota compute-resources requests.memory limit is exhausted",
+        "result": "met",
+        "evidence": "Because the quota had zero headroom, every attempt by the new ReplicaSet to create its surge pod was rejected by quota admission control, producing repeated FailedCreate events on `api-57f65dc5db` [7, 8] and permanently stalling the rollout."
+      },
+      {
+        "item": "It is a stuck rollout with the old pods still serving, not an outage and not a pod crash",
+        "result": "met",
+        "evidence": "The previous ReplicaSet `api-f64486c4c` continued serving traffic normally at 2/2 Running [5, 6], so the running `api` workload itself was not degraded during this event."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "The investigator explicitly ruled out node capacity/scheduling and image pull. Both recommended fixes (raise the quota to 256Mi, or set maxSurge 0/maxUnavailable 1) match the acceptable fixes. A minor timeline wording quirk says the rollout began at 20:28:14Z, before the quota was created at 20:28:16Z, but this does not affect the conclusion."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}

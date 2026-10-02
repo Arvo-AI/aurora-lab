@@ -1,0 +1,39 @@
+NAME                            READY   STATUS                       RESTARTS   AGE   IP             NODE                 NOMINATED NODE   READINESS GATES
+pod/api-5f7c48ddc6-nc8f7        0/1     CreateContainerConfigError   0          50s   10.244.1.107   aurora-lab-worker    <none>           <none>
+pod/api-f64486c4c-c9rqz         1/1     Running                      0          60s   10.244.2.106   aurora-lab-worker2   <none>           <none>
+pod/api-f64486c4c-dr5x9         1/1     Running                      0          60s   10.244.1.103   aurora-lab-worker    <none>           <none>
+pod/frontend-76d98597b9-826bz   1/1     Running                      0          59s   10.244.2.107   aurora-lab-worker2   <none>           <none>
+pod/frontend-76d98597b9-ptd4x   1/1     Running                      0          59s   10.244.1.106   aurora-lab-worker    <none>           <none>
+pod/loadgen-7c6676864-z9jcz     1/1     Running                      0          59s   10.244.2.108   aurora-lab-worker2   <none>           <none>
+pod/redis-59458f55d8-94b8h      1/1     Running                      0          60s   10.244.1.104   aurora-lab-worker    <none>           <none>
+pod/worker-6cf88d4b58-nz5tr     1/1     Running                      0          60s   10.244.1.105   aurora-lab-worker    <none>           <none>
+
+NAME               TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/api        ClusterIP   10.96.22.169   <none>        8080/TCP   60s   app=api
+service/frontend   ClusterIP   10.96.168.23   <none>        80/TCP     59s   app=frontend
+service/redis      ClusterIP   10.96.240.44   <none>        6379/TCP   60s   app=redis
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES               SELECTOR
+deployment.apps/api        2/2     1            2           61s   api          python:3.12-alpine   app=api
+deployment.apps/frontend   2/2     2            2           61s   nginx        nginx:1.27-alpine    app=frontend
+deployment.apps/loadgen    1/1     1            1           60s   loadgen      busybox:1.37         app=loadgen
+deployment.apps/redis      1/1     1            1           61s   redis        redis:7.4-alpine     app=redis
+deployment.apps/worker     1/1     1            1           61s   worker       python:3.12-alpine   app=worker
+
+NAME                                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES               SELECTOR
+replicaset.apps/api-5f7c48ddc6        1         1         0       51s   api          python:3.12-alpine   app=api,pod-template-hash=5f7c48ddc6
+replicaset.apps/api-f64486c4c         2         2         2       61s   api          python:3.12-alpine   app=api,pod-template-hash=f64486c4c
+replicaset.apps/frontend-76d98597b9   2         2         2       60s   nginx        nginx:1.27-alpine    app=frontend,pod-template-hash=76d98597b9
+replicaset.apps/loadgen-7c6676864     1         1         1       60s   loadgen      busybox:1.37         app=loadgen,pod-template-hash=7c6676864
+replicaset.apps/redis-59458f55d8      1         1         1       61s   redis        redis:7.4-alpine     app=redis,pod-template-hash=59458f55d8
+replicaset.apps/worker-6cf88d4b58     1         1         1       61s   worker       python:3.12-alpine   app=worker,pod-template-hash=6cf88d4b58
+
+NAME                                            ADDRESSTYPE   PORTS   ENDPOINTS                                AGE
+endpointslice.discovery.k8s.io/api-h6fz8        IPv4          8080    10.244.2.106,10.244.1.103,10.244.1.107   61s
+endpointslice.discovery.k8s.io/frontend-rndrk   IPv4          80      10.244.2.107,10.244.1.106                60s
+endpointslice.discovery.k8s.io/redis-2swlq      IPv4          6379    10.244.1.104                             61s
+
+NAME                         DATA   AGE
+configmap/api-code           2      61s
+configmap/frontend-nginx     1      61s
+configmap/kube-root-ca.crt   1      61s

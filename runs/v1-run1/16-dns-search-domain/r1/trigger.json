@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "KubePodCrashLooping [warning] namespace=shop deployment=api: Pod shop/api (container api) is in waiting state (reason: CrashLoopBackOff) after the latest rollout. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodCrashLooping [warning] namespace=shop deployment=api",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "456bfacd-b318-42f8-8605-0ada3881702f",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "a6e60368-4993-4c4b-a8be-29f962b3abc8",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab-3",
+  "user_id": "a3eb3fc5-6290-4bc7-bcf7-3d0b2bedbdb2",
+  "org_id": "1bf60bf3-1992-4cca-beac-936b711422d3",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-6691049da13add50",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T20:31:12.016899+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-3-control-plane:6443",
+      "updated_at": "2026-10-02T20:31:12.016899+00:00"
+    }
+  ]
+}

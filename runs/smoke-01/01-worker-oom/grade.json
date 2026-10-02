@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "This matches the pod's observed Terminated/OOMKilled state with exit code 137 and the start time of 14:30:41, immediately preceding the restart-driven BackOff state [6]."
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "met",
+      "evidence": "The root cause is confirmed: the worker Deployment's env var BATCH_SIZE was increased from 500 to 2500 [13] without a corresponding increase to the container's 192Mi memory limit [7]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA never gives an explicit fix. It only implies one by noting that the memory limit was not raised, so no remediation (revert BATCH_SIZE or raise the limit) is actually recommended. The diagnosis and the memory math (~244MiB vs 192Mi) are accurate.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": null,
+  "human_notes": ""
+}

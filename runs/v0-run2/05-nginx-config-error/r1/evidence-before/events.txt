@@ -1,0 +1,50 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+57s         Normal    Scheduled           pod/frontend-76d98597b9-crvl6    Successfully assigned shop/frontend-76d98597b9-crvl6 to aurora-lab-2-worker2
+57s         Normal    Pulled              pod/api-f64486c4c-nxp5w          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+57s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+57s         Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-ln4lz
+57s         Normal    Scheduled           pod/api-f64486c4c-q657d          Successfully assigned shop/api-f64486c4c-q657d to aurora-lab-2-worker
+57s         Normal    Scheduled           pod/worker-6cf88d4b58-ln4lz      Successfully assigned shop/worker-6cf88d4b58-ln4lz to aurora-lab-2-worker2
+57s         Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+57s         Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-whhdz
+57s         Normal    Pulled              pod/redis-59458f55d8-whhdz       Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+57s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-nxp5w
+57s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-q657d
+57s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+57s         Normal    Scheduled           pod/redis-59458f55d8-whhdz       Successfully assigned shop/redis-59458f55d8-whhdz to aurora-lab-2-worker2
+57s         Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7c6676864 from 0 to 1
+57s         Normal    SuccessfulCreate    replicaset/loadgen-7c6676864     Created pod: loadgen-7c6676864-prqvq
+57s         Normal    Scheduled           pod/loadgen-7c6676864-prqvq      Successfully assigned shop/loadgen-7c6676864-prqvq to aurora-lab-2-worker
+57s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+57s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-crvl6
+57s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-7fnr2
+57s         Normal    Scheduled           pod/frontend-76d98597b9-7fnr2    Successfully assigned shop/frontend-76d98597b9-7fnr2 to aurora-lab-2-worker
+57s         Normal    Scheduled           pod/api-f64486c4c-nxp5w          Successfully assigned shop/api-f64486c4c-nxp5w to aurora-lab-2-worker2
+56s         Normal    Pulled              pod/frontend-76d98597b9-crvl6    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+56s         Normal    Started             pod/redis-59458f55d8-whhdz       Container started
+56s         Normal    Created             pod/frontend-76d98597b9-7fnr2    Container created
+56s         Normal    Pulled              pod/frontend-76d98597b9-7fnr2    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+56s         Normal    Created             pod/frontend-76d98597b9-crvl6    Container created
+56s         Normal    Started             pod/frontend-76d98597b9-crvl6    Container started
+56s         Normal    Created             pod/api-f64486c4c-nxp5w          Container created
+56s         Normal    Started             pod/api-f64486c4c-nxp5w          Container started
+56s         Normal    Started             pod/worker-6cf88d4b58-ln4lz      Container started
+56s         Normal    Created             pod/worker-6cf88d4b58-ln4lz      Container created
+56s         Normal    Pulled              pod/worker-6cf88d4b58-ln4lz      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+56s         Normal    Pulled              pod/loadgen-7c6676864-prqvq      Container image "busybox:1.37" already present on machine and can be accessed by the pod
+56s         Normal    Created             pod/loadgen-7c6676864-prqvq      Container created
+56s         Normal    Started             pod/loadgen-7c6676864-prqvq      Container started
+56s         Normal    Pulled              pod/api-f64486c4c-q657d          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+56s         Normal    Created             pod/api-f64486c4c-q657d          Container created
+56s         Normal    Started             pod/api-f64486c4c-q657d          Container started
+56s         Warning   Unhealthy           pod/api-f64486c4c-q657d          Readiness probe failed: Get "http://10.244.1.9:8080/healthz": dial tcp 10.244.1.9:8080: connect: connection refused
+56s         Normal    Created             pod/redis-59458f55d8-whhdz       Container created
+56s         Normal    Started             pod/frontend-76d98597b9-7fnr2    Container started
+50s         Normal    Scheduled           pod/frontend-7547556c6b-svhfr    Successfully assigned shop/frontend-7547556c6b-svhfr to aurora-lab-2-worker2
+50s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-7547556c6b from 0 to 1
+50s         Normal    SuccessfulCreate    replicaset/frontend-7547556c6b   Created pod: frontend-7547556c6b-svhfr
+16s         Normal    Pulled              pod/frontend-7547556c6b-svhfr    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+16s         Normal    Created             pod/frontend-7547556c6b-svhfr    Container created
+15s         Normal    Started             pod/frontend-7547556c6b-svhfr    Container started
+15s         Warning   Unhealthy           pod/frontend-7547556c6b-svhfr    Readiness probe failed: Get "http://10.244.2.16:80/healthz": dial tcp 10.244.2.16:80: connect: connection refused
+14s         Warning   BackOff             pod/frontend-7547556c6b-svhfr    Back-off restarting failed container nginx in pod frontend-7547556c6b-svhfr_shop(6a7e3af5-be92-498a-9e87-002faa18ea52)

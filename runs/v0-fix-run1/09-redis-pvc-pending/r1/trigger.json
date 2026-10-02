@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "KubePodCrashLooping: an api pod in namespace shop is restarting; frontend /api/ requests failing with 5xx. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodCrashLooping",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "9be7183c-84d1-43e8-9ca1-426efacf4f71",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "38d1896a-b0f1-4fd3-a871-f86c97dc8a8c",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab-2",
+  "user_id": "d5f83286-64e6-45c3-b3df-67ee4ec51f6f",
+  "org_id": "b29b5133-89b7-4016-9743-e35df44c315f",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-e3fb0241a3c7665e",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T21:19:09.343825+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-2-control-plane:6443",
+      "updated_at": "2026-10-02T21:19:09.343825+00:00"
+    }
+  ]
+}

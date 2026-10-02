@@ -1,0 +1,48 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+27s         Normal    Scheduled           pod/api-f64486c4c-mbztv          Successfully assigned shop/api-f64486c4c-mbztv to aurora-lab-worker
+27s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+27s         Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-d9jr4
+27s         Normal    Scheduled           pod/worker-6cf88d4b58-d9jr4      Successfully assigned shop/worker-6cf88d4b58-d9jr4 to aurora-lab-worker2
+27s         Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+27s         Normal    Scheduled           pod/api-f64486c4c-sdrhr          Successfully assigned shop/api-f64486c4c-sdrhr to aurora-lab-worker2
+27s         Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-cf2s9
+27s         Normal    Scheduled           pod/redis-59458f55d8-cf2s9       Successfully assigned shop/redis-59458f55d8-cf2s9 to aurora-lab-worker2
+27s         Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7786b969d6 from 0 to 1
+27s         Normal    SuccessfulCreate    replicaset/loadgen-7786b969d6    Created pod: loadgen-7786b969d6-gdmnp
+27s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-sdrhr
+27s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-mbztv
+27s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+27s         Normal    Scheduled           pod/frontend-76d98597b9-7rlpx    Successfully assigned shop/frontend-76d98597b9-7rlpx to aurora-lab-worker
+27s         Normal    Scheduled           pod/loadgen-7786b969d6-gdmnp     Successfully assigned shop/loadgen-7786b969d6-gdmnp to aurora-lab-worker
+27s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+27s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-9b4xt
+27s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-7rlpx
+27s         Normal    Scheduled           pod/frontend-76d98597b9-9b4xt    Successfully assigned shop/frontend-76d98597b9-9b4xt to aurora-lab-worker2
+26s         Warning   Unhealthy           pod/frontend-76d98597b9-9b4xt    Readiness probe failed: Get "http://10.244.2.38:80/healthz": dial tcp 10.244.2.38:80: connect: connection refused
+26s         Normal    Created             pod/api-f64486c4c-sdrhr          Container created
+26s         Normal    Started             pod/frontend-76d98597b9-9b4xt    Container started
+26s         Normal    Pulled              pod/frontend-76d98597b9-9b4xt    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+26s         Warning   Unhealthy           pod/frontend-76d98597b9-7rlpx    Readiness probe failed: Get "http://10.244.1.34:80/healthz": dial tcp 10.244.1.34:80: connect: connection refused
+26s         Normal    Started             pod/frontend-76d98597b9-7rlpx    Container started
+26s         Normal    Created             pod/frontend-76d98597b9-7rlpx    Container created
+26s         Normal    Pulled              pod/frontend-76d98597b9-7rlpx    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+26s         Normal    Pulled              pod/loadgen-7786b969d6-gdmnp     Container image "busybox:1.37" already present on machine and can be accessed by the pod
+26s         Normal    Created             pod/loadgen-7786b969d6-gdmnp     Container created
+26s         Normal    Started             pod/loadgen-7786b969d6-gdmnp     Container started
+26s         Warning   Unhealthy           pod/api-f64486c4c-sdrhr          Readiness probe failed: Get "http://10.244.2.36:8080/healthz": dial tcp 10.244.2.36:8080: connect: connection refused
+26s         Normal    Started             pod/api-f64486c4c-sdrhr          Container started
+26s         Normal    Created             pod/frontend-76d98597b9-9b4xt    Container created
+26s         Normal    Pulled              pod/redis-59458f55d8-cf2s9       Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+26s         Normal    Created             pod/redis-59458f55d8-cf2s9       Container created
+26s         Normal    Started             pod/redis-59458f55d8-cf2s9       Container started
+26s         Normal    Pulled              pod/api-f64486c4c-sdrhr          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+26s         Warning   Unhealthy           pod/api-f64486c4c-mbztv          Readiness probe failed: Get "http://10.244.1.33:8080/healthz": dial tcp 10.244.1.33:8080: connect: connection refused
+26s         Normal    Started             pod/api-f64486c4c-mbztv          Container started
+26s         Normal    Pulled              pod/worker-6cf88d4b58-d9jr4      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+26s         Normal    Created             pod/worker-6cf88d4b58-d9jr4      Container created
+26s         Normal    Started             pod/worker-6cf88d4b58-d9jr4      Container started
+26s         Normal    Created             pod/api-f64486c4c-mbztv          Container created
+26s         Normal    Pulled              pod/api-f64486c4c-mbztv          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+20s         Normal    SuccessfulCreate    replicaset/worker-7fdf4ffb67     Created pod: worker-7fdf4ffb67-h8jf2
+20s         Warning   FailedScheduling    pod/worker-7fdf4ffb67-h8jf2      0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+20s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-7fdf4ffb67 from 0 to 1

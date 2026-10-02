@@ -1,0 +1,21 @@
+{
+  "scenario": "04-missing-secret",
+  "repeat": 1,
+  "cluster": "aurora-lab",
+  "incident_id": "4ce9ef40-db87-410b-bac8-bf6ff0fca362",
+  "user_id": "ee6bf4d4-edfe-4b11-a798-53dbca3b6dac",
+  "org_id": "5e1d6fc5-8fc2-4469-bf7e-b63d9785d5ed",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:28:51.376215+00:00",
+  "duration_seconds": 194,
+  "tool_calls": 18,
+  "tool_errors": 1,
+  "llm_calls": 32,
+  "tokens": 463675,
+  "cost_usd": 0.481489,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"4ce9ef40-db87-410b-bac8-bf6ff0fca362\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubeDeploymentRolloutStuck\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubeDeploymentRolloutStuck\\\" was triggered, indicating "
+  }
+}

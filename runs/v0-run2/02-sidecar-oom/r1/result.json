@@ -1,0 +1,21 @@
+{
+  "scenario": "02-sidecar-oom",
+  "repeat": 1,
+  "cluster": "aurora-lab-2",
+  "incident_id": "a7a6a03c-bdc2-45ef-bc52-affcf84d344a",
+  "user_id": "3408e35d-c9dc-48f7-8f89-e2bdf23be98e",
+  "org_id": "112fc83b-cd7f-4b3d-9c62-d3c0e477aecf",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:24:38.642354+00:00",
+  "duration_seconds": 82,
+  "tool_calls": 10,
+  "tool_errors": 1,
+  "llm_calls": 20,
+  "tokens": 180468,
+  "cost_usd": 0.188745,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [], \"total\": 0}"
+  }
+}

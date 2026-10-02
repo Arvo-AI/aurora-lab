@@ -1,0 +1,191 @@
+From b9dd8827f87116a66161624b14f69c227cead9df Mon Sep 17 00:00:00 2001
+From: Benjamin Gervais <lab@aurora-lab.local>
+Date: Fri, 2 Oct 2026 12:35:57 -0400
+Subject: [PATCH 2/3] fix(artifacts): explain truncated write_artifact calls
+ instead of looping
+
+When a write_artifact call is cut off by the model's output-token limit
+(Bedrock Converse defaults to 4096 since no max_tokens is set), the args
+arrive as {"title": ...} or {}. The pydantic args schema rejected these
+inside the ToolNode before the tool function ran, so the model only saw
+"content: Field required" and retried the same oversized document, and
+each attempt left an execution_steps row stuck in 'running' (the capture
+wrapper never ran).
+
+Register the tool with the equivalent plain JSON schema (content still
+required in what the model sees) so the call reaches write_artifact,
+which now returns an error naming the likely truncation and asking for a
+shorter document. The step is closed as an error by the capture wrapper.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ .../chat/backend/agent/tools/artifact_tool.py | 26 +++++-
+ .../chat/backend/agent/tools/cloud_tools.py   |  4 +-
+ .../test_write_artifact_truncated_call.py     | 82 +++++++++++++++++++
+ 3 files changed, 108 insertions(+), 4 deletions(-)
+ create mode 100644 server/tests/chat/backend/agent/tools/test_write_artifact_truncated_call.py
+
+diff --git a/server/chat/backend/agent/tools/artifact_tool.py b/server/chat/backend/agent/tools/artifact_tool.py
+index eb76050b..7cf279dc 100644
+--- a/server/chat/backend/agent/tools/artifact_tool.py
++++ b/server/chat/backend/agent/tools/artifact_tool.py
+@@ -38,6 +38,25 @@ class WriteArtifactArgs(BaseModel):
+     content: str = Field(description="The full markdown content of the document")
+ 
+ 
++# The tool is registered with this plain JSON schema instead of the pydantic
++# class. The model still sees ``content`` as required, but a call that arrives
++# without it (typically a tool call cut off by the model's output-token limit,
++# so the arguments JSON ends after ``title``) now reaches write_artifact and
++# gets an actionable error. With the pydantic class, validation failed inside
++# the ToolNode before the capture wrapper ran: the model only saw "content:
++# Field required", retried the same oversized call, and every attempt left an
++# execution_steps row stuck in 'running'.
++WRITE_ARTIFACT_TOOL_SCHEMA = WriteArtifactArgs.model_json_schema()
++
++_MISSING_CONTENT_ERROR = (
++    "content is missing from this write_artifact call, so nothing was saved. "
++    "If you did write content, the tool call was most likely cut off by the "
++    "output-token limit before the content argument finished. Retrying the "
++    "same document will be cut off again: send a shorter document (condense or "
++    "drop older entries) so the whole call fits in one response."
++)
++
++
+ def list_artifacts(user_id: str | None = None, **kwargs) -> str:
+     """List artifact metadata (title, version, last editor, updated time) for the org."""
+     if not user_id:
+@@ -130,8 +149,8 @@ def read_artifact(title: str, user_id: str | None = None, **kwargs) -> str:
+ 
+ 
+ def write_artifact(
+-    title: str,
+-    content: str,
++    title: str | None = None,
++    content: str | None = None,
+     user_id: str | None = None,
+     session_id: str | None = None,
+     **kwargs,
+@@ -140,6 +159,9 @@ def write_artifact(
+     if not user_id:
+         return _NO_USER_CTX
+ 
++    if content is None:
++        return json.dumps({"error": _MISSING_CONTENT_ERROR})
++
+     if not title or not title.strip():
+         return json.dumps({"error": "title is required."})
+ 
+diff --git a/server/chat/backend/agent/tools/cloud_tools.py b/server/chat/backend/agent/tools/cloud_tools.py
+index 8d32f704..8373dc64 100644
+--- a/server/chat/backend/agent/tools/cloud_tools.py
++++ b/server/chat/backend/agent/tools/cloud_tools.py
+@@ -1734,7 +1734,7 @@ Once you identify which account has the issue, pass account_id (e.g. 'account')
+                 args_schema=ReadArtifactArgs,
+             )
+         elif name == 'write_artifact':
+-            from .artifact_tool import WriteArtifactArgs
++            from .artifact_tool import WRITE_ARTIFACT_TOOL_SCHEMA
+             tool = StructuredTool.from_function(
+                 func=final_func,
+                 name=name,
+@@ -1752,7 +1752,7 @@ Once you identify which account has the issue, pass account_id (e.g. 'account')
+                     "if a fresh scan surfaces them again. If the existing doc was last edited by "
+                     "the user, treat their version as authoritative and change it minimally."
+                 ),
+-                args_schema=WriteArtifactArgs,
++                args_schema=WRITE_ARTIFACT_TOOL_SCHEMA,
+             )
+         elif name == 'list_slack_channels':
+             from .slack_tool import ListSlackChannelsArgs
+diff --git a/server/tests/chat/backend/agent/tools/test_write_artifact_truncated_call.py b/server/tests/chat/backend/agent/tools/test_write_artifact_truncated_call.py
+new file mode 100644
+index 00000000..47eac147
+--- /dev/null
++++ b/server/tests/chat/backend/agent/tools/test_write_artifact_truncated_call.py
+@@ -0,0 +1,82 @@
++"""A write_artifact call that arrives without ``content`` must reach the tool
++and come back with an actionable error.
++
++This is what a tool call cut off by the model's output-token limit looks like:
++the arguments JSON ends after ``title`` (or before any argument), so the parsed
++args are ``{"title": ...}`` or ``{}``. With the pydantic args schema the
++ToolNode rejected the call before the tool function (and its execution-step
++capture wrapper) ran, the model saw only "content: Field required", retried the
++same oversized document, and each attempt left a step stuck in 'running'.
++
++The calls below go through a real ``create_agent`` graph and ToolNode, with a
++scripted model standing in for the LLM.
++"""
++
++import functools
++import json
++
++import pytest
++from langchain.agents import create_agent
++from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
++from langchain_core.messages import AIMessage, ToolMessage
++from langchain_core.tools import StructuredTool
++from langchain_aws.function_calling import convert_to_anthropic_tool
++
++from chat.backend.agent.tools import artifact_tool
++from chat.backend.agent.tools.artifact_tool import WRITE_ARTIFACT_TOOL_SCHEMA, write_artifact
++
++
++class _ScriptedModel(FakeMessagesListChatModel):
++    def bind_tools(self, tools, **kwargs):
++        return self
++
++
++def _tool(func):
++    # Same construction as cloud_tools.get_cloud_tools for write_artifact.
++    return StructuredTool.from_function(
++        func=func, name="write_artifact", description="write an artifact",
++        args_schema=WRITE_ARTIFACT_TOOL_SCHEMA,
++    )
++
++
++def _run_one_call(tool, args):
++    model = _ScriptedModel(responses=[
++        AIMessage(content="", tool_calls=[{"id": "call-1", "name": "write_artifact", "args": args}]),
++        AIMessage(content="done"),
++    ])
++    out = create_agent(model=model, tools=[tool]).invoke({"messages": [("user", "go")]})
++    return [m for m in out["messages"] if isinstance(m, ToolMessage)]
++
++
++def test_schema_shown_to_model_still_requires_title_and_content():
++    schema = convert_to_anthropic_tool(_tool(write_artifact))["input_schema"]
++    assert set(schema["required"]) == {"title", "content"}
++
++
++@pytest.mark.parametrize("args", [{"title": "Incident Index"}, {}])
++def test_truncated_call_reaches_tool_and_explains_truncation(args, monkeypatch):
++    invoked = []
++
++    def capture(**kwargs):
++        invoked.append(kwargs)
++        return write_artifact(user_id="user-1", **kwargs)
++
++    # Nothing may be written for a call without content.
++    monkeypatch.setattr(
++        "utils.db.connection_pool.db_pool.get_admin_connection",
++        lambda *a, **k: pytest.fail("write_artifact touched the database"),
++    )
++
++    msgs = _run_one_call(_tool(capture), args)
++
++    assert invoked == [args], "tool function (and its capture wrapper) must run"
++    assert len(msgs) == 1 and msgs[0].tool_call_id == "call-1"
++    body = json.loads(msgs[0].content)
++    assert body == {"error": artifact_tool._MISSING_CONTENT_ERROR}
++    assert "output-token limit" in body["error"]
++
++
++def test_empty_string_content_keeps_existing_error():
++    assert json.loads(write_artifact(title="t", content="  ", user_id="u")) == {
++        "error": "content cannot be empty."
++    }
+-- 
+2.50.1 (Apple Git-155)
+

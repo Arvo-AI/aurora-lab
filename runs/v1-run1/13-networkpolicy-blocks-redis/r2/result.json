@@ -1,0 +1,21 @@
+{
+  "scenario": "13-networkpolicy-blocks-redis",
+  "repeat": 2,
+  "cluster": "aurora-lab-3",
+  "incident_id": "4b82a4d7-076d-4d95-9491-ed3233fa2e47",
+  "user_id": "57126626-604b-4443-8ed4-03ea0103a790",
+  "org_id": "f0d6b5b7-85e6-4ae1-8262-ef03b31b9e61",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:49:06.940103+00:00",
+  "duration_seconds": 444,
+  "tool_calls": 19,
+  "tool_errors": 0,
+  "llm_calls": 33,
+  "tokens": 530316,
+  "cost_usd": 0.54025,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"4b82a4d7-076d-4d95-9491-ed3233fa2e47\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"HighErrorRate [critical] namespace=shop service=frontend\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"HighErrorRate\\\" was trigg"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "must_identify": [
+    {
+      "item": "The kubelet is restarting the container because the liveness probe fails",
+      "result": "met",
+      "evidence": "As a result, every liveness check to port 8081 receives a connection refused, and kubelet repeatedly kills and restarts the container (exit code 137) once the probe's failure threshold is reached \u2014 exactly matching the observed ~60-70s restart pattern [7, 13]."
+    },
+    {
+      "item": "The probe targets port 8081 while the app listens on 8080",
+      "result": "met",
+      "evidence": "The live `api` Deployment specification has `livenessProbe.httpGet.port` set to 8081, while the `readinessProbe` correctly targets port 8080 [7, 8, 13]. The application code in the `api-code` ConfigMap binds `ThreadingHTTPServer((\"\", PORT), H)` with `PORT` defaulting to 8080, and no `PORT` environment override is set in the pod spec [9]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA never explicitly recommends a fix. It only implies that 8080 was the original, correct value, so fix_acceptable is null. It also pairs 'exit code 137' with 'Last State Reason: Error', and a reviewer may want to confirm those details against the pod describe output.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": null,
+    "notes": "The probe kill and the 8081 vs 8080 mismatch are both clear. No fix is recommended; the RCA only notes that the last-applied port was 8080."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The kubelet is restarting the container because the liveness probe fails",
+        "result": "met",
+        "evidence": "As a result, every liveness check to port 8081 receives a connection refused, and kubelet repeatedly kills and restarts the container (exit code 137) once the probe's failure threshold is reached \u2014 exactly matching the observed ~60-70s restart pattern"
+      },
+      {
+        "item": "The probe targets port 8081 while the app listens on 8080",
+        "result": "met",
+        "evidence": "The live `api` Deployment specification has `livenessProbe.httpGet.port` set to 8081, while the `readinessProbe` correctly targets port 8080 [7, 8, 13]. The application code in the `api-code` ConfigMap binds `ThreadingHTTPServer((\"\", PORT), H)` with `PORT` defaulting to 8080"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "OOM and application crash were explicitly ruled out, and the fix restores port 8080 rather than removing the probe. A reviewer may want to verify the claim about the last-applied-configuration annotation showing 8080. The stated 'Reason: Error' for the last state is also slightly unusual for a probe kill, though it is not material to the verdict."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "scenario": "18-init-waits-missing-service",
+  "repeat": 2,
+  "cluster": "aurora-lab",
+  "incident_id": "34afbc75-5e32-4bef-881e-db03cfc04e31",
+  "user_id": "80dfff35-ea0c-43c9-92fd-4ee01d25a3fb",
+  "org_id": "9e1fb190-59ec-403e-8c3f-0036ad6edf2b",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T21:05:37.197427+00:00",
+  "duration_seconds": 160,
+  "tool_calls": 19,
+  "tool_errors": 3,
+  "llm_calls": 33,
+  "tokens": 470021,
+  "cost_usd": 0.483707,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"34afbc75-5e32-4bef-881e-db03cfc04e31\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubeDeploymentR"
+  }
+}

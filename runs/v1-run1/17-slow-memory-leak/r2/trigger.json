@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "KubePodCrashLooping [warning] namespace=shop deployment=worker: Pod shop/worker (container worker) has restarted repeatedly in the last 30 minutes. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodCrashLooping [warning] namespace=shop deployment=worker",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "55981b96-8e98-45d5-9b0a-8f0eb36df4be",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "505d6ea7-76a1-423f-a1d4-ba495c1725f7",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab-2",
+  "user_id": "f770a8af-2423-42be-a91c-65b7074221ce",
+  "org_id": "d689e08d-28c6-4e32-99c4-d13073b15848",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-09948c5cefb426d3",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T21:08:04.361299+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-2-control-plane:6443",
+      "updated_at": "2026-10-02T21:08:04.361299+00:00"
+    }
+  ]
+}

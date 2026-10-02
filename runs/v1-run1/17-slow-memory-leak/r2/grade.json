@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+      "result": "met",
+      "evidence": "Pod `worker-64bddfdcf-8x9rs` started at 21:04:56 and was terminated at 21:07:16 (Exit Code 137, OOMKilled), with Restart Count 1 recorded on describe [9]."
+    },
+    {
+      "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+      "result": "met",
+      "evidence": "The root cause was a memory leak in the worker application code. The ConfigMap `api-code` containing `worker.py` shows a `recent` list intended as a bounded \"tail of recent batches,\" but the code only ever calls `recent.extend(buf[-50:])` inside the main loop and never trims the list [10]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA never gives an explicit remediation section. Fixes appear only under 'Not Checked' as 'ConfigMap patch or memory limit increase'. The ConfigMap patch is acceptable and the limit increase is offered as an alternative rather than the sole fix, but a reviewer may want to treat fix_acceptable as borderline.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "correct",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": true,
+    "notes": "Agree with the judge. Describe shows OOMKilled/137 against a 192Mi limit, the worker.py ConfigMap shows recent.extend(buf[-50:]) and the list is never trimmed, and the previous-run log has 28 batch lines, which fits about 5MB per batch. Some wording goes beyond the evidence. A single kubectl top sample (79Mi) is described as 'climbing', the crash point is called 'deterministic' after only one observed cycle, and '~15-28 batches' has no source. The fix appears only in Not Checked as 'ConfigMap patch or memory limit increase'. That is acceptable because the code patch is offered, but the limit increase alone would not fix the leak."
+  },
+  "fix_from_suggestions": {
+    "result": "acceptable",
+    "best_suggestion": "Patch `code/worker.py` to bound the `recent` list and roll out via ConfigMap `api-code`",
+    "reason": "Capping the module-level `recent` list at 50 entries removes the unbounded retention across batches that causes the OOMKill, and the memory-limit raise is offered only as a stopgap paired with the code fix (though if the loop runs inside a function, the reassignment would need a `global recent` declaration)."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+        "result": "met",
+        "evidence": "Pod `worker-64bddfdcf-8x9rs` started at 21:04:56 and was terminated at 21:07:16 (Exit Code 137, OOMKilled), with Restart Count 1 recorded on describe [9]."
+      },
+      {
+        "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+        "result": "met",
+        "evidence": "The ConfigMap `api-code` containing `worker.py` shows a `recent` list intended as a bounded \"tail of recent batches,\" but the code only ever calls `recent.extend(buf[-50:])` inside the main loop and never trims the list [10]. Each 5-second batch cycle appends roughly 5MB to `recent` with no cap, causing unbounded memory growth."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "Suggested next steps list raising the memory limit first, but it is explicitly labeled a stopgap and is paired with the code fix, which is named as the primary remediation. The proposed bounded-list patch is acceptable."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}

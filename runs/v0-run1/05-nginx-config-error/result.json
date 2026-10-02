@@ -1,0 +1,12 @@
+{
+  "scenario": "05-nginx-config-error",
+  "incident_id": "6da158a5-b061-4094-ae30-7bea0f31332f",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T14:59:20.808409+00:00",
+  "duration_seconds": 168,
+  "tool_calls": 15,
+  "tool_errors": 1,
+  "llm_calls": 20,
+  "tokens": 304386,
+  "cost_usd": 0.319868
+}

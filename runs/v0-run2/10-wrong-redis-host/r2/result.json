@@ -1,0 +1,21 @@
+{
+  "scenario": "10-wrong-redis-host",
+  "repeat": 2,
+  "cluster": "aurora-lab-3",
+  "incident_id": "2523f06b-06fd-43fd-8e2c-4d35c84e5f75",
+  "user_id": "618e6866-f884-47e3-87eb-b464cd900d6c",
+  "org_id": "13c5609e-0a61-4881-be36-1695980f2e4e",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T17:08:23.316812+00:00",
+  "duration_seconds": 197,
+  "tool_calls": 16,
+  "tool_errors": 1,
+  "llm_calls": 28,
+  "tokens": 330117,
+  "cost_usd": 0.338899,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"2523f06b-06fd-43fd-8e2c-4d35c84e5f75\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"A high-severity alert titled \\\"KubePodCrashLooping\\\" was triggered, indicating t"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "scenario": "15-stray-pods-share-label",
+  "repeat": 1,
+  "cluster": "aurora-lab-2",
+  "incident_id": "5126df23-3dbf-4132-bb1f-1f91cf4dd815",
+  "user_id": "c21f9ce6-55f9-4d15-8033-c7f8c144c0c0",
+  "org_id": "9665b6d7-670b-41db-b5c6-b8ee2540527c",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:28:11.198268+00:00",
+  "duration_seconds": 175,
+  "tool_calls": 24,
+  "tool_errors": 1,
+  "llm_calls": 36,
+  "tokens": 576480,
+  "cost_usd": 0.591582,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"5126df23-3dbf-4132-bb1f-1f91cf4dd815\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"HighErrorRate [warning] namespace=shop service=frontend\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"A warning-level condition labeled \\\"HighErro"
+  }
+}

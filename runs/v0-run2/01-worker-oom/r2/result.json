@@ -1,0 +1,21 @@
+{
+  "scenario": "01-worker-oom",
+  "repeat": 2,
+  "cluster": "aurora-lab",
+  "incident_id": "730efeb5-2a64-4969-9537-58f51b1d972e",
+  "user_id": "e3dcbe61-99b6-47b3-a52d-6e5ed26425ce",
+  "org_id": "c86b09c2-e396-4c61-8c10-41909b7aebb2",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:50:45.009953+00:00",
+  "duration_seconds": 228,
+  "tool_calls": 14,
+  "tool_errors": 1,
+  "llm_calls": 25,
+  "tokens": 337658,
+  "cost_usd": 0.34874,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"730efeb5-2a64-4969-9537-58f51b1d972e\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubePodCrashLooping\\\" was triggered, indicating that a pod ass"
+  }
+}

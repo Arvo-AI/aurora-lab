@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "HighErrorRate [critical] namespace=shop service=frontend: 100% of requests to /api/ returned 5xx over the last 5 minutes (threshold 5%). Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "HighErrorRate [critical] namespace=shop service=frontend",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "225b08c7-ba42-4f3e-b121-df4107a1af4b",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "ed8b6c5b-f98c-4026-bda9-5f4575389dc4",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab-2",
+  "user_id": "7726b317-4b93-4bc8-96cc-78d15ae8ebee",
+  "org_id": "8abaad7c-fd89-4172-8490-798257c013c0",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-142d9bc7e01412c0",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T20:46:28.967702+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-2-control-plane:6443",
+      "updated_at": "2026-10-02T20:46:28.967702+00:00"
+    }
+  ]
+}

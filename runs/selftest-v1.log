@@ -1,0 +1,16 @@
+Found 2 pods, using pod/worker-6cf88d4b58-bvcnx
+Found 2 pods, using pod/worker-6cf88d4b58-bvcnx
+Found 2 pods, using pod/worker-6cf88d4b58-bvcnx
+Found 2 pods, using pod/worker-6cf88d4b58-bvcnx
+Found 2 pods, using pod/worker-6cf88d4b58-bvcnx
+Found 2 pods, using pod/worker-6cf88d4b58-bvcnx
+broken 11-noisy-worker-svc-targetport after 30s
+broken 12-two-faults-oom-and-selector after 5s
+broken 13-networkpolicy-blocks-redis after 5s
+broken 14-resourcequota-rollout after 0s
+broken 15-stray-pods-share-label after 10s
+broken 16-dns-search-domain after 15s
+broken 17-slow-memory-leak after 140s
+FAIL 18-init-waits-missing-service: fault did not appear within 240s
+broken 19-config-drift-partial-restart after 0s
+selftest: 8 passed, 1 failed, evidence in runs/selftest-20261002T163008Z-aurora-lab-4

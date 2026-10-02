@@ -1,0 +1,21 @@
+{
+  "scenario": "03-bad-image-tag",
+  "repeat": 2,
+  "cluster": "aurora-lab-2",
+  "incident_id": "f54a8df3-1f08-4558-87ba-62972054b180",
+  "user_id": "b63e898b-0a16-4d5b-83b7-35b20ef1eff9",
+  "org_id": "0e322fb9-9c54-4b73-b8b6-9d30b15c83cd",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T16:56:41.879809+00:00",
+  "duration_seconds": 77,
+  "tool_calls": 11,
+  "tool_errors": 1,
+  "llm_calls": 16,
+  "tokens": 182398,
+  "cost_usd": 0.189905,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"f54a8df3-1f08-4558-87ba-62972054b180\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubeDeploymentRolloutStuck\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"An alert titled \\\"KubeDeploymentRolloutStuck\\\" was triggered for the \\\"sh"
+  }
+}

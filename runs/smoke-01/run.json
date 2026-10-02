@@ -1,0 +1,9 @@
+{
+  "run_id": "smoke-01",
+  "aurora_commit": "87d22bafa7ea7a7c0980184a42f2d4452f3ae18a",
+  "rca_model": "bedrock/us.anthropic.claude-sonnet-5",
+  "orchestrator_enabled": "false",
+  "scenarios": [
+    "01-worker-oom"
+  ]
+}

@@ -1,0 +1,56 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+55s         Normal    Scheduled           pod/frontend-76d98597b9-kwphd    Successfully assigned shop/frontend-76d98597b9-kwphd to aurora-lab-4-worker2
+55s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+55s         Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-6d2gv
+55s         Normal    Scheduled           pod/worker-6cf88d4b58-6d2gv      Successfully assigned shop/worker-6cf88d4b58-6d2gv to aurora-lab-4-worker
+55s         Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+55s         Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-bc2kw
+55s         Normal    Scheduled           pod/redis-59458f55d8-bc2kw       Successfully assigned shop/redis-59458f55d8-bc2kw to aurora-lab-4-worker
+55s         Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7c6676864 from 0 to 1
+55s         Normal    SuccessfulCreate    replicaset/loadgen-7c6676864     Created pod: loadgen-7c6676864-pmqqq
+55s         Normal    Scheduled           pod/loadgen-7c6676864-pmqqq      Successfully assigned shop/loadgen-7c6676864-pmqqq to aurora-lab-4-worker
+55s         Normal    Scheduled           pod/api-f64486c4c-h2dbj          Successfully assigned shop/api-f64486c4c-h2dbj to aurora-lab-4-worker
+55s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+55s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-kwphd
+55s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-lvkdv
+55s         Normal    Scheduled           pod/frontend-76d98597b9-lvkdv    Successfully assigned shop/frontend-76d98597b9-lvkdv to aurora-lab-4-worker
+55s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-h2dbj
+55s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-2n48d
+55s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+55s         Normal    Scheduled           pod/api-f64486c4c-2n48d          Successfully assigned shop/api-f64486c4c-2n48d to aurora-lab-4-worker2
+54s         Warning   Unhealthy           pod/frontend-76d98597b9-kwphd    Readiness probe failed: Get "http://10.244.1.13:80/healthz": dial tcp 10.244.1.13:80: connect: connection refused
+54s         Normal    Pulled              pod/loadgen-7c6676864-pmqqq      Container image "busybox:1.37" already present on machine and can be accessed by the pod
+54s         Normal    Pulled              pod/api-f64486c4c-2n48d          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+54s         Normal    Created             pod/api-f64486c4c-2n48d          Container created
+54s         Normal    Pulled              pod/frontend-76d98597b9-kwphd    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+54s         Normal    Created             pod/frontend-76d98597b9-kwphd    Container created
+54s         Normal    Started             pod/frontend-76d98597b9-kwphd    Container started
+54s         Normal    Started             pod/worker-6cf88d4b58-6d2gv      Container started
+54s         Normal    Created             pod/worker-6cf88d4b58-6d2gv      Container created
+54s         Normal    Pulled              pod/frontend-76d98597b9-lvkdv    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+54s         Normal    Created             pod/frontend-76d98597b9-lvkdv    Container created
+54s         Normal    Started             pod/frontend-76d98597b9-lvkdv    Container started
+54s         Warning   Unhealthy           pod/frontend-76d98597b9-lvkdv    Readiness probe failed: Get "http://10.244.2.26:80/healthz": dial tcp 10.244.2.26:80: connect: connection refused
+54s         Normal    Started             pod/api-f64486c4c-h2dbj          Container started
+54s         Normal    Created             pod/api-f64486c4c-h2dbj          Container created
+54s         Normal    Pulled              pod/api-f64486c4c-h2dbj          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+54s         Normal    Pulled              pod/worker-6cf88d4b58-6d2gv      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+54s         Normal    Started             pod/api-f64486c4c-2n48d          Container started
+54s         Normal    Created             pod/loadgen-7c6676864-pmqqq      Container created
+54s         Normal    Started             pod/loadgen-7c6676864-pmqqq      Container started
+54s         Warning   Unhealthy           pod/api-f64486c4c-2n48d          Readiness probe failed: Get "http://10.244.1.12:8080/healthz": dial tcp 10.244.1.12:8080: connect: connection refused
+54s         Normal    Started             pod/redis-59458f55d8-bc2kw       Container started
+54s         Normal    Created             pod/redis-59458f55d8-bc2kw       Container created
+54s         Normal    Pulled              pod/redis-59458f55d8-bc2kw       Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+53s         Warning   Unhealthy           pod/api-f64486c4c-h2dbj          Readiness probe failed: Get "http://10.244.2.24:8080/healthz": dial tcp 10.244.2.24:8080: connect: connection refused
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-f74h9" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-9pmcd" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-n6gfn" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-6dd5c" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-2ss6v" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-6jjd2" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-rxcr5" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-2qntq" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+45s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-897595f4f from 0 to 1
+44s         Warning   FailedCreate        replicaset/api-897595f4f         Error creating: pods "api-897595f4f-7p5pw" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+4s          Warning   FailedCreate        replicaset/api-897595f4f         (combined from similar events): Error creating: pods "api-897595f4f-nrzkg" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi

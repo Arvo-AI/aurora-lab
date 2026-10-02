@@ -1,0 +1,21 @@
+{
+  "scenario": "17-slow-memory-leak",
+  "repeat": 1,
+  "cluster": "aurora-lab",
+  "incident_id": "b8df55ba-20aa-4815-9e8b-0b5172a077e2",
+  "user_id": "57a9775c-bd50-4ac6-88c9-7240bb90d39e",
+  "org_id": "359f2e1d-6f53-4b0c-a3c5-1b064d7ed492",
+  "aurora_status": "complete",
+  "started_at": "2026-10-02T20:32:18.945305+00:00",
+  "duration_seconds": 201,
+  "tool_calls": 13,
+  "tool_errors": 0,
+  "llm_calls": 19,
+  "tokens": 302283,
+  "cost_usd": 0.312088,
+  "isolation": {
+    "list_incidents_calls": 1,
+    "foreign_incident_ids": [],
+    "first_output": "{\"incidents\": [{\"id\": \"b8df55ba-20aa-4815-9e8b-0b5172a077e2\", \"status\": \"investigating\", \"severity\": \"high\", \"title\": \"KubePodCrashLooping [warning] namespace=shop deployment=worker\", \"service\": \"shop\", \"environment\": null, \"auroraStatus\": \"running\", \"summary\": \"A high-severity alert titled \\\"KubePo"
+  }
+}

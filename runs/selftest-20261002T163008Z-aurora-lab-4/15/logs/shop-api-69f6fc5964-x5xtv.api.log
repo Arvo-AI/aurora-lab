@@ -1,0 +1,103 @@
+shop-api 0.9.3 listening on :8080
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.2.31 "GET /items HTTP/1.0" 500 -
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.1.15 "GET /items HTTP/1.0" 500 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/code/app.py", line 12, in do_GET
+    settings()
+  File "/code/app.py", line 5, in settings
+    return {"db": os.environ["DATABASE_URL"], "redis": os.environ.get("REDIS_HOST", "redis")}
+                  ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+10.244.2.31 "GET /items HTTP/1.0" 500 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -

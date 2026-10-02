@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "KubePodNotReady: worker pod in namespace shop has been Pending for over 5 minutes. Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodNotReady",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "2a991d19-7268-4c69-b77c-6d5252f6ac2f",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "fce320c7-27bf-4e4b-a735-87af473d1841",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab",
+  "user_id": "f3fcbfdd-c9df-4764-9919-483ecd49bedf",
+  "org_id": "2cd4b097-c6ba-4a94-860c-0f95bad74693",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-ca6bd1b97359856d",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T16:37:43.125283+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-control-plane:6443",
+      "updated_at": "2026-10-02T16:37:43.125283+00:00"
+    }
+  ]
+}

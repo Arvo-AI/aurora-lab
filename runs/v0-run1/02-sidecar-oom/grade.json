@@ -1,0 +1,46 @@
+{
+  "must_identify": [
+    {
+      "item": "The container being killed is the log-shipper sidecar, not the api container",
+      "result": "met",
+      "evidence": "The `api` application container in each pod remained healthy (Running, Ready: True, 0 restarts), while a second container, `log-shipper`, was repeatedly Terminated with Reason OOMKilled, Exit Code 137 [7]."
+    },
+    {
+      "item": "The sidecar is OOMKilled because its 16Mi limit is below its usage",
+      "result": "met",
+      "evidence": "The `log-shipper` container's startup code immediately allocates a 40 MB in-memory buffer, as confirmed by its own log output (\"buffering 40 MB before first flush\") [12], against a configured container memory limit of only 16Mi [7]. This oversized allocation relative to the limit causes the kubelet to OOMKill the container on every start"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The fixes (raise the log-shipper memory limit, or roll back to revision 1) appear only in the Not Checked section and were not applied because of read-only policy. A reviewer should note the claim that a third pod remains on revision 1 at 1/1, which is plausible mid-rollout but goes beyond the scenario definition.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": true,
+    "notes": "Sidecar isolation and the 40 MB vs 16Mi cause are clear, and fixes are named in Not Checked. One factual error does not change the verdict: 'the api application container itself continues to serve traffic in all pods, including the two affected ones' is wrong, because a 1/2-Ready pod is removed from the Service endpoints."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The container being killed is the log-shipper sidecar, not the api container",
+        "result": "met",
+        "evidence": "The `api` application container in each pod remained healthy (Running, Ready: True, 0 restarts), while a second container, `log-shipper`, was repeatedly Terminated with Reason OOMKilled, Exit Code 137 [7]."
+      },
+      {
+        "item": "The sidecar is OOMKilled because its 16Mi limit is below its usage",
+        "result": "met",
+        "evidence": "The `log-shipper` container's startup code immediately allocates a 40 MB in-memory buffer, as confirmed by its own log output (\"buffering 40 MB before first flush\") [12], against a configured container memory limit of only 16Mi [7]."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "Fix is to raise the log-shipper limit to 64Mi, with rollback to revision 1 as the fallback; both are acceptable. The investigator contradicts itself on impact: one passage says the api container serves traffic in all pods, another says through only the one fully-available pod. The patch command also assumes the sidecar is container index 1, which a reviewer should verify."
+  }
+}

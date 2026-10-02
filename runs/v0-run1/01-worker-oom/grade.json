@@ -1,0 +1,46 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "The pod `worker-86f68b9bf6-t2rwq` was observed in a crash loop, repeatedly terminating with OOMKilled (exit code 137) and entering BackOff [5]."
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "met",
+      "evidence": "The root cause was a deployment rollout that increased the worker's `BATCH_SIZE` environment variable from 500 to 2500 without a corresponding increase to the pod's 192Mi memory limit [7]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA never gives an explicit remediation recommendation. Credit for the fix rests on its statement that revision 1 (BATCH_SIZE=500) is a 'valid, intact rollback target' and its mention of a pending 'rollback or memory limit increase'. A reviewer should also check the BATCH_SIZE \u00d7 100KiB code citation [10], because the RCA admits the full worker.py ConfigMap content could not be retrieved.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": true,
+    "notes": "Both items are stated plainly: OOMKilled exit 137, and BATCH_SIZE 500->2500 against the 192Mi limit. The fix is weak: it only appears as 'No remediation (rollback or memory limit increase) was executed', but it names acceptable actions, so I accept true."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+        "result": "met",
+        "evidence": "The pod `worker-86f68b9bf6-t2rwq` was observed in a crash loop, repeatedly terminating with OOMKilled (exit code 137) and entering BackOff [5]."
+      },
+      {
+        "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+        "result": "met",
+        "evidence": "The root cause was a deployment rollout that increased the worker's `BATCH_SIZE` environment variable from 500 to 2500 without a corresponding increase to the pod's 192Mi memory limit [7]."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "Node memory pressure was correctly ruled out, not asserted. The investigator seeded its hypothesis from prior postmortems in memory but re-verified it with live evidence (pod describe, ReplicaSet diff, ConfigMap code). The primary fix (rollback to BATCH_SIZE=500) and the alternative (raise the limit to 384Mi, with the reason stated) are both acceptable."
+  }
+}

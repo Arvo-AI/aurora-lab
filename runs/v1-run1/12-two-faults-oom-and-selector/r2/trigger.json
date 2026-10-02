@@ -1,0 +1,30 @@
+{
+  "request": {
+    "issue_description": "KubePodCrashLooping [warning] namespace=shop deployment=worker: Pod shop/worker (container worker) is in waiting state (reason: CrashLoopBackOff). Cluster: aurora-lab (kubeconfig). Investigate and find the root cause.",
+    "title": "KubePodCrashLooping [warning] namespace=shop deployment=worker",
+    "service": "shop",
+    "severity": "high"
+  },
+  "status": 200,
+  "response": {
+    "incident_id": "d64978b2-b084-40ea-a286-10c9e23fbe38",
+    "message": "Incident created and full RCA investigation started. The investigation will run in the background using all connected integrations. You can track progress in the Incidents dashboard.",
+    "rca_session_id": "cc1cbe1f-65cb-42a5-88bf-9d43cc3c8e0d",
+    "status": "ok"
+  },
+  "cluster": "aurora-lab",
+  "user_id": "20fc023d-d23f-458e-9162-67850a295186",
+  "org_id": "7dbbde96-24cb-4d67-b2ed-4ac26a488abb",
+  "aurora_clusters": [
+    {
+      "cluster_id": "kubeconfig-d6d54a5237c3e7eb",
+      "cluster_name": "kind-aurora-lab",
+      "context_name": "kind-aurora-lab",
+      "created_at": "2026-10-02T20:48:01.715871+00:00",
+      "is_active": true,
+      "namespace": null,
+      "server_url": "https://aurora-lab-control-plane:6443",
+      "updated_at": "2026-10-02T20:48:01.715871+00:00"
+    }
+  ]
+}

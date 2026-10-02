@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "This mismatch between live config and tracked config, combined with the OOMKilled/Exit Code 137 termination reason observed on the pod [6], confirms the kernel OOM killer terminated the container due to the oversized in-memory batch allocation \u2014 not an application-level crash or cluster-wide resource shortage, as other pods on the same node remained healthy [4, 11]."
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "met",
+      "evidence": "The worker code allocates `BATCH_SIZE \u00d7 100KiB` of memory per cycle [10], so at BATCH_SIZE=2500 this amounts to roughly 244MiB, exceeding the container's 192Mi memory limit confirmed via pod describe [6]; at the originally intended BATCH_SIZE=500 this would be ~49MiB, safely under the limit."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA never states a remediation. It only implies that BATCH_SIZE=500 was safe, so no fix could be graded. A reviewer should also verify the '70 seconds before the alert' timing claim, which is not clearly supported by a cited command.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "correct",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "correct",
+    "agrees_with_judge": true,
+    "fix_acceptable": null,
+    "notes": "Both items are met and no remediation is stated."
+  },
+  "fix_from_suggestions": {
+    "result": "acceptable",
+    "best_suggestion": "Revert `BATCH_SIZE` env var to tracked value (500) on `deployment/worker`",
+    "reason": "Setting BATCH_SIZE back to 500 brings per-batch memory well under the 192Mi limit, which directly addresses the OOMKill root cause, and the alternative of raising the limit to 320Mi is also an acceptable fix with its reason stated."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+        "result": "met",
+        "evidence": "This mismatch between live config and tracked config, combined with the OOMKilled/Exit Code 137 termination reason observed on the pod [6], confirms the kernel OOM killer terminated the container due to the oversized in-memory batch allocation \u2014 not an application-level crash or cluster-wide resource shortage"
+      },
+      {
+        "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+        "result": "met",
+        "evidence": "The worker code allocates `BATCH_SIZE \u00d7 100KiB` of memory per cycle [10], so at BATCH_SIZE=2500 this amounts to roughly 244MiB, exceeding the container's 192Mi memory limit confirmed via pod describe [6]; at the originally intended BATCH_SIZE=500 this would be ~49MiB, safely under the limit."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": true,
+    "verdict": "correct",
+    "notes": "The primary fix is to revert BATCH_SIZE to 500. The alternative, raising the limit to 320Mi, comes with its reasoning stated. Both are acceptable. The investigator explicitly ruled out node pressure, and it did not claim a memory leak."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+      "result": "met",
+      "evidence": "The root cause was a configuration change introduced in deployment revision 2 of `worker`, which raised the `BATCH_SIZE` environment variable from 500 to 2500 while leaving the 192Mi memory limit unchanged [9, 10]."
+    },
+    {
+      "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "partial",
+  "notes": "The RCA wrongly says the frontend 'remained healthy and unaffected' and that impact is confined to the worker. It never checked Services or endpoints, so it missed the second fault. No explicit fix is recommended.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "human_verdict": "partial",
+  "human_notes": "",
+  "reviewer_ai": {
+    "reviewer": "claude-opus-5-5 subagent (AI review, not a person)",
+    "verdict": "partial",
+    "agrees_with_judge": true,
+    "fix_acceptable": null,
+    "notes": "Agree with partial. The OOM from BATCH_SIZE 500 to 2500 is correctly derived from the code and the 192Mi limit, but no Service, endpoints or loadgen data were collected, so the frontend selector fault was missed. The RCA says the frontend 'remained healthy and unaffected', which is false and based only on pod status. It also says 'both cluster nodes' when there were three, and calls the pod 'Running-but-crashing' when kubectl showed OOMKilled/Terminated."
+  },
+  "fix_from_suggestions": {
+    "result": "partial",
+    "best_suggestion": "Revert `BATCH_SIZE` env var to `500` on `deployment/worker`",
+    "reason": "The suggestions correctly fix the worker OOM by reverting BATCH_SIZE or raising the limit, but neither restores the frontend Service selector to app=frontend, so the second fault (no endpoints, frontend down) is left unfixed."
+  },
+  "full_output": {
+    "must_identify": [
+      {
+        "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+        "result": "met",
+        "evidence": "The root cause was a configuration change introduced in deployment revision 2 of `worker`, which raised the `BATCH_SIZE` environment variable from 500 to 2500 while leaving the 192Mi memory limit unchanged [9, 10]."
+      },
+      {
+        "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+        "result": "missed",
+        "evidence": ""
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "fix_acceptable": false,
+    "verdict": "partial",
+    "notes": "The investigator never inspected Services or endpoints. It wrongly stated that 'Other workloads in the shop namespace (api, frontend) remained healthy and unaffected' and that impact was 'confined to the worker deployment', so the user-facing frontend outage was missed entirely. The BATCH_SIZE revert is correct, but the fix leaves out restoring the frontend Service selector to app=frontend."
+  },
+  "human_review": {
+    "reviewer": "Ben (Arvo)",
+    "date": "2026-10-02",
+    "basis": "agreed with the full_output verdict"
+  }
+}
