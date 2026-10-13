@@ -1,0 +1,1 @@
+{"tool":"k8sgpt","version":"k8sgpt: 0.4.40 (3d12f1ff548f8fb1adc85a46b080f274739a1ac4), built at: 2026-10-09T19:45:48Z","model":"us.anthropic.claude-sonnet-4-5-20250929-v1:0","model_note":"Sonnet 5 rejected: K8sGPT always sends temperature, which Bedrock Converse refuses for Sonnet 5","seconds":19,"exit":0}

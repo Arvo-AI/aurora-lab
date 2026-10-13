@@ -1,0 +1,1 @@
+{"scenario":"03-bad-image-tag","alert":"KubeDeploymentRolloutStuck: deployment frontend in namespace shop has not progressed.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-13T07:51:30Z"}
