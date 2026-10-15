@@ -1,0 +1,21 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 1,
+  "results": [
+    {
+      "kind": "Pod",
+      "name": "shop/worker-7fdf4ffb67-p9pwt",
+      "error": [
+        {
+          "Text": "0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: Pod cannot be scheduled because 1 node has taints blocking it, 2 nodes lack CPU resources, and preemption won't help.\n\nSolution: 1) Add toleration for tainted node, 2) Reduce pod CPU requests, 3) Add nodes to cluster, or 4) Remove unused pods to free CPU.",
+      "parentObject": "Deployment/worker"
+    }
+  ]
+}

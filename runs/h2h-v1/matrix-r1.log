@@ -1,0 +1,57 @@
+== 01-worker-oom 08:31:15
+ limit), or raise the memory limit to cover 2500 *     100KiB (~250Mi+ plus headroom, e.g. 320–384Mi). Also re-apply via kubectl        apply/your usual GitOps/Helm path so the live config and tracked
+
+== 02-sidecar-oom 08:33:52
+om) in the deployment spec, or reduce the buffer size in the log-shipper code to fit under the limit. Either edit the Deployment manifest and re-apply, or kubectl set resources deployment api -n shop 
+
+== 03-bad-image-tag 08:36:44
+ment/frontend nginx=nginx:1.27-alpine -n shop                                                                                             or edit the deployment spec and reapply. This will let the rol
+
+== 04-missing-secret 08:39:05
+onfigError automatically) and the rollout will complete. If DB_PASSWORD/api-secrets was intentionally removed, instead revert the         deployment's env var change (kubectl rollout undo deployment/a
+
+== 05-nginx-config-error 08:41:29
+ed (or kubectl rollout restart deployment/frontend -n  shop again) so remaining pods pick up the corrected config. Note the old         frontend-76d98597b9 pods will eventually need to roll too — they
+
+== 06-liveness-wrong-port 08:44:12
+                                                                                                                                          This will trigger a new rollout; the pods should then stabiliz
+
+== 07-service-selector-mismatch 08:47:43
+                                                         If a real api-v2 rollout was intended, instead ensure the new Deployment's pod   template carries app: api-v2 and cut over the selector only on
+
+== 08-unschedulable-cpu 08:50:31
+ change resources.requests.cpu: "64" → "64m" (or back  to 50m to match the previous working revision). Once applied, the new ReplicaSet will roll out successfully and the old worker-6cf88d4b58-q9gtk p
+
+== 09-redis-pvc-pending 08:52:58
+ with the corrected storageClassName so Redis can         schedule and bind.                                                             • Once Redis is back, the crash-looping api-6fbbd57c5c-pkp7m po
+
+== 10-wrong-redis-host 08:57:20
+ibe deployment api -n shop for a stuck condition, e.g.      failing readiness blocking progress).                                          3 Going forward, confirm the Service name (redis) matches RED
+
+== 11-noisy-worker-svc-targetport 09:00:15
+ mismatch).                                           • Frontend pods (frontend-76d98597b9-*) and api pods are both running on           aurora-lab-worker/aurora-lab-worker2 with 0 restarts — the 502s
+
+== 12-two-faults-oom-and-selector 09:02:58
+rker -n shop BATCH_SIZE=500                               2 If 2500 is required, raise the memory limit/request accordingly (test to find    real usage, then set e.g. limits.memory: 512Mi or higher) v
+
+== 13-networkpolicy-blocks-redis 09:06:10
+tocol: TCP}]                                                                                                                            Apply with kubectl apply -f (or kubectl edit networkpolicy redis
+
+== 14-resourcequota-rollout 09:09:37
+                                                       • Temporarily scale down an unrelated pod before restarting api.                 Once quota headroom exists, the pending ReplicaSet api-67cc856b4
+
+== 15-stray-pods-share-label 09:12:04
+                                                       Everything else checked clean: frontend (2/2 ready, no restarts), api (2/2       ready, serving 200s), redis (connects fine after one initial ret
+
+== 16-dns-search-domain 09:15:23
+                                                         Then roll out again (kubectl rollout undo deployment/api -n shop or apply the    corrected manifest). Once fixed, the new pods will resolve red
+
+== 17-slow-memory-leak 09:18:49
+ the memory limit will only delay the OOM, not fix it,      since the leak is unbounded.                                                   3 Redeploy the ConfigMap (kubectl apply) and roll the worker 
+
+== 18-init-waits-missing-service 09:24:00
+                                                             )                                                                            litellm.exceptions.Timeout: litellm.Timeout: Connection timed 
+
+== 19-config-drift-partial-restart 14:36:48
+break failed for 19-config-drift-partial-restart
+matrix done 14:39:15

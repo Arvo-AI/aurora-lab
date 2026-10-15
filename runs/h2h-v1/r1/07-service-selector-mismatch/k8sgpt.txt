@@ -1,0 +1,21 @@
+AI Provider: amazonbedrockconverse
+
+0: Service shop/api()
+- Error: Service has no endpoints, expected label app=api-v2
+Error: The Service cannot find any Pods because no Pods have the required label "app=api-v2".
+
+Solution:
+1. Check Pod labels: kubectl get pods --show-labels
+2. Add missing label to Pods: kubectl label pods <pod-name> app=api-v2
+3. Or update Deployment with correct label
+4. Verify: kubectl get endpoints
+1: Service shop/redis()
+- Error: Service shop/redis has event Cluster IP [IPv4]: 10.96.237.59 is not allocated; repairing
+Error: Kubernetes detected that the Cluster IP assigned to the redis service wasn't properly allocated in the IP pool and is attempting to fix it automatically.
+
+Solution: 
+1. Wait for auto-repair to complete
+2. If persists, delete service: `kubectl delete svc redis -n shop`
+3. Recreate service
+4. Verify: `kubectl get svc -n shop`
+

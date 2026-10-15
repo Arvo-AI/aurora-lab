@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "New api pods are stuck in Init:0/1 because the init container wait-for-db never completes",
+      "result": "partial",
+      "evidence": "Your Kubernetes service has no ready endpoints because the pod \"api-77b4b6956f-gr92w\" isn't ready yet."
+    },
+    {
+      "item": "It waits for postgres:5432, and no Service named postgres exists in namespace shop",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA only restates the symptom: a pod is not ready, so the Service has no endpoints. It never mentions the init container, Init:0/1, or the missing postgres Service. The fix is a generic troubleshooting checklist, and its suggested `kubectl logs` would return nothing because the api container never started. A stricter reviewer could reasonably grade this as wrong or no_answer.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}

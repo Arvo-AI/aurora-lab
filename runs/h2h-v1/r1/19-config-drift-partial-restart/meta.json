@@ -1,0 +1,1 @@
+{"scenario":"19-config-drift-partial-restart","alert":"HighErrorRate [warning] namespace=shop service=frontend: 48% of requests to /api/ returned 5xx over the last 10 minutes (threshold 5%).","model":"us.anthropic.claude-sonnet-5","started":"2026-10-15T21:35:06Z"}

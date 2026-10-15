@@ -1,0 +1,1 @@
+{"scenario":"07-service-selector-mismatch","alert":"HighErrorRate: frontend /api/ requests in namespace shop are failing with 5xx; all pods are Running.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-15T08:49:21Z"}

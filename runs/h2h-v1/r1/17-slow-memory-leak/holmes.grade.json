@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+      "result": "met",
+      "evidence": "Pod shop/worker-7d568fdf96-rm2rj, container worker: restartCount: 1, lastState.terminated.reason: OOMKilled, exitCode: 137."
+    },
+    {
+      "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+      "result": "met",
+      "evidence": "recent is never trimmed despite the comment calling it a \"tail of recent batches\" \u2014 it grows by ~5MB every 5s batch forever. ... No change to BATCH_SIZE (still 500), no change to the memory limit (192Mi)"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The leak mechanism is correct, but the RCA wrongly calls it a 'pre-existing bug' and says the restart only relaunched old code. In fact the worker.py change in the api-code ConfigMap was the trigger, and the investigator did not check ConfigMap history. A reviewer may want to downgrade for this mistaken change attribution.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": ""
+}

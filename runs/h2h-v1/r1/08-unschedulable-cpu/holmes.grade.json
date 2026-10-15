@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "FailedScheduling event for worker-7fdf4ffb67-p9pwt: \"0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. preemption: not helpful.\""
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "met",
+      "evidence": "Both worker nodes (aurora-lab-worker, aurora-lab-worker2) have only 10 allocatable CPUs each (confirmed via node status) \u2014 nowhere near the requested 64 cores."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA mentions the control-plane taint but explicitly dismisses it as expected and unrelated, so it does not assert taints as the cause. The primary fix restores 50m. The alternative of 64m rests on the investigator's guess about intent, but it would also schedule.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": ""
+}

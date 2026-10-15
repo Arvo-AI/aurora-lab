@@ -1,0 +1,22 @@
+AI Provider: amazonbedrockconverse
+
+0: Deployment shop/worker()
+- Error: Deployment shop/worker has 1 replicas but 0 are available with status running
+Error: The worker deployment in the shop namespace has 1 desired pod but none are running successfully.
+
+Solution: 
+1. Check pod status: kubectl get pods -n shop
+2. View pod logs: kubectl logs -n shop <pod-name>
+3. Describe pod: kubectl describe pod -n shop <pod-name>
+4. Fix issues found (image, resources, etc.)
+1: Pod shop/worker-86f68b9bf6-2vsst(Deployment/worker)
+- Error: the termination reason is OOMKilled exitCode=137 container=worker pod=worker-86f68b9bf6-2vsst
+Error: Container ran out of memory and was killed by Kubernetes.
+
+Solution: 
+1. Increase memory limits in pod spec
+2. Add: resources.limits.memory (e.g., "2Gi")
+3. Check app for memory leaks
+4. Monitor usage with: kubectl top pod
+5. Redeploy pod
+

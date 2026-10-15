@@ -1,0 +1,1 @@
+{"scenario":"09-redis-pvc-pending","alert":"KubePodCrashLooping: an api pod in namespace shop is restarting; frontend /api/ requests failing with 5xx.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-15T08:54:51Z"}

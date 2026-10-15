@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The new api pods exit because the name redis does not resolve",
+      "result": "missed",
+      "evidence": ""
+    },
+    {
+      "item": "The cause is the pod's dnsPolicy None / dnsConfig search domains (cluster.internal), not REDIS_HOST, the redis Service or CoreDNS",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "wrong",
+  "notes": "The RCA only reports the readiness probe failing (connection refused) and the Service having no ready endpoints, which are symptoms. It blames the probe config or app startup timing and suggests increasing initialDelaySeconds, without mentioning DNS, redis resolution or dnsConfig.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}

@@ -1,0 +1,12 @@
+AI Provider: amazonbedrockconverse
+
+0: Service shop/api()
+- Error: Service has not ready endpoints, pods: [Pod/api-869d87b484-mwsv7], expected 1
+Error: Your Kubernetes service has no ready endpoints because the pod "api-869d87b484-mwsv7" isn't passing health checks.
+
+Solution:
+1. Check pod status: `kubectl describe pod api-869d87b484-mwsv7`
+2. View logs: `kubectl logs api-869d87b484-mwsv7`
+3. Fix readiness probe or app issues
+4. Restart if needed
+

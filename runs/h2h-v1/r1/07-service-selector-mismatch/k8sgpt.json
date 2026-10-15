@@ -1,0 +1,43 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has no endpoints, expected label app=api-v2",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "app",
+              "Masked": "czVh"
+            },
+            {
+              "Unmasked": "api-v2",
+              "Masked": "ciRlcFNP"
+            }
+          ]
+        }
+      ],
+      "details": "Error: The Service cannot find any Pods because no Pods have the label \"app=api-v2\" that the Service is looking for.\n\nSolution:\n1. Check Pod labels: kubectl get pods --show-labels\n2. Add missing label to Pods: kubectl label pods \u003cpod-name\u003e app=api-v2\n3. Verify: kubectl get endpoints",
+      "parentObject": ""
+    },
+    {
+      "kind": "Service",
+      "name": "shop/redis",
+      "error": [
+        {
+          "Text": "Service shop/redis has event Cluster IP [IPv4]: 10.96.237.59 is not allocated; repairing",
+          "KubernetesDoc": "",
+          "Sensitive": null
+        }
+      ],
+      "details": "Error: The Kubernetes service has an IP address that wasn't properly allocated from the cluster's IP pool, causing a mismatch in IP management.\n\nSolution:\n1. Delete the service: `kubectl delete svc redis -n shop`\n2. Recreate it: `kubectl apply -f redis-service.yaml`\n3. Verify: `kubectl get svc redis -n shop`",
+      "parentObject": ""
+    }
+  ]
+}

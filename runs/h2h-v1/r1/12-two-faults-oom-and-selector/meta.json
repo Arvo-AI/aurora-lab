@@ -1,0 +1,1 @@
+{"scenario":"12-two-faults-oom-and-selector","alert":"KubePodCrashLooping [warning] namespace=shop deployment=worker: Pod shop/worker (container worker) is in waiting state (reason: CrashLoopBackOff).","model":"us.anthropic.claude-sonnet-5","started":"2026-10-15T09:05:21Z"}

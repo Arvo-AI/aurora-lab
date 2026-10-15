@@ -1,0 +1,34 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Pod",
+      "name": "shop/api-5f7c48ddc6-xgvwt",
+      "error": [
+        {
+          "Text": "secret \"api-secrets\" not found",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: Kubernetes cannot find a secret named \"api-secrets\" in your cluster.\n\nSolution:\n1. Check if secret exists: `kubectl get secrets`\n2. Create the missing secret: `kubectl create secret generic api-secrets --from-literal=key=value`\n3. Or apply from file: `kubectl apply -f api-secrets.yaml`",
+      "parentObject": "Deployment/api"
+    },
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/api-5f7c48ddc6-xgvwt], expected 1",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The service cannot route traffic because its pod is not ready to accept connections.\n\nSolution:\n1. Check pod status: kubectl get pods\n2. View pod logs: kubectl logs api-5f7c48ddc6-xgvwt\n3. Check readiness probe: kubectl describe pod api-5f7c48ddc6-xgvwt\n4. Fix app issues or adjust probe settings",
+      "parentObject": ""
+    }
+  ]
+}

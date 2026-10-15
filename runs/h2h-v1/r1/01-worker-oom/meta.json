@@ -1,0 +1,1 @@
+{"scenario":"01-worker-oom","alert":"KubePodCrashLooping: pod worker in namespace shop is restarting repeatedly.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-15T08:32:58Z"}

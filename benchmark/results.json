@@ -1,0 +1,1351 @@
+{
+ "generated": "2026-10-15",
+ "cluster": "kind v0.33.0, Kubernetes v1.37.0, 3 nodes",
+ "judge": "us.anthropic.claude-opus-5-5, then a person",
+ "tools": {
+  "aurora": {
+   "name": "Aurora",
+   "version": "commit 87d22baf",
+   "model": "bedrock/us.anthropic.claude-sonnet-5",
+   "url": "https://github.com/Arvo-AI/aurora",
+   "input": "alert text + read-only kubectl (observability_only policy)"
+  },
+  "holmesgpt": {
+   "name": "HolmesGPT",
+   "version": "0.43.0",
+   "model": "bedrock/us.anthropic.claude-sonnet-5",
+   "url": "https://github.com/robusta-dev/holmesgpt",
+   "input": "alert text, `holmes ask`, default toolsets"
+  },
+  "k8sgpt": {
+   "name": "K8sGPT",
+   "version": "0.4.40",
+   "model": "us.anthropic.claude-sonnet-4-5 (K8sGPT sends temperature, which Bedrock rejects for Sonnet 5)",
+   "url": "https://github.com/k8sgpt-ai/k8sgpt",
+   "input": "`k8sgpt analyze --explain --namespace shop`"
+  }
+ },
+ "totals": {
+  "aurora": {
+   "runs": 38,
+   "graded": 38,
+   "correct": 34,
+   "partial": 4,
+   "wrong": 0,
+   "median_seconds": 153.5,
+   "median_cost": 0.35
+  },
+  "holmesgpt": {
+   "runs": 19,
+   "graded": 19,
+   "correct": 14,
+   "partial": 4,
+   "wrong": 1,
+   "median_seconds": 45,
+   "median_cost": null
+  },
+  "k8sgpt": {
+   "runs": 19,
+   "graded": 19,
+   "correct": 0,
+   "partial": 11,
+   "wrong": 8,
+   "median_seconds": 13,
+   "median_cost": null
+  }
+ },
+ "scenarios": [
+  {
+   "id": "01-worker-oom",
+   "title": "Worker OOMKilled after a batch size change",
+   "alert": "KubePodCrashLooping: pod worker in namespace shop is restarting repeatedly.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/01-worker-oom",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 91,
+       "cost": 0.248943,
+       "tool_calls": 12,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/01-worker-oom/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 228,
+       "cost": 0.34874,
+       "tool_calls": 14,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/01-worker-oom/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 159.5,
+     "median_cost": 0.3
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 39,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/01-worker-oom"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 39,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 15,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/01-worker-oom"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 15,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "02-sidecar-oom",
+   "title": "Log shipper sidecar OOMKilled, app container healthy",
+   "alert": "KubePodCrashLooping: pods of deployment api in namespace shop are restarting.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/02-sidecar-oom",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 82,
+       "cost": 0.188745,
+       "tool_calls": 10,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/02-sidecar-oom/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 98,
+       "cost": 0.301869,
+       "tool_calls": 12,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/02-sidecar-oom/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 90.0,
+     "median_cost": 0.25
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 39,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/02-sidecar-oom"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 39,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 32,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/02-sidecar-oom"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 32,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "03-bad-image-tag",
+   "title": "Frontend rollout stuck on a mistyped image tag",
+   "alert": "KubeDeploymentRolloutStuck: deployment frontend in namespace shop has not progressed.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/03-bad-image-tag",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 101,
+       "cost": 0.244937,
+       "tool_calls": 13,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/03-bad-image-tag/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 77,
+       "cost": 0.189905,
+       "tool_calls": 11,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/03-bad-image-tag/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 89.0,
+     "median_cost": 0.22
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 22,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/03-bad-image-tag"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 22,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 17,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/03-bad-image-tag"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 17,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "04-missing-secret",
+   "title": "New api pods blocked on a Secret that does not exist",
+   "alert": "KubeDeploymentRolloutStuck: deployment api in namespace shop has not progressed; new pods not starting.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/04-missing-secret",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 194,
+       "cost": 0.481489,
+       "tool_calls": 18,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/04-missing-secret/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 133,
+       "cost": 0.352698,
+       "tool_calls": 17,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/04-missing-secret/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 163.5,
+     "median_cost": 0.42
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 31,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/04-missing-secret"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 31,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 14,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/04-missing-secret"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 14,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "05-nginx-config-error",
+   "title": "Frontend crash loop from an invalid nginx config",
+   "alert": "KubePodCrashLooping: a frontend pod in namespace shop is restarting after a config change.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/05-nginx-config-error",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 120,
+       "cost": 0.27232,
+       "tool_calls": 13,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/05-nginx-config-error/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 152,
+       "cost": 0.363298,
+       "tool_calls": 16,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/05-nginx-config-error/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 136.0,
+     "median_cost": 0.32
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 49,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/05-nginx-config-error"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 49,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 15,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/05-nginx-config-error"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 15,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "06-liveness-wrong-port",
+   "title": "api restarts because the liveness probe targets the wrong port",
+   "alert": "KubePodCrashLooping: api pods in namespace shop restart every minute or so.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/06-liveness-wrong-port",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 123,
+       "cost": 0.34945,
+       "tool_calls": 14,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/06-liveness-wrong-port/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 87,
+       "cost": 0.283933,
+       "tool_calls": 12,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/06-liveness-wrong-port/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 105.0,
+     "median_cost": 0.32
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 43,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/06-liveness-wrong-port"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 43,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/06-liveness-wrong-port"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 0,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "07-service-selector-mismatch",
+   "title": "api Service selects no pods after a selector change",
+   "alert": "HighErrorRate: frontend /api/ requests in namespace shop are failing with 5xx; all pods are Running.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/07-service-selector-mismatch",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 175,
+       "cost": 0.522465,
+       "tool_calls": 22,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/07-service-selector-mismatch/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 138,
+       "cost": 0.397561,
+       "tool_calls": 15,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/07-service-selector-mismatch/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 156.5,
+     "median_cost": 0.46
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 55,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/07-service-selector-mismatch"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 55,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 15,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/07-service-selector-mismatch"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 15,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "08-unschedulable-cpu",
+   "title": "Worker pod Pending, CPU request larger than any node",
+   "alert": "KubePodNotReady: worker pod in namespace shop has been Pending for over 5 minutes.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/08-unschedulable-cpu",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 362,
+       "cost": 0.345238,
+       "tool_calls": 14,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/08-unschedulable-cpu/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 89,
+       "cost": 0.210104,
+       "tool_calls": 10,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/08-unschedulable-cpu/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 225.5,
+     "median_cost": 0.28
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 43,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/08-unschedulable-cpu"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 43,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 12,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/08-unschedulable-cpu"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 12,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "09-redis-pvc-pending",
+   "title": "api failing because redis is Pending on an unbindable PVC",
+   "alert": "KubePodCrashLooping: an api pod in namespace shop is restarting; frontend /api/ requests failing with 5xx.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/09-redis-pvc-pending",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 406,
+       "cost": 0.302429,
+       "tool_calls": 14,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/09-redis-pvc-pending/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 155,
+       "cost": 0.468522,
+       "tool_calls": 19,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/09-redis-pvc-pending/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 280.5,
+     "median_cost": 0.39
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 104,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/09-redis-pvc-pending"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 104,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 45,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/09-redis-pvc-pending"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 45,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "10-wrong-redis-host",
+   "title": "api crash loop from a wrong REDIS_HOST",
+   "alert": "KubePodCrashLooping: an api pod in namespace shop is restarting after the latest deploy.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/10-wrong-redis-host",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v0-run2/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 292,
+       "cost": 0.227784,
+       "tool_calls": 12,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/10-wrong-redis-host/r1"
+      },
+      {
+       "run": "v0-run2/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 197,
+       "cost": 0.338899,
+       "tool_calls": 16,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/10-wrong-redis-host/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 244.5,
+     "median_cost": 0.28
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 45,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/10-wrong-redis-host"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 45,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "wrong",
+       "reviewed": false,
+       "seconds": 13,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/10-wrong-redis-host"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 13,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "11-noisy-worker-svc-targetport",
+   "title": "frontend 5xx from a wrong api Service targetPort, next to a noisy but harmless worker",
+   "alert": "HighErrorRate [critical] namespace=shop service=frontend: 100% of requests to /api/ returned 5xx over the last 5 minutes (threshold 5%).",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/11-noisy-worker-svc-targetport",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 144,
+       "cost": 0.441335,
+       "tool_calls": 19,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/11-noisy-worker-svc-targetport/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "partial",
+       "reviewed": true,
+       "seconds": 535,
+       "cost": 0.571023,
+       "tool_calls": 16,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/11-noisy-worker-svc-targetport/r2"
+      }
+     ],
+     "correct": 1,
+     "graded": 2,
+     "median_seconds": 339.5,
+     "median_cost": 0.51
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 65,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/11-noisy-worker-svc-targetport"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 65,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/11-noisy-worker-svc-targetport"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 0,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "12-two-faults-oom-and-selector",
+   "title": "Two faults at once, worker OOM and a frontend Service selecting no pods; the alert covers only the worker",
+   "alert": "KubePodCrashLooping [warning] namespace=shop deployment=worker: Pod shop/worker (container worker) is in waiting state (reason: CrashLoopBackOff).",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/12-two-faults-oom-and-selector",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "partial",
+       "reviewed": true,
+       "seconds": 140,
+       "cost": 0.363446,
+       "tool_calls": 18,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/12-two-faults-oom-and-selector/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "partial",
+       "reviewed": true,
+       "seconds": 548,
+       "cost": 0.324243,
+       "tool_calls": 14,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/12-two-faults-oom-and-selector/r2"
+      }
+     ],
+     "correct": 0,
+     "graded": 2,
+     "median_seconds": 344.0,
+     "median_cost": 0.34
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 26,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/12-two-faults-oom-and-selector"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 26,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 23,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/12-two-faults-oom-and-selector"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 23,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "13-networkpolicy-blocks-redis",
+   "title": "frontend 5xx because a NetworkPolicy blocks api to redis",
+   "alert": "HighErrorRate [critical] namespace=shop service=frontend: 100% of requests to /api/ returned 5xx over the last 5 minutes (threshold 5%).",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/13-networkpolicy-blocks-redis",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 202,
+       "cost": 0.686726,
+       "tool_calls": 25,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/13-networkpolicy-blocks-redis/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 444,
+       "cost": 0.54025,
+       "tool_calls": 19,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/13-networkpolicy-blocks-redis/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 323.0,
+     "median_cost": 0.61
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 110,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/13-networkpolicy-blocks-redis"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 110,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/13-networkpolicy-blocks-redis"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 0,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "14-resourcequota-rollout",
+   "title": "api rollout stuck because a ResourceQuota forbids the surge pod",
+   "alert": "KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api: Rollout of deployment shop/api is not progressing for longer than 15 minutes.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/14-resourcequota-rollout",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 108,
+       "cost": 0.242535,
+       "tool_calls": 14,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/14-resourcequota-rollout/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 144,
+       "cost": 0.38973,
+       "tool_calls": 19,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/14-resourcequota-rollout/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 126.0,
+     "median_cost": 0.32
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 41,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/14-resourcequota-rollout"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 41,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 9,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/14-resourcequota-rollout"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 9,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "15-stray-pods-share-label",
+   "title": "One in three api requests fails because a stray Deployment's pods carry app=api",
+   "alert": "HighErrorRate [warning] namespace=shop service=frontend: 31% of requests to /api/ returned 5xx over the last 10 minutes (threshold 5%).",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/15-stray-pods-share-label",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 175,
+       "cost": 0.591582,
+       "tool_calls": 24,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/15-stray-pods-share-label/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 118,
+       "cost": 0.35377,
+       "tool_calls": 17,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/15-stray-pods-share-label/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 146.5,
+     "median_cost": 0.47
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 97,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/15-stray-pods-share-label"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 97,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/15-stray-pods-share-label"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 0,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "16-dns-search-domain",
+   "title": "New api pods crash because their dnsConfig search domains are for another cluster domain",
+   "alert": "KubePodCrashLooping [warning] namespace=shop deployment=api: Pod shop/api (container api) is in waiting state (reason: CrashLoopBackOff) after the latest rollout.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/16-dns-search-domain",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 140,
+       "cost": 0.40405,
+       "tool_calls": 15,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/16-dns-search-domain/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 205,
+       "cost": 0.56062,
+       "tool_calls": 24,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/16-dns-search-domain/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 172.5,
+     "median_cost": 0.48
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 82,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/16-dns-search-domain"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 82,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "wrong",
+       "reviewed": false,
+       "seconds": 16,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/16-dns-search-domain"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 16,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "17-slow-memory-leak",
+   "title": "Worker OOMKilled every few minutes by a slow leak in its code; logs look clean",
+   "alert": "KubePodCrashLooping [warning] namespace=shop deployment=worker: Pod shop/worker (container worker) has restarted repeatedly in the last 30 minutes.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/17-slow-memory-leak",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 201,
+       "cost": 0.312088,
+       "tool_calls": 13,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/17-slow-memory-leak/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 86,
+       "cost": 0.196479,
+       "tool_calls": 12,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/17-slow-memory-leak/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 143.5,
+     "median_cost": 0.25
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "correct",
+       "reviewed": false,
+       "seconds": 72,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/17-slow-memory-leak"
+      }
+     ],
+     "correct": 1,
+     "graded": 1,
+     "median_seconds": 72,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/17-slow-memory-leak"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 0,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "18-init-waits-missing-service",
+   "title": "api rollout stuck on an init container waiting for a Service that does not exist",
+   "alert": "KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api: Rollout of deployment shop/api is not progressing for longer than 15 minutes.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/18-init-waits-missing-service",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 158,
+       "cost": 0.400898,
+       "tool_calls": 20,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/18-init-waits-missing-service/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 160,
+       "cost": 0.483707,
+       "tool_calls": 19,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/18-init-waits-missing-service/r2"
+      }
+     ],
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 159.0,
+     "median_cost": 0.44
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 43,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/18-init-waits-missing-service"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 43,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "partial",
+       "reviewed": false,
+       "seconds": 12,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/18-init-waits-missing-service"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 12,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "19-config-drift-partial-restart",
+   "title": "Half of frontend requests fail; one frontend pod loaded an edited ConfigMap, the other still runs the old config",
+   "alert": "HighErrorRate [warning] namespace=shop service=frontend: 48% of requests to /api/ returned 5xx over the last 10 minutes (threshold 5%).",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/19-config-drift-partial-restart",
+   "tools": {
+    "aurora": {
+     "runs": [
+      {
+       "run": "v1-run1/r1",
+       "verdict": "partial",
+       "reviewed": true,
+       "seconds": 280,
+       "cost": 0.389664,
+       "tool_calls": 15,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/19-config-drift-partial-restart/r1"
+      },
+      {
+       "run": "v1-run1/r2",
+       "verdict": "correct",
+       "reviewed": true,
+       "seconds": 253,
+       "cost": 0.839121,
+       "tool_calls": 28,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v1-run1/19-config-drift-partial-restart/r2"
+      }
+     ],
+     "correct": 1,
+     "graded": 2,
+     "median_seconds": 266.5,
+     "median_cost": 0.61
+    },
+    "holmesgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "wrong",
+       "reviewed": false,
+       "seconds": 49,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/19-config-drift-partial-restart"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 49,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [
+      {
+       "run": "h2h-v1/r1",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/19-config-drift-partial-restart"
+      }
+     ],
+     "correct": 0,
+     "graded": 1,
+     "median_seconds": 0,
+     "median_cost": null
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+AI Provider: amazonbedrockconverse
+
+0: ReplicaSet shop/api-67cc856b45(Deployment/api)
+- Error: pods "api-67cc856b45-hsx6j" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi
+Error: Pod cannot start because the namespace has reached its memory quota limit (200Mi used out of 200Mi allowed).
+
+Solution:
+1. Increase quota limit: Edit ResourceQuota
+2. OR delete unused pods to free memory
+3. OR reduce pod's memory request below 32Mi
+4. Then retry deployment
+

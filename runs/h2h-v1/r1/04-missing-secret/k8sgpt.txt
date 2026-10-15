@@ -1,0 +1,20 @@
+AI Provider: amazonbedrockconverse
+
+0: Pod shop/api-5f7c48ddc6-xgvwt(Deployment/api)
+- Error: secret "api-secrets" not found
+Error: Kubernetes cannot find a secret named "api-secrets" in your cluster.
+
+Solution:
+1. Check if secret exists: `kubectl get secrets`
+2. Create the missing secret: `kubectl create secret generic api-secrets --from-literal=key=value`
+3. Or apply from file: `kubectl apply -f secret.yaml`
+1: Service shop/api()
+- Error: Service has not ready endpoints, pods: [Pod/api-5f7c48ddc6-xgvwt], expected 1
+Error: The service cannot route traffic because its pod is not ready to accept connections.
+
+Solution:
+1. Check pod status: kubectl describe pod api-5f7c48ddc6-xgvwt
+2. View logs: kubectl logs api-5f7c48ddc6-xgvwt
+3. Fix readiness probe or app startup issues
+4. Verify pod becomes Ready
+

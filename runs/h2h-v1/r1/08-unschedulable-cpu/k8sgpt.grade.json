@@ -1,0 +1,24 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "Error: 0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "partial",
+      "evidence": "Pod cannot be scheduled because 1 node has taints blocking it, 2 nodes lack CPU resources, and preemption won't help."
+    }
+  ],
+  "wrong_answers_asserted": [
+    "Taints, node selectors or affinity"
+  ],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA never mentions the 64-core request. It frames the problem as nodes lacking CPU, and lists taint tolerations as the first fix. 'Reduce pod CPU requests' appears only as one of four hedged options, alongside adding nodes. Reviewer should decide whether that buried option counts as an acceptable fix; it was graded false because the lead fix is wrong.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}

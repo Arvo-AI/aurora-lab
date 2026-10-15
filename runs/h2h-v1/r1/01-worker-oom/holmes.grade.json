@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "Pod: worker-86f68b9bf6-2vsst (namespace shop) is CrashLooping with OOMKilled (exit code 137), restart count 3, Back-off restarting failed container events from kubelet."
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "met",
+      "evidence": "What changed: BATCH_SIZE env var on the worker Deployment was raised from 500 \u2192 2500. ... At batch=500 that's ~50 MiB; at batch=2500 it's ~250 MiB, which blows past the container's memory limit of 192Mi (request is only 64Mi)."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA offers two fixes: revert BATCH_SIZE to 500, or raise the limit to about 320\u2013384Mi with the working-set reasoning stated. Both are acceptable. The RCA also claims config drift because the last-applied-configuration annotation was bypassed; this matches the injected 'kubectl set env' change but is supplementary. The 64Mi request and the ~20-40s timing were not independently verified here.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": ""
+}

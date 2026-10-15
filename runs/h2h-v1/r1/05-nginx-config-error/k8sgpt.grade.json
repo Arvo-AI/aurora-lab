@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "nginx fails to start with an [emerg] unknown directive error",
+      "result": "partial",
+      "evidence": "Error: The nginx container in pod frontend-58cbb747b6-7rwwm crashed with an error."
+    },
+    {
+      "item": "The bad directive is proxy_conect_timeout in the frontend-nginx ConfigMap",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA only reports a generic container error and gives generic steps ('check logs', 'verify container config'), never naming the [emerg] unknown directive or the ConfigMap typo. The Service finding hedges toward a readiness probe ('adjust probe settings'), but this is offered as one option rather than asserted as the cause; a reviewer may judge that it leans toward the probe wrong answer.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}

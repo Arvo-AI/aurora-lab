@@ -1,0 +1,21 @@
+AI Provider: amazonbedrockconverse
+
+0: Pod shop/api-779966d57-2n4cb(Deployment/api)
+- Error: Readiness probe failed: Get "http://10.244.2.70:8080/healthz": dial tcp 10.244.2.70:8080: connect: connection refused
+Error: The readiness probe cannot connect to port 8080 on your container to check if it's healthy.
+
+Solution:
+1. Verify app runs on port 8080
+2. Check app starts before probe timeout
+3. Confirm /healthz endpoint exists
+4. Increase initialDelaySeconds in probe config
+1: Service shop/api()
+- Error: Service has not ready endpoints, pods: [Pod/api-779966d57-2n4cb], expected 1
+Error: The service cannot route traffic because the pod "api-779966d57-2n4cb" is not ready to accept connections.
+
+Solution: 
+1. Check pod status: kubectl describe pod api-779966d57-2n4cb
+2. Review pod logs: kubectl logs api-779966d57-2n4cb
+3. Fix readiness probe or app issues
+4. Verify pod restarts successfully
+

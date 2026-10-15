@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+      "result": "missed",
+      "evidence": ""
+    },
+    {
+      "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "no_answer",
+  "notes": "K8sGPT reported 'No problems detected' while the pod was crash-looping from repeated OOMKills. It gave no root cause and no fix. A reviewer should check whether its analyzers missed the OOMKilled restarts because the pod looked Running between crashes.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}

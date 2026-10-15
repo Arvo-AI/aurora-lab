@@ -1,0 +1,1 @@
+{"scenario":"08-unschedulable-cpu","alert":"KubePodNotReady: worker pod in namespace shop has been Pending for over 5 minutes.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-15T08:52:03Z"}

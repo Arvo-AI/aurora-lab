@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+      "result": "met",
+      "evidence": "Someone increased BATCH_SIZE from 500 to 2500 on the worker deployment without raising the memory limit (still 192Mi), causing the worker to exceed its memory limit and get OOMKilled on every start, hence CrashLoopBackOff."
+    },
+    {
+      "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA diagnoses the alerted worker OOM correctly, including the 192Mi limit. It never mentions the frontend Service selector fault, which is not alerted but leaves the frontend down for users. The fix is marked unacceptable because it only reverts BATCH_SIZE and leaves the frontend selector broken; the investigator never checked Services or endpoints.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": ""
+}

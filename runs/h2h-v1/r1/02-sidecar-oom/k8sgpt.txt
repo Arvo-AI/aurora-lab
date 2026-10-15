@@ -1,0 +1,39 @@
+AI Provider: amazonbedrockconverse
+
+0: Deployment shop/api()
+- Error: Deployment shop/api has 2 replicas in spec but 3 replicas in status because status field is not updated yet after scaling and 1 replicas are available with status running
+Error: Deployment "shop/api" shows mismatched replica counts - spec says 2, status shows 3, with only 1 running. Status hasn't synced after recent scaling.
+
+Solution:
+1. Wait 30-60s for status sync
+2. Run: kubectl rollout status deployment/api -n shop
+3. If stuck, run: kubectl rollout restart deployment/api -n shop
+1: Pod shop/api-7d4b6f6f7d-m72bd(Deployment/api)
+- Error: the termination reason is OOMKilled exitCode=137 container=log-shipper pod=api-7d4b6f6f7d-m72bd
+Error: Container ran out of memory and was killed by Kubernetes.
+
+Solution:
+1. Increase memory limit in deployment YAML
+2. Add/adjust resources.limits.memory (e.g., 512Mi→1Gi)
+3. Apply: kubectl apply -f deployment.yaml
+4. Monitor: kubectl top pod
+2: Pod shop/api-7d4b6f6f7d-xqvvq(Deployment/api)
+- Error: the termination reason is OOMKilled exitCode=137 container=log-shipper pod=api-7d4b6f6f7d-xqvvq
+Error: Container ran out of memory and was killed by Kubernetes.
+
+Solution:
+1. Increase memory limits in deployment YAML
+2. Add: resources.limits.memory (e.g., "512Mi")
+3. Apply: kubectl apply -f deployment.yaml
+4. Monitor: kubectl top pod api-7d4b6f6f7d-xqvvq
+3: Service shop/api()
+- Error: Service has not ready endpoints, pods: [Pod/api-7d4b6f6f7d-xqvvq Pod/api-7d4b6f6f7d-m72bd], expected 2
+Error: Your Kubernetes service has 2 pods that aren't ready to accept traffic yet.
+
+Solution:
+1. Check pod status: `kubectl get pods`
+2. View pod logs: `kubectl logs <pod-name>`
+3. Describe pods: `kubectl describe pod <pod-name>`
+4. Fix issues (crashes, failed health checks, missing resources)
+5. Wait for pods to become ready
+

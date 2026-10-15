@@ -1,0 +1,21 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 1,
+  "results": [
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/api-77b4b6956f-gstww], expected 1",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The service cannot route traffic because the pod \"api-77b4b6956f-gstww\" is not ready to accept connections.\n\nSolution:\n1. Check pod status: `kubectl describe pod api-77b4b6956f-gstww`\n2. View logs: `kubectl logs api-77b4b6956f-gstww`\n3. Fix readiness probe or app startup issues\n4. Verify resource limits",
+      "parentObject": ""
+    }
+  ]
+}

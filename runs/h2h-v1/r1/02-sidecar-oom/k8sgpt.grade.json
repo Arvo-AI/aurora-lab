@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The container being killed is the log-shipper sidecar, not the api container",
+      "result": "met",
+      "evidence": "the termination reason is OOMKilled exitCode=137 container=log-shipper pod=api-7d4b6f6f7d-m72bd"
+    },
+    {
+      "item": "The sidecar is OOMKilled because its 16Mi limit is below its usage",
+      "result": "partial",
+      "evidence": "Container ran out of memory and was killed by Kubernetes."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "partial",
+  "notes": "The RCA names log-shipper as the OOMKilled container but never calls it a sidecar, never says the api container is healthy, and never cites the 16Mi limit; its example '512Mi\u21921Gi' implies a wrong current limit. The 'increase memory limit' fix does not say which container, and the RCA leads with a misleading replica-sync finding and suggests a rollout restart, which would not fix the problem.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}

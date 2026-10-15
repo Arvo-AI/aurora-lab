@@ -1,0 +1,1 @@
+{"scenario":"10-wrong-redis-host","alert":"KubePodCrashLooping: an api pod in namespace shop is restarting after the latest deploy.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-15T08:59:17Z"}

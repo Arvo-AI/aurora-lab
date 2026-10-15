@@ -1,0 +1,34 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Pod",
+      "name": "shop/api-869d87b484-mwsv7",
+      "error": [
+        {
+          "Text": "the last termination reason is Error container=api pod=api-869d87b484-mwsv7",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: Container \"api\" in pod \"api-869d87b484-mwsv7\" terminated with an error status.\n\nSolution:\n1. Check logs: `kubectl logs api-869d87b484-mwsv7 -c api`\n2. Review previous logs: `kubectl logs api-869d87b484-mwsv7 -c api --previous`\n3. Fix app code/config based on error\n4. Redeploy",
+      "parentObject": "Deployment/api"
+    },
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/api-869d87b484-mwsv7], expected 1",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The service cannot route traffic because its pod is not ready to accept connections.\n\nSolution:\n1. Check pod status: kubectl describe pod api-869d87b484-mwsv7\n2. Review pod logs: kubectl logs api-869d87b484-mwsv7\n3. Verify readiness probe configuration\n4. Fix app issues preventing ready state",
+      "parentObject": ""
+    }
+  ]
+}

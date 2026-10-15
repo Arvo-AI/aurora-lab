@@ -1,0 +1,31 @@
+AI Provider: amazonbedrockconverse
+
+0: Deployment shop/worker()
+- Error: Deployment shop/worker has 1 replicas but 0 are available with status running
+Error: The deployment "worker" in namespace "shop" expects 1 pod to run, but none are currently available or running.
+
+Solution:
+1. Check pod status: `kubectl get pods -n shop`
+2. View pod logs: `kubectl logs -n shop <pod-name>`
+3. Check events: `kubectl describe pod -n shop <pod-name>`
+4. Fix issues (image pull, resources, etc.)
+5. Restart if needed
+1: Pod shop/worker-86f68b9bf6-qrgkr(Deployment/worker)
+- Error: the termination reason is OOMKilled exitCode=137 container=worker pod=worker-86f68b9bf6-qrgkr
+Error: Container ran out of memory (OOM - Out Of Memory) and was killed by Kubernetes.
+
+Solution: 
+1. Increase memory limit in deployment YAML
+2. Add: resources.limits.memory (e.g., "2Gi")
+3. Apply: kubectl apply -f deployment.yaml
+4. Monitor: kubectl top pod
+2: Service shop/frontend()
+- Error: Service has no endpoints, expected label app=frontend
+- Error: Service has no endpoints, expected label tier=web
+Error: The Service cannot find any Pods because none have the required labels (app=frontend AND tier=web).
+
+Solution:
+1. Check Pod labels: kubectl get pods --show-labels
+2. Add missing labels to Pods: kubectl label pods <pod-name> app=frontend tier=web
+3. Verify: kubectl get endpoints
+

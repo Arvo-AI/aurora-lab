@@ -6,6 +6,13 @@ alert. Because we injected the fault, we know the true root cause, so every
 investigation can be scored. We publish every run, including the ones Aurora
 gets wrong.
 
+## The benchmark
+
+The current table, Aurora vs HolmesGPT vs K8sGPT on every scenario with every graded run,
+is at [aurorasre.ai/benchmark](https://www.aurorasre.ai/benchmark) and as
+[`benchmark/results.json`](benchmark/results.json). To add an agent, open an issue with
+the "Benchmark: add an agent" template.
+
 ## How a run works
 
 1. `lab.sh up` creates a 3-node [kind](https://kind.sigs.k8s.io) cluster.

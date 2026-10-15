@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The new ReplicaSet cannot create pods (FailedCreate) because the ResourceQuota compute-resources requests.memory limit is exhausted",
+      "result": "met",
+      "evidence": "ReplicaSet shop/api-67cc856b45(Deployment/api) - Error: pods \"api-67cc856b45-hsx6j\" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi"
+    },
+    {
+      "item": "It is a stuck rollout with the old pods still serving, not an outage and not a pod crash",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "partial",
+  "notes": "The RCA quotes the quota error correctly but says 'Pod cannot start', which implies a pod exists when the pod object was never created. It also never says the old pods keep serving. Fix option 3 ('reduce pod's memory request below 32Mi') is flawed because the quota is fully used, so any non-zero request would still be rejected. The primary fix, raising the quota, is acceptable.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}

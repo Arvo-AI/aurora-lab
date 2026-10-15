@@ -1,0 +1,79 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 4,
+  "results": [
+    {
+      "kind": "Deployment",
+      "name": "shop/worker",
+      "error": [
+        {
+          "Text": "Deployment shop/worker has 1 replicas but 0 are available with status running",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "shop",
+              "Masked": "KTVpPw=="
+            },
+            {
+              "Unmasked": "worker",
+              "Masked": "KXI0TE9P"
+            }
+          ]
+        }
+      ],
+      "details": "Error: The deployment \"worker\" in namespace \"shop\" expects 1 pod to run, but none are currently running.\n\nSolution:\n1. Check pod status: `kubectl get pods -n shop`\n2. View pod logs: `kubectl logs -n shop \u003cpod-name\u003e`\n3. Check events: `kubectl describe pod -n shop \u003cpod-name\u003e`\n4. Fix issues (image pull, resources, etc.)",
+      "parentObject": ""
+    },
+    {
+      "kind": "Pod",
+      "name": "shop/worker-86f68b9bf6-qrgkr",
+      "error": [
+        {
+          "Text": "the termination reason is OOMKilled exitCode=137 container=worker pod=worker-86f68b9bf6-qrgkr",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The container ran out of memory (OOM) and was killed by Kubernetes.\n\nSolution: \n1. Increase memory limits in pod spec\n2. Add: resources.limits.memory (e.g., \"2Gi\")\n3. Optimize app memory usage\n4. Apply: kubectl apply -f pod.yaml\n5. Monitor: kubectl top pod",
+      "parentObject": "Deployment/worker"
+    },
+    {
+      "kind": "Service",
+      "name": "shop/frontend",
+      "error": [
+        {
+          "Text": "Service has no endpoints, expected label app=frontend",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "app",
+              "Masked": "T1Jt"
+            },
+            {
+              "Unmasked": "frontend",
+              "Masked": "aXlGeGJBNEU="
+            }
+          ]
+        },
+        {
+          "Text": "Service has no endpoints, expected label tier=web",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "tier",
+              "Masked": "YT5hSw=="
+            },
+            {
+              "Unmasked": "web",
+              "Masked": "ZSZO"
+            }
+          ]
+        }
+      ],
+      "details": "Error: The Service cannot find any Pods because no Pods have the required labels (app=frontend AND tier=web).\n\nSolution:\n1. Check Pod labels: kubectl get pods --show-labels\n2. Add missing labels to Pods: kubectl label pods \u003cpod-name\u003e app=frontend tier=web\n3. Verify: kubectl get endpoints",
+      "parentObject": ""
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Pod",
+      "name": "shop/frontend-58cbb747b6-7rwwm",
+      "error": [
+        {
+          "Text": "the last termination reason is Error container=nginx pod=frontend-58cbb747b6-7rwwm",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The nginx container in pod frontend-58cbb747b6-7rwwm crashed or failed to start.\n\nSolution:\n1. Check logs: kubectl logs frontend-58cbb747b6-7rwwm -c nginx\n2. Review container config for errors\n3. Verify image exists and is accessible\n4. Check resource limits\n5. Restart pod if needed",
+      "parentObject": "Deployment/frontend"
+    },
+    {
+      "kind": "Service",
+      "name": "shop/frontend",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/frontend-58cbb747b6-7rwwm], expected 1",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The frontend pod exists but isn't passing health checks, so the Service can't route traffic to it.\n\nSolution:\n1. Check pod status: `kubectl describe pod frontend-58cbb747b6-7rwwm`\n2. Review logs: `kubectl logs frontend-58cbb747b6-7rwwm`\n3. Verify readiness probe settings\n4. Fix app issues or probe config",
+      "parentObject": ""
+    }
+  ]
+}

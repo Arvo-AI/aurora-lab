@@ -1,0 +1,22 @@
+{
+  "must_identify": [
+    {
+      "item": "The api Service has no endpoints",
+      "result": "met",
+      "evidence": "Error: Service has no endpoints, expected label app=api-v2"
+    },
+    {
+      "item": "Its selector (app=api-v2) does not match the pod labels (app=api)",
+      "result": "partial",
+      "evidence": "Error: The Service cannot find any Pods because no Pods have the required label \"app=api-v2\"."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA treats app=api-v2 as the correct label, never says the pods carry app=api, and recommends relabeling pods or the Deployment instead of reverting the selector. A reviewer should also check the unrelated redis ClusterIP finding, which recommends deleting and recreating the redis Service; that is noise and potentially harmful.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": ""
+}
