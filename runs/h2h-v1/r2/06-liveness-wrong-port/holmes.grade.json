@@ -1,0 +1,28 @@
+{
+  "must_identify": [
+    {
+      "item": "The kubelet is restarting the container because the liveness probe fails",
+      "result": "met",
+      "evidence": "Every ~60s (15s initial delay + 3\u00d710s period) the liveness probe fails with connection refused, kubelet kills the container, and it restarts \u2014 matching the \"restarts every minute\" symptom exactly."
+    },
+    {
+      "item": "The probe targets port 8081 while the app listens on 8080",
+      "result": "met",
+      "evidence": "Root cause: The api Deployment's livenessProbe targets port 8081, but the application only listens on port 8080 (confirmed in pod logs: api listening on :8080, and in the configmap-mounted api.py which binds only PORT=8080)."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA explicitly rules out OOM and application bugs. The patch command shown has a typo in the JSON path ('tpGet' instead of 'httpGet'), probably from line wrapping, so it may not run as written. The claim that the change came from a direct edit, based on drift from last-applied-configuration, is the investigator's inference and was not part of the scenario definition.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "The answer clearly states both must_identify items ('kubelet kills the container' due to liveness probe failures, and 'livenessProbe targets port 8081, but the application only listens on port 8080'), proposes the acceptable fix (set port back to 8080), and explicitly rules out OOM and application crash as causes.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
+}

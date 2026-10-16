@@ -1,0 +1,1 @@
+{"scenario":"05-nginx-config-error","alert":"KubePodCrashLooping: a frontend pod in namespace shop is restarting after a config change.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-16T08:08:35Z"}

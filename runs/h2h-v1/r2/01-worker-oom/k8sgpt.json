@@ -1,0 +1,43 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Deployment",
+      "name": "shop/worker",
+      "error": [
+        {
+          "Text": "Deployment shop/worker has 1 replicas but 0 are available with status running",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "shop",
+              "Masked": "OFAwUA=="
+            },
+            {
+              "Unmasked": "worker",
+              "Masked": "Tmc6PSRJ"
+            }
+          ]
+        }
+      ],
+      "details": "Error: The deployment \"worker\" in namespace \"shop\" expects 1 pod to run, but none are currently running.\n\nSolution: 1) Check pod status: kubectl get pods -n shop 2) View pod logs: kubectl logs \u003cpod-name\u003e -n shop 3) Describe pod: kubectl describe pod \u003cpod-name\u003e -n shop 4) Fix issues found (image, resources, etc.)",
+      "parentObject": ""
+    },
+    {
+      "kind": "Pod",
+      "name": "shop/worker-86f68b9bf6-dvxbd",
+      "error": [
+        {
+          "Text": "the termination reason is OOMKilled exitCode=137 container=worker pod=worker-86f68b9bf6-dvxbd",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The container ran out of memory (RAM) and was killed by Kubernetes.\n\nSolution:\n1. Increase memory limit in deployment YAML\n2. Add: resources.limits.memory (e.g., \"2Gi\")\n3. Apply: kubectl apply -f deployment.yaml\n4. Monitor: kubectl top pod worker-*",
+      "parentObject": "Deployment/worker"
+    }
+  ]
+}

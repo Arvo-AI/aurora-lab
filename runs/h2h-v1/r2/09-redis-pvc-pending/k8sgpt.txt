@@ -1,0 +1,54 @@
+AI Provider: amazonbedrockconverse
+
+0: Deployment shop/redis()
+- Error: Deployment shop/redis has 1 replicas but 0 are available with status running
+Error: The Redis deployment in the "shop" namespace has 1 desired replica, but none are currently running.
+
+Solution:
+1. Check pod status: `kubectl get pods -n shop`
+2. View pod details: `kubectl describe pod <pod-name> -n shop`
+3. Check logs: `kubectl logs <pod-name> -n shop`
+4. Fix issues (image, resources, config)
+5. Restart if needed
+1: PersistentVolumeClaim shop/redis-data()
+- Error: storageclass.storage.k8s.io "fast-ssd" not found
+Error: The Kubernetes cluster cannot find a StorageClass named "fast-ssd".
+
+Solution:
+1. Check existing StorageClasses: `kubectl get storageclass`
+2. Create the missing StorageClass or update your PVC/Pod to use an existing one
+3. Verify: `kubectl describe storageclass fast-ssd`
+2: Pod shop/api-7cb69b5959-jlzfb(Deployment/api)
+- Error: Readiness probe failed: Get "http://10.244.2.125:8080/healthz": dial tcp 10.244.2.125:8080: connect: connection refused
+Error: The pod's readiness probe cannot connect to port 8080 on the container to check if it's healthy.
+
+Solution: 1) Verify app runs on port 8080 2) Check app started successfully 3) Ensure /healthz endpoint exists 4) Review app logs for startup errors 5) Increase initialDelaySeconds in probe config
+3: Pod shop/redis-5fff65475c-kfq9s(Deployment/redis)
+- Error: 0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found
+Error: Your pod cannot start because it needs storage (PersistentVolumeClaim) that doesn't exist or isn't available.
+
+Solution:
+1. Check PVC exists: `kubectl get pvc`
+2. If missing, create PVC matching pod's request
+3. Verify PV available: `kubectl get pv`
+4. Check storage class exists
+5. Ensure PVC status shows "Bound"
+4: Service shop/redis()
+- Error: Service has no endpoints, expected label app=redis
+Error: The Service cannot find any Pods because no Pods have the label "app=redis" that matches the Service selector.
+
+Solution:
+1. Check Pod labels: kubectl get pods --show-labels
+2. Add missing label: kubectl label pod <pod-name> app=redis
+3. Or fix Pod YAML to include label app=redis
+4. Verify: kubectl get endpoints
+5: Service shop/api()
+- Error: Service has not ready endpoints, pods: [Pod/api-7cb69b5959-jlzfb], expected 1
+Error: Your Kubernetes service has no ready endpoints because the pod "api-7cb69b5959-jlzfb" isn't ready yet.
+
+Solution:
+1. Check pod status: `kubectl describe pod api-7cb69b5959-jlzfb`
+2. View logs: `kubectl logs api-7cb69b5959-jlzfb`
+3. Fix issues (crash, health check, image pull)
+4. Restart if needed
+

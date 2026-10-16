@@ -1,0 +1,34 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Pod",
+      "name": "shop/frontend-7b6c998456-8s5ht",
+      "error": [
+        {
+          "Text": "Back-off pulling image \"nginx:1.27-alpne\": ErrImagePull: rpc error: code = NotFound desc = failed to pull and unpack image \"docker.io/library/nginx:1.27-alpne\": failed to resolve reference \"docker.io/library/nginx:1.27-alpne\": docker.io/library/nginx:1.27-alpne: not found",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The image \"nginx:1.27-alpne\" cannot be found because of a typo in the tag name.\n\nSolution: \n1. Fix the typo: change \"alpne\" to \"alpine\"\n2. Update your deployment/pod YAML to use \"nginx:1.27-alpine\"\n3. Reapply the configuration with kubectl apply",
+      "parentObject": "Deployment/frontend"
+    },
+    {
+      "kind": "Service",
+      "name": "shop/frontend",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/frontend-7b6c998456-8s5ht], expected 1",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The frontend pod exists but isn't passing health checks, so the Service can't route traffic to it.\n\nSolution:\n1. Check pod status: `kubectl describe pod frontend-7b6c998456-8s5ht`\n2. View logs: `kubectl logs frontend-7b6c998456-8s5ht`\n3. Fix readiness probe or app startup issue\n4. Verify pod becomes Ready",
+      "parentObject": ""
+    }
+  ]
+}

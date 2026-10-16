@@ -18,5 +18,11 @@
   "judge_model": "us.anthropic.claude-opus-5-5",
   "tool": "holmes",
   "human_verdict": null,
-  "human_notes": ""
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "The answer clearly states both must_identify items ('zero matching endpoints' and selector app-v2 vs pod label app:api) and proposes the acceptable fix (patch selector back to app:api), without asserting any wrong_answers like app failure, restart, or network/DNS issues.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
 }

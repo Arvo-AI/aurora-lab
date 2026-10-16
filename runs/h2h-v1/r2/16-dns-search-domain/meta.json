@@ -1,0 +1,1 @@
+{"scenario":"16-dns-search-domain","alert":"KubePodCrashLooping [warning] namespace=shop deployment=api: Pod shop/api (container api) is in waiting state (reason: CrashLoopBackOff) after the latest rollout.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-16T08:42:56Z"}

@@ -1,0 +1,13 @@
+AI Provider: amazonbedrockconverse
+
+0: Service shop/api()
+- Error: Service has not ready endpoints, pods: [Pod/api-77b4b6956f-qrdkb], expected 1
+Error: The service cannot route traffic because its pod is not ready to accept connections.
+
+Solution:
+1. Check pod status: `kubectl get pods`
+2. View pod logs: `kubectl logs api-77b4b6956f-qrdkb`
+3. Check readiness probe configuration
+4. Verify app starts correctly
+5. Fix issues and redeploy
+

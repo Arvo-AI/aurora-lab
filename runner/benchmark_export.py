@@ -63,7 +63,9 @@ def main():
                         continue
                     gf = d / f"{'holmes' if tool == 'holmesgpt' else 'k8sgpt'}.grade.json"
                     g = json.loads(gf.read_text()) if gf.exists() else {}
+                    rv = g.get("reviewer_ai") or {}
                     tools[tool].append({"run": f"{h2h.name}/{rep.name}", "verdict": verdict_of(g), "reviewed": bool(g.get("human_verdict")),
+                                        "ai_review": ({"agree": rv.get("agree"), "verdict": rv.get("verdict")} if rv else None),
                                         "seconds": meta.get("seconds"), "cost": None, "model": meta.get("model"),
                                         "link": f"{GITHUB}/runs/{h2h.name}/{rep.name}/{sdir.name}"})
         scenarios.append({
@@ -83,7 +85,10 @@ def main():
     for t in tools_meta:
         runs = [x for s in scenarios for x in s["tools"][t]["runs"]]
         graded = [x for x in runs if x["verdict"] != "pending"]
+        reviewed_ai = [x for x in runs if x.get("ai_review")]
         totals[t] = {"runs": len(runs), "graded": len(graded), "correct": sum(1 for x in graded if x["verdict"] == "correct"),
+                     "ai_reviewed": len(reviewed_ai), "ai_agreed": sum(1 for x in reviewed_ai if x["ai_review"]["agree"]),
+                     "human_reviewed": sum(1 for x in runs if x.get("reviewed")),
                      "partial": sum(1 for x in graded if x["verdict"] == "partial"),
                      "wrong": sum(1 for x in graded if x["verdict"] in ("wrong", "no_answer")),
                      "median_seconds": median([x["seconds"] for x in runs]), "median_cost": median([x["cost"] for x in runs])}

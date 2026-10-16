@@ -1,0 +1,28 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "FailedScheduling: 0/3 nodes are available: 1 node(s) had untolerated taint(s), Insufficient cpu."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "met",
+      "evidence": "Each node in kind-aurora-lab (aurora-lab-worker, aurora-lab-worker2) only has 10 allocatable CPUs ... No node in the 3-node cluster has 64 free CPUs, so the pod can never be scheduled"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA mentions the control-plane taint only as context for excluding one node, not as the cause. Its 'dropped m suffix' typo theory is unsupported, since dropping the m from 50m would give 50, not 64. This speculation does not affect the diagnosis or the fix.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "The answer identifies the pod as Pending with FailedScheduling Insufficient cpu, and correctly states the 64-core request exceeds the 10-allocatable-CPU nodes, with a fix lowering it back to 50m; the taint mention is incidental context, not the asserted primary cause.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
+}

@@ -1,0 +1,2 @@
+W1016 10:48:46.483017   36727 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W1016 10:48:46.543770   36728 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice

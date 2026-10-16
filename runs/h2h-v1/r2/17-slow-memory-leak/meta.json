@@ -1,0 +1,1 @@
+{"scenario":"17-slow-memory-leak","alert":"KubePodCrashLooping [warning] namespace=shop deployment=worker: Pod shop/worker (container worker) has restarted repeatedly in the last 30 minutes.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-16T08:48:46Z"}

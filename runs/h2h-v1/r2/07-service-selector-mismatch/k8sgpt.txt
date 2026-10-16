@@ -1,0 +1,12 @@
+AI Provider: amazonbedrockconverse
+
+0: Service shop/api()
+- Error: Service has no endpoints, expected label app=api-v2
+Error: The Service cannot find any Pods because no Pods have the required label "app=api-v2".
+
+Solution:
+1. Check Pod labels: kubectl get pods --show-labels
+2. Add missing label to Pods: kubectl label pods <pod-name> app=api-v2
+3. Or update Deployment with correct label in pod template
+4. Verify: kubectl get endpoints
+

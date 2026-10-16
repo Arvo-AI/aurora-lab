@@ -1,0 +1,1 @@
+{"scenario":"11-noisy-worker-svc-targetport","alert":"HighErrorRate [critical] namespace=shop service=frontend: 100% of requests to /api/ returned 5xx over the last 5 minutes (threshold 5%).","model":"us.anthropic.claude-sonnet-5","started":"2026-10-16T08:27:08Z"}

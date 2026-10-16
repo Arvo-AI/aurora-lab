@@ -1,0 +1,3 @@
+W1016 10:08:35.948976   21010 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W1016 10:08:43.186925   21082 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+   0% |                                                | (0/2, 0 it/hr) [0s:0s]                                                                                 50% |███████████████████████                       | (1/2, 14 it/min) [4s:4s]                                                                                100% |██████████████████████████████████████████████| (2/2, 15 it/min)

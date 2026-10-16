@@ -1,0 +1,22 @@
+AI Provider: amazonbedrockconverse
+
+0: Pod shop/frontend-64466765fd-6vzmx(Deployment/frontend)
+- Error: the last termination reason is Error container=nginx pod=frontend-64466765fd-6vzmx
+Error: The nginx container in the frontend pod crashed or failed to start properly.
+
+Solution: 
+1. Check logs: `kubectl logs frontend-64466765fd-6vzmx -c nginx`
+2. Review container config for errors
+3. Verify image exists and is accessible
+4. Check resource limits
+5. Restart pod if needed
+1: Service shop/frontend()
+- Error: Service has not ready endpoints, pods: [Pod/frontend-64466765fd-6vzmx], expected 1
+Error: The frontend pod is not passing its readiness checks, so the service cannot route traffic to it.
+
+Solution: 
+1. Check pod logs: kubectl logs frontend-64466765fd-6vzmx
+2. Describe pod: kubectl describe pod frontend-64466765fd-6vzmx
+3. Fix readiness probe or app issues
+4. Restart if needed
+

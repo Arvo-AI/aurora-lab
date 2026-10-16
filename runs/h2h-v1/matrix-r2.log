@@ -1,0 +1,58 @@
+== 01-worker-oom 07:57:11
+BATCH_SIZE=2500) plus Python/runtime overhead. Recommend reverting BATCH_SIZE to 500 to match the deployment's own                        last-applied-configuration, since that's the known-good value,
+
+== 02-sidecar-oom 07:59:36
+overhead), or fix the sidecar code to not pre-allocate   40MB before flushing/streaming. Until fixed, consider rolling back the           deployment to revision 1 (kubectl rollout undo deployment/api 
+
+== 03-bad-image-tag 08:02:11
+ment/frontend nginx=nginx:1.27-alpine -n shop                                                                                             or edit the deployment spec directly. This will let the rollou
+
+== 04-missing-secret 08:04:37
+d will restart automatically and the rollout will        complete. If DB_PASSWORD was added in error (e.g., wrong namespace or premature  config change), alternatively revert the deployment spec (kube
+
+== 05-nginx-config-error 08:07:00
+                                                         Then restart the deployment (kubectl rollout restart deployment/frontend -n      shop) so all pods pick up the corrected config, and verify the
+
+== 06-liveness-wrong-port 08:09:27
+                                                       Other pods checked: readiness probe on port 8080 succeeds initially (200 OK)     before each kill, confirming the app itself is healthy — this is
+
+== 07-service-selector-mismatch 08:13:07
+eployment to app: api-v2 if that rename was            intentional — but then also check worker and other consumers of api/redis for    the same label scheme). After the patch, confirm endpoints popul
+
+== 08-unschedulable-cpu 08:15:31
+                                                         or edit spec.template.spec.containers[0].resources.requests.cpu back to "50m".   Once corrected, the ReplicaSet will roll out successfully and 
+
+== 09-redis-pvc-pending 08:18:01
+egression in api — the app's redis-dependency/retry       logic is working as designed; the trigger was purely the infra change to the     StorageClass name on the redis PVC combined with the coincide
+
+== 10-wrong-redis-host 08:22:07
+esolve the redis Service, connect, pass readiness,    and the rollout will complete (old RS scaled to 0).                               No other issues found — redis, frontend, loadgen, worker pods/RS
+
+== 11-noisy-worker-svc-targetport 08:25:27
+                                                          kubectl patch svc api -n shop -p                                                 '{"spec":{"ports":[{"port":8080,"targetPort":8080}]}}'       
+
+== 12-two-faults-oom-and-selector 08:27:54
+E to 500 (or a value that fits in memory), or raise  the container memory limit to comfortably cover batch * 100KiB plus              Python/runtime overhead (e.g. ≥320–384Mi for BATCH_SIZE=2500). Als
+
+== 13-networkpolicy-blocks-redis 08:30:33
+                                                         Apply with kubectl apply -n shop -f <policy.yaml> (or kubectl patch              networkpolicy redis -n shop ...). After that, api pods should 
+
+== 14-resourcequota-rollout 08:34:12
+memory requests in shop to free headroom before          rolling api.                                                                   No other issues found — nodes/pods otherwise healthy; the only b
+
+== 15-stray-pods-share-label 08:36:42
+rontend error rate back near 0%.                          2 Separately decide if shop-api is meant to be live: if yes, add the missing       DATABASE_URL env var (and point its own Service at it, not 
+
+== 16-dns-search-domain 08:41:03
+, svc.cluster.local, cluster.local.                      Then re-roll the deployment; the rollout will complete once the new ReplicaSet's pod can resolve redis and pass the readiness probe on /healthz
+
+== 17-slow-memory-leak 08:44:53
+ly delays the inevitable OOM since the leak is            unbounded.                                                                     3 Consider adding a liveness/memory-based restart threshold or 
+
+== 18-init-waits-missing-service 08:49:56
+gres — suggesting this init container was added          prematurely/by mistake).                                                       Then re-check: kubectl rollout status deployment/api -n shop. If
+
+== 19-config-drift-partial-restart 08:52:20
+                                                         Then roll the frontend deployment (kubectl rollout restart deployment/frontend   -n shop) so both replicas pick up the corrected config immedia
+
+matrix done 08:56:32

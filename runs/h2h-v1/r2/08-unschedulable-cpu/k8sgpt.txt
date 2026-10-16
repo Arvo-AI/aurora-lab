@@ -1,0 +1,8 @@
+AI Provider: amazonbedrockconverse
+
+0: Pod shop/worker-7fdf4ffb67-7h676(Deployment/worker)
+- Error: 0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+Error: Pod cannot be scheduled because 1 node has taints blocking it, 2 nodes lack sufficient CPU resources, and preemption won't help.
+
+Solution: 1) Add CPU resources to nodes or reduce pod CPU requests 2) Remove taints or add tolerations to pod 3) Scale cluster by adding nodes
+

@@ -1,0 +1,28 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "Pod worker-86f68b9bf6-dvxbd in namespace shop is in CrashLoopBackOff, restart count 3, last 2 terminations: OOMKilled / exit code 137."
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "met",
+      "evidence": "The live pod spec has BATCH_SIZE=2500, 5x higher than the last-applied config \u2014 this value was changed (e.g. via kubectl edit/kubectl set env or a direct patch) without updating memory limits accordingly."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA infers the prior value of 500 from the last-applied-configuration annotation, not from rollout history. That matches the ground truth, but the inference method is indirect. The recommended fix is to revert BATCH_SIZE to 500, and the alternative of raising the limit to at least 512Mi includes a stated reason.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "The answer clearly identifies OOMKilled/exit code 137 as the cause and ties it to BATCH_SIZE rising from 500 to 2500 (2500 \u00d7 100KiB \u2248 244MiB exceeding the 192Mi limit), and proposes reverting to BATCH_SIZE=500 or raising the memory limit, matching the acceptable fixes with no wrong answers asserted.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
+}

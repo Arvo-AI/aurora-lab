@@ -1,0 +1,30 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 1,
+  "results": [
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has no endpoints, expected label app=api-v2",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "app",
+              "Masked": "ZUZU"
+            },
+            {
+              "Unmasked": "api-v2",
+              "Masked": "JTModXFz"
+            }
+          ]
+        }
+      ],
+      "details": "Error: The Service cannot find any Pods because no Pods have the required label \"app=api-v2\".\n\nSolution: \n1. Check Pod labels: kubectl get pods --show-labels\n2. Add missing label to Pods: kubectl label pods \u003cpod-name\u003e app=api-v2\n3. Or update Deployment to include label in Pod template\n4. Verify: kubectl get endpoints",
+      "parentObject": ""
+    }
+  ]
+}

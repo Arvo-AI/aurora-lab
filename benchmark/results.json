@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-15",
+ "generated": "2026-10-16",
  "cluster": "kind v0.33.0, Kubernetes v1.37.0, 3 nodes",
  "judge": "us.anthropic.claude-opus-5-5, then a person",
  "tools": {
@@ -30,27 +30,36 @@
    "runs": 38,
    "graded": 38,
    "correct": 34,
+   "ai_reviewed": 0,
+   "ai_agreed": 0,
+   "human_reviewed": 38,
    "partial": 4,
    "wrong": 0,
    "median_seconds": 153.5,
    "median_cost": 0.35
   },
   "holmesgpt": {
-   "runs": 19,
-   "graded": 19,
-   "correct": 14,
-   "partial": 4,
+   "runs": 38,
+   "graded": 38,
+   "correct": 31,
+   "ai_reviewed": 38,
+   "ai_agreed": 38,
+   "human_reviewed": 0,
+   "partial": 6,
    "wrong": 1,
-   "median_seconds": 45,
+   "median_seconds": 45.0,
    "median_cost": null
   },
   "k8sgpt": {
-   "runs": 19,
-   "graded": 19,
+   "runs": 38,
+   "graded": 38,
    "correct": 0,
-   "partial": 11,
-   "wrong": 8,
-   "median_seconds": 13,
+   "ai_reviewed": 38,
+   "ai_agreed": 38,
+   "human_reviewed": 0,
+   "partial": 21,
+   "wrong": 17,
+   "median_seconds": 12.5,
    "median_cost": null
   }
  },
@@ -93,15 +102,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 39,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/01-worker-oom"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 28,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/01-worker-oom"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 39,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 33.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -110,15 +136,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 15,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/01-worker-oom"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 14,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/01-worker-oom"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 15,
+     "graded": 2,
+     "median_seconds": 14.5,
      "median_cost": null
     }
    }
@@ -161,15 +204,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 39,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/02-sidecar-oom"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 30,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/02-sidecar-oom"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 39,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 34.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -178,15 +238,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 32,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/02-sidecar-oom"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 28,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/02-sidecar-oom"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 32,
+     "graded": 2,
+     "median_seconds": 30.0,
      "median_cost": null
     }
    }
@@ -229,15 +306,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 22,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/03-bad-image-tag"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 28,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/03-bad-image-tag"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 22,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 25.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -246,15 +340,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 17,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/03-bad-image-tag"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 16,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/03-bad-image-tag"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 17,
+     "graded": 2,
+     "median_seconds": 16.5,
      "median_cost": null
     }
    }
@@ -297,15 +408,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 31,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/04-missing-secret"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 29,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/04-missing-secret"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 31,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 30.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -314,15 +442,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 14,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/04-missing-secret"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 14,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/04-missing-secret"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 14,
+     "graded": 2,
+     "median_seconds": 14.0,
      "median_cost": null
     }
    }
@@ -365,15 +510,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 49,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/05-nginx-config-error"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 36,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/05-nginx-config-error"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 49,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 42.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -382,15 +544,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 15,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/05-nginx-config-error"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 16,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/05-nginx-config-error"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 15,
+     "graded": 2,
+     "median_seconds": 15.5,
      "median_cost": null
     }
    }
@@ -433,15 +612,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 43,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/06-liveness-wrong-port"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 51,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/06-liveness-wrong-port"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 43,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 47.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -450,15 +646,32 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
        "seconds": 0,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/06-liveness-wrong-port"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/06-liveness-wrong-port"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 0,
+     "graded": 2,
+     "median_seconds": 0.0,
      "median_cost": null
     }
    }
@@ -501,15 +714,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 55,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/07-service-selector-mismatch"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 39,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/07-service-selector-mismatch"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 55,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 47.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -518,15 +748,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 15,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/07-service-selector-mismatch"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 10,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/07-service-selector-mismatch"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 15,
+     "graded": 2,
+     "median_seconds": 12.5,
      "median_cost": null
     }
    }
@@ -569,15 +816,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 43,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/08-unschedulable-cpu"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 44,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/08-unschedulable-cpu"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 43,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 43.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -586,15 +850,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 12,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/08-unschedulable-cpu"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 9,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/08-unschedulable-cpu"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 12,
+     "graded": 2,
+     "median_seconds": 10.5,
      "median_cost": null
     }
    }
@@ -637,15 +918,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 104,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/09-redis-pvc-pending"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 87,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/09-redis-pvc-pending"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 104,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 95.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -654,15 +952,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 45,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/09-redis-pvc-pending"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 46,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/09-redis-pvc-pending"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 45,
+     "graded": 2,
+     "median_seconds": 45.5,
      "median_cost": null
     }
    }
@@ -705,15 +1020,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 45,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/10-wrong-redis-host"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 67,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/10-wrong-redis-host"
       }
      ],
-     "correct": 0,
-     "graded": 1,
-     "median_seconds": 45,
+     "correct": 1,
+     "graded": 2,
+     "median_seconds": 56.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -722,15 +1054,32 @@
        "run": "h2h-v1/r1",
        "verdict": "wrong",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "wrong"
+       },
        "seconds": 13,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/10-wrong-redis-host"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "wrong",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "wrong"
+       },
+       "seconds": 15,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/10-wrong-redis-host"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 13,
+     "graded": 2,
+     "median_seconds": 14.0,
      "median_cost": null
     }
    }
@@ -773,15 +1122,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 65,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/11-noisy-worker-svc-targetport"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 46,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/11-noisy-worker-svc-targetport"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 65,
+     "graded": 2,
+     "median_seconds": 55.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -790,15 +1156,32 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
        "seconds": 0,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/11-noisy-worker-svc-targetport"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/11-noisy-worker-svc-targetport"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 0,
+     "graded": 2,
+     "median_seconds": 0.0,
      "median_cost": null
     }
    }
@@ -841,15 +1224,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 26,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/12-two-faults-oom-and-selector"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 34,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/12-two-faults-oom-and-selector"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 26,
+     "graded": 2,
+     "median_seconds": 30.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -858,15 +1258,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 23,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/12-two-faults-oom-and-selector"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 22,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/12-two-faults-oom-and-selector"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 23,
+     "graded": 2,
+     "median_seconds": 22.5,
      "median_cost": null
     }
    }
@@ -909,15 +1326,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 110,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/13-networkpolicy-blocks-redis"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 118,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/13-networkpolicy-blocks-redis"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 110,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 114.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -926,15 +1360,32 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
        "seconds": 0,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/13-networkpolicy-blocks-redis"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/13-networkpolicy-blocks-redis"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 0,
+     "graded": 2,
+     "median_seconds": 0.0,
      "median_cost": null
     }
    }
@@ -977,15 +1428,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 41,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/14-resourcequota-rollout"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 45,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/14-resourcequota-rollout"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 41,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 43.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -994,15 +1462,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 9,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/14-resourcequota-rollout"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "partial",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
+       "seconds": 9,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/14-resourcequota-rollout"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 9,
+     "graded": 2,
+     "median_seconds": 9.0,
      "median_cost": null
     }
    }
@@ -1045,15 +1530,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 97,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/15-stray-pods-share-label"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 162,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/15-stray-pods-share-label"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 97,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 129.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -1062,15 +1564,32 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
        "seconds": 0,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/15-stray-pods-share-label"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
+       "seconds": 1,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/15-stray-pods-share-label"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 0,
+     "graded": 2,
+     "median_seconds": 0.5,
      "median_cost": null
     }
    }
@@ -1113,15 +1632,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 82,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/16-dns-search-domain"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 101,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/16-dns-search-domain"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 82,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 91.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -1130,15 +1666,32 @@
        "run": "h2h-v1/r1",
        "verdict": "wrong",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "wrong"
+       },
        "seconds": 16,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/16-dns-search-domain"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "wrong",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "wrong"
+       },
+       "seconds": 15,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/16-dns-search-domain"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 16,
+     "graded": 2,
+     "median_seconds": 15.5,
      "median_cost": null
     }
    }
@@ -1181,15 +1734,32 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
        "seconds": 72,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/17-slow-memory-leak"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 70,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/17-slow-memory-leak"
       }
      ],
-     "correct": 1,
-     "graded": 1,
-     "median_seconds": 72,
+     "correct": 2,
+     "graded": 2,
+     "median_seconds": 71.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -1198,15 +1768,32 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
        "seconds": 0,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/17-slow-memory-leak"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/17-slow-memory-leak"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 0,
+     "graded": 2,
+     "median_seconds": 0.0,
      "median_cost": null
     }
    }
@@ -1249,15 +1836,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 43,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/18-init-waits-missing-service"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 43,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/18-init-waits-missing-service"
       }
      ],
-     "correct": 0,
-     "graded": 1,
-     "median_seconds": 43,
+     "correct": 1,
+     "graded": 2,
+     "median_seconds": 43.0,
      "median_cost": null
     },
     "k8sgpt": {
@@ -1266,15 +1870,32 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "partial"
+       },
        "seconds": 12,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/18-init-waits-missing-service"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "wrong",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "wrong"
+       },
+       "seconds": 8,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/18-init-waits-missing-service"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 12,
+     "graded": 2,
+     "median_seconds": 10.0,
      "median_cost": null
     }
    }
@@ -1317,15 +1938,32 @@
        "run": "h2h-v1/r1",
        "verdict": "wrong",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "wrong"
+       },
        "seconds": 49,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/19-config-drift-partial-restart"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "correct",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "correct"
+       },
+       "seconds": 106,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/19-config-drift-partial-restart"
       }
      ],
-     "correct": 0,
-     "graded": 1,
-     "median_seconds": 49,
+     "correct": 1,
+     "graded": 2,
+     "median_seconds": 77.5,
      "median_cost": null
     },
     "k8sgpt": {
@@ -1334,15 +1972,32 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
        "seconds": 0,
        "cost": null,
        "model": null,
        "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/19-config-drift-partial-restart"
+      },
+      {
+       "run": "h2h-v1/r2",
+       "verdict": "no_answer",
+       "reviewed": false,
+       "ai_review": {
+        "agree": true,
+        "verdict": "no_answer"
+       },
+       "seconds": 0,
+       "cost": null,
+       "model": null,
+       "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/19-config-drift-partial-restart"
       }
      ],
      "correct": 0,
-     "graded": 1,
-     "median_seconds": 0,
+     "graded": 2,
+     "median_seconds": 0.0,
      "median_cost": null
     }
    }

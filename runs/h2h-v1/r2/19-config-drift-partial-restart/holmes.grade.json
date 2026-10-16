@@ -1,0 +1,28 @@
+{
+  "must_identify": [
+    {
+      "item": "Only one of the two frontend pods fails (502/504, it cannot connect to its upstream), the other serves normally",
+      "result": "met",
+      "evidence": "With 1 of 2 replicas permanently broken and the other still fine, this produces almost exactly the observed ~48% 5xx rate on /api/ (one healthy, one failing, roughly 50/50 traffic split)."
+    },
+    {
+      "item": "The cause is the frontend-nginx ConfigMap upstream changed to api:8000; only the restarted pod has loaded it, the other still runs the old config",
+      "result": "met",
+      "evidence": "frontend-76d98597b9-xmkdj (created 08:53:03Z, before the configmap edit): still has the old, correct cached config (port 8080). ... frontend-76d98597b9-xnrjs (created 08:53:10Z, after the configmap edit \u2014 it replaced a short\u2011lived pod wrwl9 that was killed at 08:53:10Z): mounted the ConfigMap volume with the new broken content immediately"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA gets the mechanism wrong. It says xmkdj is healthy only because kubelet has not yet re-synced the mounted ConfigMap, and predicts it will fail on its own within about a minute. In fact the file in that pod is already updated, and nginx only re-reads config at start, so it would fail only on restart or reload. A reviewer may want to downgrade item 2 to partial for this misstated mechanism.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "The answer explicitly states both required facts \u2014 'xmkdj ... still has the old, correct cached config (port 8080)' while 'xnrjs ... mounted the ConfigMap volume with the new broken content immediately' causing 504s \u2014 and gives the correct fix (revert to api:8080 and restart). The erroneous aside about kubelet re-sync causing future failure is a mechanism flaw but doesn't negate the correctly stated current root cause and symptom split, so 'correct' is justified despite the noted caveat.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
+}

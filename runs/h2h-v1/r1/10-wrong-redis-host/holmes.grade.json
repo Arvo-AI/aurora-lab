@@ -18,5 +18,11 @@
   "judge_model": "us.anthropic.claude-opus-5-5",
   "tool": "holmes",
   "human_verdict": null,
-  "human_notes": ""
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "The investigator inverted the change direction, claiming the new deploy fixed REDIS_HOST to 'redis' and the crashing pod was just a stale old ReplicaSet 'cosmetic' leftover, so the fix never actually sets REDIS_HOST back to redis or rolls back the real change as required by acceptable_fixes.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
 }

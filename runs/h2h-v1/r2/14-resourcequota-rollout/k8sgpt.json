@@ -1,0 +1,21 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 1,
+  "results": [
+    {
+      "kind": "ReplicaSet",
+      "name": "shop/api-55f69c557",
+      "error": [
+        {
+          "Text": "pods \"api-55f69c557-rv8jf\" is forbidden: exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The pod cannot start because the namespace has reached its memory quota limit (200Mi already used out of 200Mi available).\n\nSolution: \n1. Delete unused pods to free memory\n2. Increase the namespace quota limit\n3. Reduce pod memory request below 32Mi",
+      "parentObject": "Deployment/api"
+    }
+  ]
+}

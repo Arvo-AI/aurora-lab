@@ -1,0 +1,31 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "Error: 0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "partial",
+      "evidence": "1) Add CPU resources to nodes or reduce pod CPU requests"
+    }
+  ],
+  "wrong_answers_asserted": [
+    "Taints, node selectors or affinity",
+    "Adding nodes as the primary fix without noting the request is the error"
+  ],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA restates the scheduler message but never says the request (64 cores) is the error. It treats the taint as a co-cause. 'Reduce pod CPU requests' appears only as one option alongside adding CPU, removing taints and scaling nodes, with no target value. The taint is likely the control-plane node's normal taint, which is irrelevant here.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "k8sgpt",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "The answer never states the 64-core request itself (vs node allocatable) is the root cause, instead listing 'reduce pod CPU requests' as one of several equal options alongside adding nodes and removing taints, and it introduces an unverified taint co-cause, matching the judge's 'partial' call.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
+}

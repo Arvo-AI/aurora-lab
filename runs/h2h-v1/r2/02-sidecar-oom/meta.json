@@ -1,0 +1,1 @@
+{"scenario":"02-sidecar-oom","alert":"KubePodCrashLooping: pods of deployment api in namespace shop are restarting.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-16T08:01:13Z"}

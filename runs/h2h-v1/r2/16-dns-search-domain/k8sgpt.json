@@ -1,0 +1,34 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 2,
+  "results": [
+    {
+      "kind": "Pod",
+      "name": "shop/api-779966d57-hz46t",
+      "error": [
+        {
+          "Text": "the last termination reason is Error container=api pod=api-779966d57-hz46t",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The container named \"api\" in pod \"api-779966d57-hz46t\" terminated with an error status.\n\nSolution: \n1. Check logs: kubectl logs api-779966d57-hz46t -c api\n2. Review previous logs: kubectl logs api-779966d57-hz46t -c api --previous\n3. Fix app code/config\n4. Redeploy",
+      "parentObject": "Deployment/api"
+    },
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/api-779966d57-hz46t], expected 1",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The service cannot route traffic because its pod is not ready to accept connections.\n\nSolution:\n1. Check pod status: `kubectl get pods`\n2. View pod logs: `kubectl logs api-779966d57-hz46t`\n3. Describe pod: `kubectl describe pod api-779966d57-hz46t`\n4. Fix readiness probe or app issues\n5. Restart if needed",
+      "parentObject": ""
+    }
+  ]
+}

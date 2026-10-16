@@ -1,0 +1,28 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+      "result": "met",
+      "evidence": "Restart count 1, last container state OOMKilled, exit code 137, started 2026-10-16T08:45:38Z."
+    },
+    {
+      "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+      "result": "met",
+      "evidence": "recent is intended to hold only a bounded \"tail\" of recent items, but it's never trimmed \u2014 extend() keeps appending ~5MiB per 5-second loop forever."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA says 'nothing changed' and 'not a config change', so it misses that the leak was introduced by a recent edit to the api-code ConfigMap. Raising the memory limit is offered only as a stop-gap, with the code fix named as the real fix.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "tool": "holmes",
+  "human_verdict": null,
+  "human_notes": "",
+  "reviewer_ai": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "The answer clearly states OOMKilled with exit code 137 and attributes the crash loop to an unbounded 'recent' list leak ('extend() keeps appending ~5MiB per 5-second loop forever'), matching both must_identify items, and offers the code fix as the primary solution while only mentioning raising memory limit as an explicitly temporary stop-gap, so no wrong_answer is asserted.",
+    "model": "us.anthropic.claude-sonnet-5"
+  }
+}

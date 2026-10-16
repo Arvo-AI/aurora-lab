@@ -1,0 +1,69 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 4,
+  "results": [
+    {
+      "kind": "Deployment",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Deployment shop/api has 2 replicas in spec but 3 replicas in status because status field is not updated yet after scaling and 1 replicas are available with status running",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "shop",
+              "Masked": "NmhQcA=="
+            },
+            {
+              "Unmasked": "api",
+              "Masked": "bHko"
+            }
+          ]
+        }
+      ],
+      "details": "Error: The deployment \"api\" in namespace \"shop\" is scaling. The desired state (2 replicas) doesn't match current state (3 replicas), with only 1 running.\n\nSolution:\n1. Wait 1-2 minutes for scaling to complete\n2. Run: kubectl get pods -n shop\n3. If stuck, run: kubectl rollout restart deployment/api -n shop",
+      "parentObject": ""
+    },
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/api-7d4b6f6f7d-xm4zr Pod/api-7d4b6f6f7d-6wdwj], expected 2",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: Your Kubernetes Service cannot route traffic because none of the 2 pods are passing their readiness checks.\n\nSolution: 1) Check pod logs: kubectl logs api-7d4b6f6f7d-xm4zr 2) Verify readiness probe config 3) Check app startup time 4) Ensure dependencies are available",
+      "parentObject": ""
+    },
+    {
+      "kind": "Pod",
+      "name": "shop/api-7d4b6f6f7d-6wdwj",
+      "error": [
+        {
+          "Text": "the termination reason is OOMKilled exitCode=137 container=log-shipper pod=api-7d4b6f6f7d-6wdwj",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: Container ran out of memory and was killed by Kubernetes.\n\nSolution:\n1. Increase memory limit in deployment YAML\n2. Add/raise resources.limits.memory value\n3. Apply: kubectl apply -f deployment.yaml\n4. Monitor: kubectl top pod api-7d4b6f6f7d-6wdwj",
+      "parentObject": "Deployment/api"
+    },
+    {
+      "kind": "Pod",
+      "name": "shop/api-7d4b6f6f7d-xm4zr",
+      "error": [
+        {
+          "Text": "the termination reason is OOMKilled exitCode=137 container=log-shipper pod=api-7d4b6f6f7d-xm4zr",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The container \"log-shipper\" ran out of memory and was killed by Kubernetes.\n\nSolution:\n1. Increase memory limit in deployment YAML\n2. Add: resources.limits.memory (e.g., \"512Mi\")\n3. Apply: kubectl apply -f deployment.yaml\n4. Monitor: kubectl top pod",
+      "parentObject": "Deployment/api"
+    }
+  ]
+}

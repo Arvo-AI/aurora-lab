@@ -1,0 +1,104 @@
+{
+  "provider": "amazonbedrockconverse",
+  "errors": null,
+  "status": "ProblemDetected",
+  "problems": 6,
+  "results": [
+    {
+      "kind": "Deployment",
+      "name": "shop/redis",
+      "error": [
+        {
+          "Text": "Deployment shop/redis has 1 replicas but 0 are available with status running",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "shop",
+              "Masked": "P2x9NQ=="
+            },
+            {
+              "Unmasked": "redis",
+              "Masked": "PjVBNm8="
+            }
+          ]
+        }
+      ],
+      "details": "Error: The Redis deployment in the shop namespace has 1 desired replica, but none are currently running.\n\nSolution:\n1. Check pod status: `kubectl get pods -n shop`\n2. View pod logs: `kubectl logs \u003cpod-name\u003e -n shop`\n3. Describe pod: `kubectl describe pod \u003cpod-name\u003e -n shop`\n4. Fix issues (image, resources, config)\n5. Restart: `kubectl rollout restart deployment/redis -n shop`",
+      "parentObject": ""
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "name": "shop/redis-data",
+      "error": [
+        {
+          "Text": "storageclass.storage.k8s.io \"fast-ssd\" not found",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The Kubernetes cluster cannot find a StorageClass named \"fast-ssd\".\n\nSolution:\n1. Check existing StorageClasses: `kubectl get storageclass`\n2. Create the missing StorageClass or update your PVC/Pod to use an existing one\n3. Verify the correct name spelling",
+      "parentObject": ""
+    },
+    {
+      "kind": "Pod",
+      "name": "shop/api-7cb69b5959-jlzfb",
+      "error": [
+        {
+          "Text": "the last termination reason is Error container=api pod=api-7cb69b5959-jlzfb",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: The container \"api\" in pod \"api-7cb69b5959-jlzfb\" terminated with an error status.\n\nSolution: \n1. Check logs: kubectl logs api-7cb69b5959-jlzfb -c api\n2. Review previous logs: kubectl logs api-7cb69b5959-jlzfb -c api --previous\n3. Fix app code/config\n4. Redeploy",
+      "parentObject": "Deployment/api"
+    },
+    {
+      "kind": "Pod",
+      "name": "shop/redis-5fff65475c-kfq9s",
+      "error": [
+        {
+          "Text": "0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: Your pod cannot start because it needs storage (PersistentVolumeClaim) that doesn't exist or isn't available.\n\nSolution:\n1. Check PVC exists: `kubectl get pvc`\n2. If missing, create PVC matching pod's request\n3. Verify PV available: `kubectl get pv`\n4. Check storage class exists\n5. Ensure PVC status shows \"Bound\"",
+      "parentObject": "Deployment/redis"
+    },
+    {
+      "kind": "Service",
+      "name": "shop/api",
+      "error": [
+        {
+          "Text": "Service has not ready endpoints, pods: [Pod/api-7cb69b5959-jlzfb], expected 1",
+          "KubernetesDoc": "",
+          "Sensitive": []
+        }
+      ],
+      "details": "Error: Your Kubernetes service has no ready endpoints because the pod \"api-7cb69b5959-jlzfb\" isn't ready yet.\n\nSolution:\n1. Check pod status: kubectl describe pod api-7cb69b5959-jlzfb\n2. View logs: kubectl logs api-7cb69b5959-jlzfb\n3. Fix issues (crash, failed health checks, or wrong port)\n4. Restart if needed",
+      "parentObject": ""
+    },
+    {
+      "kind": "Service",
+      "name": "shop/redis",
+      "error": [
+        {
+          "Text": "Service has no endpoints, expected label app=redis",
+          "KubernetesDoc": "",
+          "Sensitive": [
+            {
+              "Unmasked": "app",
+              "Masked": "TVM7"
+            },
+            {
+              "Unmasked": "redis",
+              "Masked": "WG46ZG8="
+            }
+          ]
+        }
+      ],
+      "details": "Error: The Service cannot find any Pods because no Pods have the label \"app=redis\".\n\nSolution:\n1. Check Pod labels: kubectl get pods --show-labels\n2. Add missing label to Pod: kubectl label pod \u003cpod-name\u003e app=redis\n3. Or update Pod YAML with \"app: redis\" under metadata.labels\n4. Verify: kubectl get endpoints",
+      "parentObject": ""
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"scenario":"06-liveness-wrong-port","alert":"KubePodCrashLooping: api pods in namespace shop restart every minute or so.","model":"us.anthropic.claude-sonnet-5","started":"2026-10-16T08:12:16Z"}
