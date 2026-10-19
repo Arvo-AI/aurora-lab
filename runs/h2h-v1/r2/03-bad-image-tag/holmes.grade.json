@@ -8,7 +8,7 @@
     {
       "item": "The old pods are still serving (rollout stuck, not an outage)",
       "result": "met",
-      "evidence": "Since maxUnavailable: 25%, the rollout can't fully proceed \u2014 it's stuck with 2 old pods available + 1 new pod failing to pull, matching the KubeDeploymentRolloutStuck alert"
+      "evidence": "Since maxUnavailable: 25%, the rollout can't fully proceed — it's stuck with 2 old pods available + 1 new pod failing to pull, matching the KubeDeploymentRolloutStuck alert"
     }
   ],
   "wrong_answers_asserted": [],
@@ -24,5 +24,27 @@
     "verdict": "correct",
     "reason": "The answer clearly identifies the ImagePullBackOff due to the nonexistent tag 'nginx:1.27-alpne' and shows the old ReplicaSet 'still running 2/2 healthy pods', implying service continuity, with the correct fix 'kubectl set image deployment/frontend nginx=nginx:1.27-alpine -n shop'; no wrong answers were asserted.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "Item 2 is stated via '2/2 healthy pods' and '2 old pods available' rather than the literal words 'no outage', which I count as met since it unambiguously says the old pods are up and available. Fix is the correct set image command.",
+    "items": [
+      {
+        "item": "Pods are in ImagePullBackOff / ErrImagePull because the tag nginx:1.27-alpne does not exist",
+        "result": "met",
+        "evidence": "container image nginx:1.27-alpne -- a typo, should be nginx:1.27-alpine ... stuck Pending/ImagePullBackOff: Back-off pulling image \"nginx:1.27-alpne\": ErrImagePull: ... not found"
+      },
+      {
+        "item": "The old pods are still serving (rollout stuck, not an outage)",
+        "result": "met",
+        "evidence": "from nginx:1.27-alpine (old ReplicaSet frontend-76d98597b9, still running 2/2 healthy pods) ... it's stuck with 2 old pods available + 1 new pod failing to pull"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

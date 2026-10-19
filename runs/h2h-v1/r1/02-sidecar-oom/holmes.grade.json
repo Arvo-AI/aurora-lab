@@ -8,7 +8,7 @@
     {
       "item": "The sidecar is OOMKilled because its 16Mi limit is below its usage",
       "result": "met",
-      "evidence": "But its container memory limit is only 16Mi. Allocating 40MB instantly exceeds the 16Mi limit, so the kernel OOM-kills it (OOMKilled, exit code 137) within seconds of starting, every time \u2014 crash loop (BackOff restarting log-shipper, restart count climbing: 4 on both new pods in <2 min)."
+      "evidence": "But its container memory limit is only 16Mi. Allocating 40MB instantly exceeds the 16Mi limit, so the kernel OOM-kills it (OOMKilled, exit code 137) within seconds of starting, every time — crash loop (BackOff restarting log-shipper, restart count climbing: 4 on both new pods in <2 min)."
     }
   ],
   "wrong_answers_asserted": [],
@@ -24,5 +24,27 @@
     "verdict": "correct",
     "reason": "The answer correctly identifies the log-shipper sidecar as the OOMKilled container while the api container stays healthy ('the api container itself is healthy/Ready in both'), explains the 40MB buffer exceeding the 16Mi limit, and proposes an acceptable fix (raising the sidecar's memory limit), with no wrong answers asserted.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "Names the sidecar, states api is healthy, cites 16Mi vs 40MB; fix targets the log-shipper container specifically (kubectl set resources ... -c log-shipper --limits=memory=64Mi), which is acceptable.",
+    "items": [
+      {
+        "item": "The container being killed is the log-shipper sidecar, not the api container",
+        "result": "met",
+        "evidence": "both 1/2 Ready, log-shipper OOMKilled repeatedly; the api container itself is healthy/Ready in both"
+      },
+      {
+        "item": "The sidecar is OOMKilled because its 16Mi limit is below its usage",
+        "result": "met",
+        "evidence": "But its container memory limit is only 16Mi. Allocating 40MB instantly exceeds the 16Mi limit, so the kernel OOM-kills it (OOMKilled, exit code 137)"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

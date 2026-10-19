@@ -24,5 +24,27 @@
     "verdict": "wrong",
     "reason": "The investigator's answer only cites 'connection refused' on the readiness probe and recommends increasing initialDelaySeconds, never mentioning DNS resolution, redis, or dnsConfig/dnsPolicy, so both must_identify items are missed and the root cause is incorrect.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "wrong",
+    "reason": "The answer blames the readiness probe / port 8080 ('The readiness probe cannot connect to port 8080 on your container', 'Increase initialDelaySeconds'), a symptom misread as cause; DNS, redis resolution and dnsConfig are never mentioned.",
+    "items": [
+      {
+        "item": "The new api pods exit because the name redis does not resolve",
+        "result": "missed",
+        "evidence": ""
+      },
+      {
+        "item": "The cause is the pod's dnsPolicy None / dnsConfig search domains (cluster.internal), not REDIS_HOST, the redis Service or CoreDNS",
+        "result": "missed",
+        "evidence": ""
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

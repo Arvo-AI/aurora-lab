@@ -3,7 +3,7 @@
     {
       "item": "The failing requests come from the pod of a separate Deployment shop-api, which shares the app=api label and is therefore an endpoint of the api Service",
       "result": "met",
-      "evidence": "Because shop-api's pod template also has app: api (plus app.kubernetes.io/name: shop-api), its pod shop-api-69f6fc5964-x7m7w (10.244.1.77) got pulled into the api Service's Endpoints alongside the two legitimate api pods \u2014 3 backends total instead of 2."
+      "evidence": "Because shop-api's pod template also has app: api (plus app.kubernetes.io/name: shop-api), its pod shop-api-69f6fc5964-x7m7w (10.244.1.77) got pulled into the api Service's Endpoints alongside the two legitimate api pods — 3 backends total instead of 2."
     },
     {
       "item": "That pod returns 500 because its config lacks DATABASE_URL (KeyError), while the real api pods are healthy",
@@ -24,5 +24,27 @@
     "verdict": "correct",
     "reason": "The answer correctly identifies that shop-api's pod shares the app=api label and joins the api Service endpoints, and that it returns 500s due to missing DATABASE_URL while the real api pods are healthy; the fix (relabel or delete shop-api) matches the acceptable fixes, with no wrong answers asserted.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "Names the stray Deployment shop-api, the shared app=api label, the extra Service endpoint, the KeyError, and the healthy real api pods; redis explicitly ruled out ('not relevant to the 5xx'); fix relabel/delete acceptable. Agree with judge.",
+    "items": [
+      {
+        "item": "The failing requests come from the pod of a separate Deployment shop-api, which shares the app=api label and is therefore an endpoint of the api Service",
+        "result": "met",
+        "evidence": "Because shop-api's pod template also has app: api ... its pod shop-api-69f6fc5964-x7m7w (10.244.1.77) got pulled into the api Service's Endpoints alongside the two legitimate api pods -- 3 backends total instead of 2."
+      },
+      {
+        "item": "That pod returns 500 because its config lacks DATABASE_URL (KeyError), while the real api pods are healthy",
+        "result": "met",
+        "evidence": "KeyError: 'DATABASE_URL' ... DATABASE_URL is never set in the shop-api Deployment's env ... so every request routed to this pod returns 500 ... api (2/2 ready, serving 200s)"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

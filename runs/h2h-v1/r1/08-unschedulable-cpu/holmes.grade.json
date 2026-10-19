@@ -8,7 +8,7 @@
     {
       "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
       "result": "met",
-      "evidence": "Both worker nodes (aurora-lab-worker, aurora-lab-worker2) have only 10 allocatable CPUs each (confirmed via node status) \u2014 nowhere near the requested 64 cores."
+      "evidence": "Both worker nodes (aurora-lab-worker, aurora-lab-worker2) have only 10 allocatable CPUs each (confirmed via node status) — nowhere near the requested 64 cores."
     }
   ],
   "wrong_answers_asserted": [],
@@ -24,5 +24,27 @@
     "verdict": "correct",
     "reason": "The answer correctly identifies the Pending pod with FailedScheduling Insufficient cpu and the 64-core request exceeding node allocatable CPU (10 each), and the fix restores the request to 50m; the taint mention is explicitly dismissed as 'expected, unrelated' rather than asserted as the cause.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "Both items met; control-plane taint explicitly dismissed as expected and unrelated; fix sets cpu=50m.",
+    "items": [
+      {
+        "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+        "result": "met",
+        "evidence": "FailedScheduling event for worker-7fdf4ffb67-p9pwt: \"0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu.\""
+      },
+      {
+        "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+        "result": "met",
+        "evidence": "CPU request was changed from 50m ... to 64 (64 whole cores) ... Both worker nodes ... have only 10 allocatable CPUs each"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

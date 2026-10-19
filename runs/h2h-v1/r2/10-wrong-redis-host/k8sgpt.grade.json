@@ -24,5 +24,27 @@
     "verdict": "wrong",
     "reason": "The investigator never mentions REDIS_HOST, redis-master, or DNS resolution failure; it only cites 'Readiness probe failed... connection refused' and 'Service has not ready endpoints' with fixes pointing to probe/port config, missing the actual root cause entirely.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": false,
+    "verdict": "no_answer",
+    "reason": "Disagree on label only. The text restates the symptom: 'The readiness probe cannot connect to your application on port 8080. The application isn't running or listening on the expected port.' That statement is true (the process exits before listening), not an incorrect cause, and the solutions are a hedged checklist ('Verify app runs on port 8080', 'Check container logs for startup errors', 'Adjust initialDelaySeconds'). No root cause is asserted, so per the rubric this is no_answer rather than wrong. redis-master/REDIS_HOST never mentioned.",
+    "items": [
+      {
+        "item": "The api exits because it cannot resolve redis-master",
+        "result": "missed",
+        "evidence": ""
+      },
+      {
+        "item": "REDIS_HOST is set to redis-master while the Service is named redis",
+        "result": "missed",
+        "evidence": ""
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

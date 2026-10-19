@@ -24,5 +24,27 @@
     "verdict": "partial",
     "reason": "The answer correctly identifies OOMKilled and the missing-label selector issue but never ties the OOM to the BATCH_SIZE change ('OOMKilled exitCode=137' with no mention of BATCH_SIZE 500->2500) and proposes labeling pods tier=web rather than reverting the selector, which doesn't match the acceptable fix.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "Same as r1: OOMKill without BATCH_SIZE (partial), frontend selector/no-endpoints stated (met), faults listed independently so no wrong answer. Agree with judge.",
+    "items": [
+      {
+        "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+        "result": "partial",
+        "evidence": "the termination reason is OOMKilled exitCode=137 container=worker pod=worker-86f68b9bf6-jrh5f ... Container ran out of memory and was killed by Kubernetes."
+      },
+      {
+        "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+        "result": "met",
+        "evidence": "The Service cannot find any Pods because no Pods have the required labels (app=frontend AND tier=web)."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

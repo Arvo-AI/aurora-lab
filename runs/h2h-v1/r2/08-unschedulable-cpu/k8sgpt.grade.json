@@ -27,5 +27,30 @@
     "verdict": "partial",
     "reason": "The answer never states the 64-core request itself (vs node allocatable) is the root cause, instead listing 'reduce pod CPU requests' as one of several equal options alongside adding nodes and removing taints, and it introduces an unverified taint co-cause, matching the judge's 'partial' call.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "Never states the request is 64 cores or oversized; hedges between adding node CPU, reducing requests, removing taints and adding nodes. Same verdict as judge.",
+    "items": [
+      {
+        "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+        "result": "met",
+        "evidence": "Pod cannot be scheduled because 1 node has taints blocking it, 2 nodes lack sufficient CPU resources"
+      },
+      {
+        "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+        "result": "partial",
+        "evidence": "1) Add CPU resources to nodes or reduce pod CPU requests"
+      }
+    ],
+    "wrong_answers_asserted": [
+      "Taints, node selectors or affinity",
+      "Adding nodes as the primary fix without noting the request is the error"
+    ],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

@@ -24,5 +24,27 @@
     "verdict": "partial",
     "reason": "The investigator correctly identified the worker OOMKilled/BATCH_SIZE fault but never mentioned the frontend Service selector issue (tier=web matching no pods), and the fix only addresses BATCH_SIZE, so the second must_identify item is missed as the judge found.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "Worker OOM via BATCH_SIZE is fully diagnosed with the right fix. The frontend Service selector is never mentioned (no 'frontend', 'Service', 'selector', 'endpoints' in the answer), so the second, un-alerted fault is missed. Agree with judge.",
+    "items": [
+      {
+        "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+        "result": "met",
+        "evidence": "Someone increased BATCH_SIZE from 500 to 2500 on the worker deployment without raising the memory limit (still 192Mi), causing the worker to exceed its memory limit and get OOMKilled on every start"
+      },
+      {
+        "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+        "result": "missed",
+        "evidence": ""
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

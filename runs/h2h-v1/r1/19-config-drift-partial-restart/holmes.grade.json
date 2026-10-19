@@ -26,5 +26,29 @@
     "verdict": "wrong",
     "reason": "The investigator attributed the 5xx burst to a transient startup race with api pods ('frontend had no retry/backoff... before api's pods passed their readiness probe') and declared it resolved, never identifying the ConfigMap upstream drift to api:8000 or the per-pod discrepancy between the two frontend pods, and effectively blamed api pods as the cause.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "wrong",
+    "reason": "The answer states 'All data points to a transient startup race, now resolved' and blames api pods not accepting connections at cold start ('the api container itself wasn't accepting TCP connections for the first second(s) of its life'); it never mentions the api:8000 upstream or a per-pod split, and claims 'No new 502s in the latest frontend logs'. No item met or partial and the stated cause is incorrect, so wrong rather than partial.",
+    "items": [
+      {
+        "item": "Only one of the two frontend pods fails (502/504, it cannot connect to its upstream), the other serves normally",
+        "result": "missed",
+        "evidence": ""
+      },
+      {
+        "item": "The cause is the frontend-nginx ConfigMap upstream changed to api:8000; only the restarted pod has loaded it, the other still runs the old config",
+        "result": "missed",
+        "evidence": ""
+      }
+    ],
+    "wrong_answers_asserted": [
+      "api pods failing as the cause"
+    ],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

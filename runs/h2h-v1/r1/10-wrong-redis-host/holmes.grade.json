@@ -3,12 +3,12 @@
     {
       "item": "The api exits because it cannot resolve redis-master",
       "result": "met",
-      "evidence": "For the stale pod api-869d87b484-mwsv7 this fails DNS resolution: redis connection failed (attempt 1/5): [Errno -2] Name does not resolve ... giving up: redis unavailable \u2192 sys.exit(1) \u2192 container exits with code 1 \u2192 CrashLoopBackOff"
+      "evidence": "For the stale pod api-869d87b484-mwsv7 this fails DNS resolution: redis connection failed (attempt 1/5): [Errno -2] Name does not resolve ... giving up: redis unavailable → sys.exit(1) → container exits with code 1 → CrashLoopBackOff"
     },
     {
       "item": "REDIS_HOST is set to redis-master while the Service is named redis",
       "result": "partial",
-      "evidence": "The still-terminating old ReplicaSet api-869d87b484 has REDIS_HOST=redis-master, a hostname that doesn't exist as a Service in the shop namespace (kubectl get svc -n shop lists only api, frontend, redis \u2014 no redis-master)."
+      "evidence": "The still-terminating old ReplicaSet api-869d87b484 has REDIS_HOST=redis-master, a hostname that doesn't exist as a Service in the shop namespace (kubectl get svc -n shop lists only api, frontend, redis — no redis-master)."
     }
   ],
   "wrong_answers_asserted": [],
@@ -24,5 +24,27 @@
     "verdict": "partial",
     "reason": "The investigator inverted the change direction, claiming the new deploy fixed REDIS_HOST to 'redis' and the crashing pod was just a stale old ReplicaSet 'cosmetic' leftover, so the fix never actually sets REDIS_HOST back to redis or rolls back the real change as required by acceptable_fixes.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "Agree. break.sh runs 'kubectl set env deploy/api REDIS_HOST=redis-master', so the Deployment template and the NEW RS (api-869d87b484, revision 2, same hash in r2) carry redis-master; the answer inverts this ('latest deploy ... sets REDIS_HOST=redis', 'pre-existing bad config in the old ReplicaSet ... cosmetic now'). Its fix (scale rs api-869d87b484 to 0 / let rollout finish) would be undone by the Deployment controller and leaves REDIS_HOST=redis-master, so service is not restored. Not 'wrong' since the mechanism (redis-master unresolvable) is right; no listed wrong answer asserted.",
+    "items": [
+      {
+        "item": "The api exits because it cannot resolve redis-master",
+        "result": "met",
+        "evidence": "For the stale pod api-869d87b484-mwsv7 this fails DNS resolution: redis connection failed (attempt 1/5): [Errno -2] Name does not resolve ... giving up ... sys.exit(1) -> container exits with code 1 -> CrashLoopBackOff"
+      },
+      {
+        "item": "REDIS_HOST is set to redis-master while the Service is named redis",
+        "result": "partial",
+        "evidence": "The still-terminating old ReplicaSet api-869d87b484 has REDIS_HOST=redis-master, a hostname that doesn't exist as a Service in the shop namespace"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

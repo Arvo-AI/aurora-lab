@@ -3,12 +3,12 @@
     {
       "item": "Pods are in ImagePullBackOff / ErrImagePull because the tag nginx:1.27-alpne does not exist",
       "result": "met",
-      "evidence": "The new pod frontend-7b6c998456-rv848 can't pull the misspelled tag: Failed to pull image \"nginx:1.27-alpne\": ... not found Error: ErrImagePull \u2192 ImagePullBackOff"
+      "evidence": "The new pod frontend-7b6c998456-rv848 can't pull the misspelled tag: Failed to pull image \"nginx:1.27-alpne\": ... not found Error: ErrImagePull → ImagePullBackOff"
     },
     {
       "item": "The old pods are still serving (rollout stuck, not an outage)",
       "result": "met",
-      "evidence": "Old RS frontend-76d98597b9 (image nginx:1.27-alpine, correct): 2/2 pods Running/Ready \u2014 still serving traffic, so no outage."
+      "evidence": "Old RS frontend-76d98597b9 (image nginx:1.27-alpine, correct): 2/2 pods Running/Ready — still serving traffic, so no outage."
     }
   ],
   "wrong_answers_asserted": [],
@@ -22,7 +22,29 @@
   "reviewer_ai": {
     "agree": true,
     "verdict": "correct",
-    "reason": "The answer clearly identifies ImagePullBackOff due to the nonexistent tag 'nginx:1.27-alpne' and states old pods are '2/2 pods Running/Ready \u2014 still serving traffic, so no outage,' matching both must_identify items, and proposes the acceptable fix of correcting the tag without asserting any wrong answers.",
+    "reason": "The answer clearly identifies ImagePullBackOff due to the nonexistent tag 'nginx:1.27-alpne' and states old pods are '2/2 pods Running/Ready — still serving traffic, so no outage,' matching both must_identify items, and proposes the acceptable fix of correcting the tag without asserting any wrong answers.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "Both items explicit; fix 'kubectl set image deployment/frontend nginx=nginx:1.27-alpine -n shop' is acceptable; no registry-credential or network claim.",
+    "items": [
+      {
+        "item": "Pods are in ImagePullBackOff / ErrImagePull because the tag nginx:1.27-alpne does not exist",
+        "result": "met",
+        "evidence": "The new pod frontend-7b6c998456-rv848 can't pull the misspelled tag: Failed to pull image \"nginx:1.27-alpne\": ... not found / Error: ErrImagePull -> ImagePullBackOff"
+      },
+      {
+        "item": "The old pods are still serving (rollout stuck, not an outage)",
+        "result": "met",
+        "evidence": "Old RS frontend-76d98597b9 (image nginx:1.27-alpine, correct): 2/2 pods Running/Ready -- still serving traffic, so no outage."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

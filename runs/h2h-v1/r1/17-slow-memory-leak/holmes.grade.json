@@ -8,7 +8,7 @@
     {
       "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
       "result": "met",
-      "evidence": "recent is never trimmed despite the comment calling it a \"tail of recent batches\" \u2014 it grows by ~5MB every 5s batch forever. ... No change to BATCH_SIZE (still 500), no change to the memory limit (192Mi)"
+      "evidence": "recent is never trimmed despite the comment calling it a \"tail of recent batches\" — it grows by ~5MB every 5s batch forever. ... No change to BATCH_SIZE (still 500), no change to the memory limit (192Mi)"
     }
   ],
   "wrong_answers_asserted": [],
@@ -24,5 +24,27 @@
     "verdict": "correct",
     "reason": "The investigator correctly identified OOMKilled/exit 137 and the memory leak in worker.py (unbounded 'recent' list) as the cause, explicitly ruling out BATCH_SIZE and noting raising the memory limit is only a stopgap. The mistaken attribution of the change ('pre-existing bug... restart didn't change configuration') is a factual slip about the change history but does not affect the must_identify criteria, which only require correctly naming OOMKilled and the leak mechanism as the cause.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "Both items explicitly met; raising the limit is offered only as a stopgap that 'will only delay the OOM', so no wrong answer. The claim that the leak is a 'pre-existing bug' rather than a new code change is a factual slip about change history but is not a wrong_answers item and does not change the identified cause.",
+    "items": [
+      {
+        "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+        "result": "met",
+        "evidence": "Pod shop/worker-7d568fdf96-rm2rj, container worker: restartCount: 1, lastState.terminated.reason: OOMKilled, exitCode: 137."
+      },
+      {
+        "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+        "result": "met",
+        "evidence": "recent is never trimmed despite the comment calling it a \"tail of recent batches\" — it grows by ~5MB every 5s batch forever ... No change to BATCH_SIZE (still 500)"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

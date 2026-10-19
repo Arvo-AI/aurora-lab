@@ -24,5 +24,27 @@
     "verdict": "correct",
     "reason": "The answer identifies the pod as Pending with FailedScheduling Insufficient cpu, and correctly states the 64-core request exceeds the 10-allocatable-CPU nodes, with a fix lowering it back to 50m; the taint mention is incidental context, not the asserted primary cause.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "correct",
+    "reason": "Both items met; taint mentioned only as why the control-plane node is excluded; fix sets cpu=50m. The 'dropped m suffix' story is speculation but does not change the diagnosis.",
+    "items": [
+      {
+        "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+        "result": "met",
+        "evidence": "FailedScheduling: 0/3 nodes are available: 1 node(s) had untolerated taint(s), Insufficient cpu. ... pod worker-7fdf4ffb67-7h676, Pending"
+      },
+      {
+        "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+        "result": "met",
+        "evidence": "changed the CPU request from 50m to 64 (whole cores instead of millicores) ... only has 10 allocatable CPUs ... No node in the 3-node cluster has 64 free CPUs"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

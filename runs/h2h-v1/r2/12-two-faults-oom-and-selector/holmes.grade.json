@@ -3,7 +3,7 @@
     {
       "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
       "result": "met",
-      "evidence": "Deployment shop/worker revision 2 bumped BATCH_SIZE from 500 \u2192 2500 ... At 2500 that's ~250MB, which blows past the 192Mi limit immediately."
+      "evidence": "Deployment shop/worker revision 2 bumped BATCH_SIZE from 500 → 2500 ... At 2500 that's ~250MB, which blows past the 192Mi limit immediately."
     },
     {
       "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
@@ -24,5 +24,27 @@
     "verdict": "partial",
     "reason": "The answer correctly identifies and evidences the worker OOMKilled/BATCH_SIZE fault but never mentions the frontend Service selector issue, so the second must_identify item is missed, matching the judge's partial verdict.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "Best-evidenced worker diagnosis of the set (reads worker.py buffer math), but the frontend Service selector is never mentioned. Agree with judge.",
+    "items": [
+      {
+        "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+        "result": "met",
+        "evidence": "Deployment shop/worker revision 2 bumped BATCH_SIZE from 500 -> 2500 ... At 2500 that's ~250MB, which blows past the 192Mi limit immediately."
+      },
+      {
+        "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+        "result": "missed",
+        "evidence": ""
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

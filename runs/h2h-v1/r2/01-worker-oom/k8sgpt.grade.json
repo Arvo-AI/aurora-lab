@@ -24,5 +24,27 @@
     "verdict": "partial",
     "reason": "The answer correctly identifies OOMKilled with exitCode=137 but never mentions BATCH_SIZE or the batch size change as the trigger, and the fix 'Increase memory limits' lacks the required stated reason tied to the batch's working set.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "OOMKilled reported, trigger absent, fix 'Increase memory limits in pod spec' has no stated reason. 'Check for memory leaks in app' is one generic step among five, not asserted as the cause.",
+    "items": [
+      {
+        "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+        "result": "met",
+        "evidence": "the termination reason is OOMKilled exitCode=137 container=worker pod=worker-86f68b9bf6-dvxbd"
+      },
+      {
+        "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+        "result": "missed",
+        "evidence": "BATCH_SIZE and the batch are never mentioned"
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }

@@ -24,5 +24,27 @@
     "verdict": "partial",
     "reason": "The answer correctly identifies OOMKilled but never names BATCH_SIZE as the cause, only recommending a generic memory limit increase to '2Gi'; it also mislabels the selector fix as adding tier=web labels to pods rather than reverting the Service selector to app=frontend, which would not persist and misses the stated intended fix.",
     "model": "us.anthropic.claude-sonnet-5"
+  },
+  "reviewer_2": {
+    "agree": true,
+    "verdict": "partial",
+    "reason": "OOMKill is reported but BATCH_SIZE is never named, so the cause is half right (partial). The frontend Service selector fault IS stated (no endpoints, tier=web label matches no pods). The two are listed independently, so the wrong answer 'frontend failure as consequence of worker crash' is not asserted. Fix (label pods tier=web by hand, raise memory to 2Gi) is not the acceptable one but that does not change the verdict. Agree with judge.",
+    "items": [
+      {
+        "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+        "result": "partial",
+        "evidence": "the termination reason is OOMKilled exitCode=137 container=worker ... Container ran out of memory (OOM - Out Of Memory) and was killed by Kubernetes."
+      },
+      {
+        "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+        "result": "met",
+        "evidence": "Service has no endpoints, expected label app=frontend ... expected label tier=web ... The Service cannot find any Pods because none have the required labels (app=frontend AND tier=web)."
+      }
+    ],
+    "wrong_answers_asserted": [],
+    "model": "us.anthropic.claude-fable-5-1",
+    "method": "independent regrade from scenario.yaml and the raw answer, judge grade read afterwards",
+    "at": "2026-10-19",
+    "directed_by": "Ben Gervais"
   }
 }
