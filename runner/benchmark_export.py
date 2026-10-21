@@ -49,7 +49,7 @@ def main():
             for rdir in sorted((ROOT / "runs" / run / sdir.name).glob("r*")) if (ROOT / "runs" / run / sdir.name).exists() else []:
                 g = json.loads((rdir / "grade.json").read_text()) if (rdir / "grade.json").exists() else {}
                 r = json.loads((rdir / "result.json").read_text()) if (rdir / "result.json").exists() else {}
-                tools["aurora"].append({"run": f"{run}/{rdir.name}", "verdict": verdict_of(g), "reviewed": bool(g.get("human_verdict")),
+                tools["aurora"].append({"run": f"{run}/{rdir.name}", "verdict": verdict_of(g), "judge_verdict": g.get("verdict"), "reviewed": bool(g.get("human_verdict")),
                                         "seconds": r.get("duration_seconds"), "cost": r.get("cost_usd"), "tool_calls": r.get("tool_calls"),
                                         "link": f"{GITHUB}/runs/{run}/{sdir.name}/{rdir.name}"})
         for h2h in sorted((ROOT / "runs").glob("h2h-*")):
@@ -64,7 +64,10 @@ def main():
                     gf = d / f"{'holmes' if tool == 'holmesgpt' else 'k8sgpt'}.grade.json"
                     g = json.loads(gf.read_text()) if gf.exists() else {}
                     rv = g.get("reviewer_ai") or {}
-                    tools[tool].append({"run": f"{h2h.name}/{rep.name}", "verdict": verdict_of(g), "reviewed": bool(g.get("human_verdict")),
+                    raw = d / ("holmes.md" if tool == "holmesgpt" else "k8sgpt.txt")
+                    no_problems = tool == "k8sgpt" and raw.exists() and "No problems detected" in raw.read_text(errors="replace")
+                    tools[tool].append({"run": f"{h2h.name}/{rep.name}", "verdict": verdict_of(g), "judge_verdict": g.get("verdict"), "reviewed": bool(g.get("human_verdict")),
+                                        "no_problems": no_problems,
                                         "ai_review": ({"agree": rv.get("agree"), "verdict": rv.get("verdict")} if rv else None),
                                         "seconds": meta.get("seconds"), "cost": None, "model": meta.get("model"),
                                         "link": f"{GITHUB}/runs/{h2h.name}/{rep.name}/{sdir.name}"})
@@ -89,11 +92,15 @@ def main():
         totals[t] = {"runs": len(runs), "graded": len(graded), "correct": sum(1 for x in graded if x["verdict"] == "correct"),
                      "ai_reviewed": len(reviewed_ai), "ai_agreed": sum(1 for x in reviewed_ai if x["ai_review"]["agree"]),
                      "human_reviewed": sum(1 for x in runs if x.get("reviewed")),
+                     "human_changed": sum(1 for x in runs if x.get("reviewed") and x["verdict"] != x.get("judge_verdict")),
                      "partial": sum(1 for x in graded if x["verdict"] == "partial"),
                      "wrong": sum(1 for x in graded if x["verdict"] in ("wrong", "no_answer")),
+                     "wrong_only": sum(1 for x in graded if x["verdict"] == "wrong"),
+                     "no_answer": sum(1 for x in graded if x["verdict"] == "no_answer"),
+                     "no_problems": sum(1 for x in runs if x.get("no_problems")),
                      "median_seconds": median([x["seconds"] for x in runs]), "median_cost": median([x["cost"] for x in runs])}
     out = {"generated": __import__("datetime").date.today().isoformat(), "cluster": "kind v0.33.0, Kubernetes v1.37.0, 3 nodes",
-           "judge": "us.anthropic.claude-opus-5-5, then a person", "tools": tools_meta, "totals": totals, "scenarios": scenarios}
+           "judge": "us.anthropic.claude-opus-5-5", "tools": tools_meta, "totals": totals, "scenarios": scenarios}
     (ROOT / "benchmark").mkdir(exist_ok=True)
     (ROOT / "benchmark" / "results.json").write_text(json.dumps(out, indent=1))
     site = Path(a.site) / "lib" / "benchmark"

@@ -2642,10 +2642,10 @@ human: partial
 alert: KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api: Rollout of deployment shop/api is not progressing for longer than 15 minutes.
 must identify:
 - partial: New api pods are stuck in Init:0/1 because the init container wait-for-db never completes
-  evidence: Your Kubernetes service has no ready endpoints because the pod "api-77b4b6956f-gr92w" isn't ready yet.
+  evidence: Error: The service cannot route traffic because its pod is not ready to accept connections.
 - missed: It waits for postgres:5432, and no Service named postgres exists in namespace shop
 fix acceptable: False
-judge notes: The RCA only restates the symptom: a pod is not ready, so the Service has no endpoints. It never mentions the init container, Init:0/1, or the missing postgres Service. The fix is a generic troubleshooting checklist, and its suggested `kubectl logs` would return nothing because the api container never started. A stricter reviewer could reasonably grade this as wrong or no_answer.
+judge notes: The RCA reports only the symptom: the service has no ready endpoints and the pod is not ready. It never mentions the init container, Init:0/1, or the missing postgres Service, and its generic steps point toward the readiness probe and pod logs, but the api container never starts and has no logs. A reviewer could reasonably downgrade this to 'wrong', since the 'not ready' statement is only a loose gesture at the real cause.
 answer:
 ```
 AI Provider: amazonbedrockconverse

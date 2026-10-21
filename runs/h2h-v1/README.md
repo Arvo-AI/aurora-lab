@@ -16,8 +16,34 @@ timeout against the kind API server on the first pass and was rerun; scenario
 Original outputs were replaced.
 
 Totals (judge, 38 runs per tool): HolmesGPT 31 correct, 6 partial, 1 wrong.
-K8sGPT 0 correct, 21 partial, 17 wrong or "No problems detected". A second model
-(us.anthropic.claude-sonnet-5, `runner/review_h2h.py`) re-read every grade and
-agreed with all 76; see `review-summary.md`. `human_verdict` is still empty.
+K8sGPT 0 correct, 21 partial, 5 wrong, 12 "No problems detected". A second model
+(us.anthropic.claude-sonnet-5, `runner/review_h2h.py`) read every grade next to
+the judge's and agreed with all 76; see `review-summary.md`. A third pass
+(`review2-summary.md`, 2026-10-19) graded all 76 from scratch without seeing the
+judge's grade: it agreed on all 38 HolmesGPT verdicts and disputed 6 K8sGPT
+labels (symptom-only answers the judge called partial or wrong, the reviewer
+no_answer). The judge's labels stand. `human_verdict` is still empty.
+
+What each tool was asked. HolmesGPT got the scenario's alert text followed by
+"Namespace shop, cluster kind-aurora-lab. Find the root cause and say what
+changed." (`runner/h2h.sh`). Aurora got the same alert text followed by
+"Cluster: aurora-lab (kubeconfig). Investigate and find the root cause."
+(`runner/run.py`). K8sGPT got no alert; `k8sgpt analyze --explain --namespace
+shop` scans the namespace.
+
+Timing. HolmesGPT's `seconds` is the wall time of one `holmes ask`. K8sGPT's
+`seconds` covers two `k8sgpt analyze --explain` passes (JSON, then text), so it
+is about twice a single run. Aurora's `duration_seconds` comes from its own
+timeline and includes the lab contention described in REPORT.md.
+
+Correction (2026-10-21). The judge's grade for r1/18 K8sGPT quoted a pod name
+(`api-77b4b6956f-gr92w`) that is not in the run's `k8sgpt.txt`. Cause: scenario
+18 was first run at 09:24 on 2026-10-15, HolmesGPT timed out, K8sGPT did not;
+the whole scenario was rerun at 17:40 and both outputs replaced, but the K8sGPT
+grade written for the first output was kept because `grade_h2h.py` skips
+existing grade files. The first-pass grade is kept in
+`logs/18-r1-k8sgpt.grade.first-pass.json`; the output it graded was not saved.
+The run's actual output was graded on 2026-10-21 with the same judge and
+prompt: partial again, evidence now quotes the file. Totals unchanged.
 Aurora (human reviewed, 2 repeats, 2026-10-02): 34 correct, 4 partial of 38.
 The table is `benchmark/results.json` and aurorasre.ai/benchmark.

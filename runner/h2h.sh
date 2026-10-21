@@ -21,12 +21,15 @@ ALERT=$(python3 -c "import yaml,sys;print(yaml.safe_load(open(sys.argv[1]))['ale
 echo "{\"scenario\":\"$SCEN\",\"alert\":$(printf '%s' "$ALERT" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))'),\"model\":\"$MODEL\",\"started\":\"$(date -u +%FT%TZ)\"}" > "$OUT/meta.json"
 
 # K8sGPT: analyzers over the shop namespace, explanations on, JSON and text.
+# "seconds" covers both passes (that is what h2h-v1 recorded); "seconds_json" is the first pass alone.
 t0=$(date +%s)
 k8sgpt analyze --explain --namespace shop --output json --no-cache > "$OUT/k8sgpt.json" 2> "$OUT/k8sgpt.err"; rc=$?
+t1=$(date +%s)
 k8sgpt analyze --explain --namespace shop --no-cache > "$OUT/k8sgpt.txt" 2>> "$OUT/k8sgpt.err"
-echo "{\"tool\":\"k8sgpt\",\"version\":\"$(k8sgpt version 2>/dev/null | head -1)\",\"seconds\":$(( $(date +%s) - t0 )),\"exit\":$rc}" > "$OUT/k8sgpt.meta.json"
+echo "{\"tool\":\"k8sgpt\",\"version\":\"$(k8sgpt version 2>/dev/null | head -1)\",\"seconds\":$(( $(date +%s) - t0 )),\"seconds_json\":$(( t1 - t0 )),\"exit\":$rc}" > "$OUT/k8sgpt.meta.json"
 
-# HolmesGPT: the alert text as the question, same model, read-only kubectl toolset.
+# HolmesGPT: the alert text as the question, same model, default toolsets (its own allow-list
+# refuses commands it does not know, so in practice it ran read-only; the kubeconfig is the admin one).
 export PATH="$HOME/.local/bin:$PATH"
 t0=$(date +%s)
 holmes ask "$ALERT Namespace shop, cluster kind-aurora-lab. Find the root cause and say what changed." \
