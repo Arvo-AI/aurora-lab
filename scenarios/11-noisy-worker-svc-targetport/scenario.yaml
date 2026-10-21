@@ -3,7 +3,7 @@ title: frontend 5xx from a wrong api Service targetPort, next to a noisy but har
 alert: "HighErrorRate [critical] namespace=shop service=frontend: 100% of requests to /api/ returned 5xx over the last 5 minutes (threshold 5%)."
 change: >
   Two changes about the same time. (1) A harmless one: the worker was redeployed
-  with code that logs a DeprecationWarning and a metrics push ERROR on every batch.
+  with code that logs a DeprecationWarning on every batch and a metrics push ERROR every third.
   (2) The real one: the api Service targetPort was changed from 8080 to 9090.
 root_cause: >
   The api Service now sends traffic to targetPort 9090, where nothing listens (the
