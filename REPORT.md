@@ -250,7 +250,8 @@ From Aurora's `llm_usage_tracking` table, 12:00 to 17:35 ET. The RCA rows match 
 | **Total** | **about $54** |
 
 Median RCA cost was $0.32 (v0) and $0.40 (v1). Prediscovery cost about $1 per
-cluster connection, more than twice what all the RCAs together cost.
+cluster connection, almost twice what all 44 RCAs together cost
+($30.38 against $16.77).
 
 ## Limits
 
