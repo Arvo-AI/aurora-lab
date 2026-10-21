@@ -44,16 +44,16 @@ sees. Aurora gets read-only cluster access under its default
 
 | # | Fault | Alert Aurora receives |
 |---|---|---|
-| 01 | Worker OOMKilled after a batch size change | KubePodCrashLooping |
-| 02 | Sidecar OOMKilled, app container healthy | KubePodCrashLooping |
-| 03 | Mistyped image tag, rollout stuck | KubeDeploymentRolloutStuck |
-| 04 | Env var references a Secret that does not exist | KubeDeploymentRolloutStuck |
-| 05 | Invalid nginx directive in a ConfigMap | KubePodCrashLooping |
-| 06 | Liveness probe on the wrong port | KubePodCrashLooping |
-| 07 | Service selector matches no pods | HighErrorRate |
-| 08 | CPU request larger than any node | KubePodNotReady |
-| 09 | redis Pending on a PVC with a missing StorageClass (symptom shows in api) | KubePodCrashLooping |
-| 10 | Wrong REDIS_HOST, name does not resolve | KubePodCrashLooping |
+| 01 | [Worker OOMKilled after a batch size change](scenarios/01-worker-oom/) | KubePodCrashLooping |
+| 02 | [Sidecar OOMKilled, app container healthy](scenarios/02-sidecar-oom/) | KubePodCrashLooping |
+| 03 | [Mistyped image tag, rollout stuck](scenarios/03-bad-image-tag/) | KubeDeploymentRolloutStuck |
+| 04 | [Env var references a Secret that does not exist](scenarios/04-missing-secret/) | KubeDeploymentRolloutStuck |
+| 05 | [Invalid nginx directive in a ConfigMap](scenarios/05-nginx-config-error/) | KubePodCrashLooping |
+| 06 | [Liveness probe on the wrong port](scenarios/06-liveness-wrong-port/) | KubePodCrashLooping |
+| 07 | [Service selector matches no pods](scenarios/07-service-selector-mismatch/) | HighErrorRate |
+| 08 | [CPU request larger than any node](scenarios/08-unschedulable-cpu/) | KubePodNotReady |
+| 09 | [redis Pending on a PVC with a missing StorageClass (symptom shows in api)](scenarios/09-redis-pvc-pending/) | KubePodCrashLooping |
+| 10 | [Wrong REDIS_HOST, name does not resolve](scenarios/10-wrong-redis-host/) | KubePodCrashLooping |
 
 ## Scenarios (v1)
 
@@ -62,19 +62,22 @@ partial restarts.
 
 | # | Fault | Alert Aurora receives |
 |---|---|---|
-| 11 | api Service targetPort wrong, worker logs noisy but harmless | HighErrorRate |
-| 12 | Worker OOM plus a frontend Service selecting no pods; alert covers only the worker | KubePodCrashLooping |
-| 13 | NetworkPolicy blocks api to redis | HighErrorRate |
-| 14 | ResourceQuota forbids the rollout's surge pod | KubeDeploymentRolloutStuck |
-| 15 | Stray Deployment's pods carry app=api, 1 in 3 requests fail | HighErrorRate |
-| 16 | dnsConfig search domains for the wrong cluster domain | KubePodCrashLooping |
-| 17 | Slow memory leak in worker code, logs clean | KubePodCrashLooping |
-| 18 | Init container waits for a Service that does not exist | KubeDeploymentRolloutStuck |
-| 19 | ConfigMap edited, only one of two frontend pods restarted | HighErrorRate |
+| 11 | [api Service targetPort wrong, worker logs noisy but harmless](scenarios/11-noisy-worker-svc-targetport/) | HighErrorRate |
+| 12 | [Worker OOM plus a frontend Service selecting no pods; alert covers only the worker](scenarios/12-two-faults-oom-and-selector/) | KubePodCrashLooping |
+| 13 | [NetworkPolicy blocks api to redis](scenarios/13-networkpolicy-blocks-redis/) | HighErrorRate |
+| 14 | [ResourceQuota forbids the rollout's surge pod](scenarios/14-resourcequota-rollout/) | KubeDeploymentRolloutStuck |
+| 15 | [Stray Deployment's pods carry app=api, 1 in 3 requests fail](scenarios/15-stray-pods-share-label/) | HighErrorRate |
+| 16 | [dnsConfig search domains for the wrong cluster domain](scenarios/16-dns-search-domain/) | KubePodCrashLooping |
+| 17 | [Slow memory leak in worker code, logs clean](scenarios/17-slow-memory-leak/) | KubePodCrashLooping |
+| 18 | [Init container waits for a Service that does not exist](scenarios/18-init-waits-missing-service/) | KubeDeploymentRolloutStuck |
+| 19 | [ConfigMap edited, only one of two frontend pods restarted](scenarios/19-config-drift-partial-restart/) | HighErrorRate |
 
 Each scenario folder has `scenario.yaml` (alert, change, root cause, what a
 correct answer must identify, acceptable fixes, known wrong answers),
-`break.sh` and `check.sh`.
+`break.sh`, `check.sh`, and a `README.md` runbook: how to recognise the fault,
+diagnose it with real output from the lab runs, and fix it. The runbooks are
+mirrored from [aurorasre.ai/runbooks](https://www.aurorasre.ai/runbooks), which
+stays the canonical copy.
 
 ## Running it
 
