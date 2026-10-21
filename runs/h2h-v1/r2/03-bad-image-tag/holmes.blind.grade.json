@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "Pods are in ImagePullBackOff / ErrImagePull because the tag nginx:1.27-alpne does not exist",
+      "result": "met",
+      "evidence": "The new ReplicaSet frontend-7b6c998456 created pod frontend-7b6c998456-8s5ht, which is stuck Pending/ImagePullBackOff: Back-off pulling image \"nginx:1.27-alpne\": ErrImagePull: ... failed to resolve reference \"docker.io/library/nginx:1.27-alpne\": docker.io/library/nginx:1.27-alpne: not found"
+    },
+    {
+      "item": "The old pods are still serving (rollout stuck, not an outage)",
+      "result": "met",
+      "evidence": "Since maxUnavailable: 25%, the rollout can't fully proceed \u2014 it's stuck with 2 old pods available + 1 new pod failing to pull, matching the KubeDeploymentRolloutStuck alert"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA never says outright that traffic is still being served. It does say the old ReplicaSet has '2/2 healthy pods' and '2 old pods available', which counts as stating it. Its rollout-mechanics explanation credits maxUnavailable, but maxSurge is what let the extra new pod be created, so a reviewer may want to note that minor inaccuracy.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "nginx fails to start with an [emerg] unknown directive error",
+      "result": "met",
+      "evidence": "nginx: [emerg] unknown directive \"proxy_conect_timeout\" in /etc/nginx/conf.d/default.conf:9"
+    },
+    {
+      "item": "The bad directive is proxy_conect_timeout in the frontend-nginx ConfigMap",
+      "result": "met",
+      "evidence": "The ConfigMap frontend-nginx (mounted into frontend pods at /etc/nginx/conf.d/default.conf) was edited and introduced a typo in the nginx directive: proxy_conect_timeout 2s;   # should be proxy_connect_timeout"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The readiness probe failure is presented as a consequence of nginx not starting, not as the cause, so it does not count as a wrong answer. The rollout explanation is slightly muddled: it says the rollout will 'stall at 1 new/healthy replica', but the new pod is not healthy. The core diagnosis and fix are accurate.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

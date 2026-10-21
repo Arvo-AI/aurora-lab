@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The container being killed is the log-shipper sidecar, not the api container",
+      "result": "met",
+      "evidence": "both 1/2 Ready, log-shipper OOMKilled repeatedly; the api container itself is healthy/Ready in both."
+    },
+    {
+      "item": "The sidecar is OOMKilled because its 16Mi limit is below its usage",
+      "result": "met",
+      "evidence": "Allocating 40MB instantly exceeds the 16Mi limit, so the kernel OOM-kills it (OOMKilled, exit code 137) within seconds of starting, every time"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA quotes the sidecar's Python code. The commands may have surfaced it through the describe output, but a reviewer should confirm that the quoted snippet matches the actual container spec. The RCA also says the old ReplicaSet pod is still running at 1/1.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

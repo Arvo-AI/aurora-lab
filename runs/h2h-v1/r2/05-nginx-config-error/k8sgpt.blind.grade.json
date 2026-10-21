@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "nginx fails to start with an [emerg] unknown directive error",
+      "result": "partial",
+      "evidence": "Error: The nginx container in the frontend pod crashed or failed to start properly."
+    },
+    {
+      "item": "The bad directive is proxy_conect_timeout in the frontend-nginx ConfigMap",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA restates the alert (container error, endpoints not ready) without saying why it fails. It never mentions the [emerg] error, the typo, or the ConfigMap, and no commands were recorded, so the logs were never checked. 'Check resource limits' and 'Fix readiness probe' appear as generic checklist items rather than asserted causes, but a reviewer may want to treat that hedging as drifting toward the listed wrong answers.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "k8sgpt"
+}

@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "FailedScheduling: 0/3 nodes are available: 1 node(s) had untolerated taint(s), Insufficient cpu."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "met",
+      "evidence": "Each node in kind-acme-lab (acme-lab-worker, acme-lab-worker2) only has 10 allocatable CPUs ... No node in the 3-node cluster has 64 free CPUs, so the pod can never be scheduled"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA mentions the control-plane taint only to explain why that node is excluded, not as the cause. Its claim that the change was a typo that dropped the 'm' suffix is unsupported speculation and does not fit the numbers, since 50m without the 'm' would be 50, not 64.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

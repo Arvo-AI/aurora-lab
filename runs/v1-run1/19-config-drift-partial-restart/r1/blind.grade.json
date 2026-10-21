@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "Only one of the two frontend pods fails (502/504, it cannot connect to its upstream), the other serves normally",
+      "result": "met",
+      "evidence": "One of two frontend replicas (`g5zrg`) continuously returned 504s to `/api/items` callers for the duration of the observed window [7], while the other replica (`kt2jr`) recovered within ~6 seconds of a single startup failure [8]."
+    },
+    {
+      "item": "The cause is the frontend-nginx ConfigMap upstream changed to api:8000; only the restarted pod has loaded it, the other still runs the old config",
+      "result": "partial",
+      "evidence": "The `frontend-nginx` ConfigMap defines the upstream as `server api:8000` [13], but the `api` ClusterIP service is actually exposed on port `8080` [6]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "partial",
+  "notes": "The RCA correctly identifies the api:8000 vs 8080 port mismatch. It never explains why only one pod fails: nginx loads its config only at start, so only the recreated pod picked up the edit while the other still runs the old config. It explicitly leaves this 'not fully reconciled' and gives no remediation.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

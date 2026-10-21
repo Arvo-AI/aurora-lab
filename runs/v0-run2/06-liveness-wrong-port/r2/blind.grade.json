@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The kubelet is restarting the container because the liveness probe fails",
+      "result": "met",
+      "evidence": "The kubelet repeatedly killed the container after failed liveness checks against port 8081 (`connection refused`), while the readiness probe on the correct port 8080 succeeded [5]."
+    },
+    {
+      "item": "The probe targets port 8081 while the app listens on 8080",
+      "result": "met",
+      "evidence": "The root cause was a misconfigured liveness probe on the `api` Deployment: the probe targets port 8081, while the application only listens on port 8080 [6, 7, 10]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA does not explicitly recommend a fix, such as reverting the liveness probe port to 8080, so fix acceptability cannot be graded. It correctly rules out OOM and application crash.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

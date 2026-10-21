@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The kubelet is restarting the container because the liveness probe fails",
+      "result": "met",
+      "evidence": "Every ~60s (15s initial delay + 3\u00d710s period) the liveness probe fails with connection refused, kubelet kills the container, and it restarts \u2014 matching the \"restarts every minute\" symptom exactly."
+    },
+    {
+      "item": "The probe targets port 8081 while the app listens on 8080",
+      "result": "met",
+      "evidence": "The api Deployment's livenessProbe targets port 8081, but the application only listens on port 8080 (confirmed in pod logs: api listening on :8080, and in the configmap-mounted api.py which binds only PORT=8080)."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The patch command's JSON path appears as '.../livenessProbe/ tpGet/port', probably a line-wrap artifact for 'httpGet', so verify it before running. The timing math (15s + 3\u00d710s \u2248 45s, not 60s) and the claim about the last-applied annotation showing 8080 are minor details worth a quick check.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

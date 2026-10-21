@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "Every node in the cluster has only 10 allocatable CPUs [7, 8], so no node could ever satisfy this request, producing the FailedScheduling event \"0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu\" [6]."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "met",
+      "evidence": "The root cause was a resource misconfiguration introduced in the worker Deployment's revision 2 rollout: the new pod template requested cpu: \"64\" (64 whole CPU cores) instead of a millicore value [6, 9]. Every node in the cluster has only 10 allocatable CPUs [7, 8], so no node could ever satisfy this request"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The fix appears only in passing ('correct the resource request or roll back the deployment', plus kubectl set resources / rollout undo under Not Checked) and never names 50m explicitly. A rollback would still restore the 50m request. The taint in the event is quoted but not blamed, and the claim of an out-of-band edit is an inference from the last-applied annotation, not a confirmed fact.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

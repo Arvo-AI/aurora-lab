@@ -30,7 +30,10 @@ the "Benchmark: add an agent" template.
    Aurora's words. `runner/grade_full.py` regrades on everything Aurora shows
    the user (report, notes, suggested next steps, last message), and
    `runner/grade_fixes.py` grades the suggested fixes. A person then checks
-   each verdict and records it as `human_verdict`.
+   each verdict and records it as `human_verdict`. `runner/grade_blind.py`
+   grades every answer again with the agent's name, its tool names and the
+   cluster name removed from the prompt, as a check on the judge
+   (`runs/blind-regrade.md`).
 
 Nothing in the cluster hints at the fault: names and labels are neutral, the
 ground truth lives only in `scenarios/*/scenario.yaml`, which Aurora never

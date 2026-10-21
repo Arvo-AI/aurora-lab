@@ -39,6 +39,9 @@
    "wrong_only": 0,
    "no_answer": 0,
    "no_problems": 0,
+   "blind_graded": 38,
+   "blind_agreed": 38,
+   "blind_correct": 34,
    "median_seconds": 153.5,
    "median_cost": 0.35
   },
@@ -55,6 +58,9 @@
    "wrong_only": 1,
    "no_answer": 0,
    "no_problems": 0,
+   "blind_graded": 38,
+   "blind_agreed": 37,
+   "blind_correct": 30,
    "median_seconds": 45.0,
    "median_cost": null
   },
@@ -71,6 +77,9 @@
    "wrong_only": 5,
    "no_answer": 12,
    "no_problems": 12,
+   "blind_graded": 38,
+   "blind_agreed": 36,
+   "blind_correct": 0,
    "median_seconds": 12.5,
    "median_cost": null
   }
@@ -88,6 +97,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 91,
        "cost": 0.248943,
@@ -98,6 +108,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 228,
        "cost": 0.34874,
@@ -116,6 +127,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -131,6 +143,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -154,6 +167,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -169,6 +183,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -200,6 +215,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 82,
        "cost": 0.188745,
@@ -210,6 +226,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 98,
        "cost": 0.301869,
@@ -228,6 +245,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -243,6 +261,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -266,6 +285,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -281,6 +301,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -312,6 +333,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 101,
        "cost": 0.244937,
@@ -322,6 +344,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 77,
        "cost": 0.189905,
@@ -340,6 +363,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -355,6 +379,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -378,6 +403,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -393,6 +419,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -424,6 +451,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 194,
        "cost": 0.481489,
@@ -434,6 +462,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 133,
        "cost": 0.352698,
@@ -452,6 +481,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -467,6 +497,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -490,6 +521,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -505,6 +537,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -536,6 +569,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 120,
        "cost": 0.27232,
@@ -546,6 +580,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 152,
        "cost": 0.363298,
@@ -564,6 +599,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -579,6 +615,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -602,6 +639,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -617,6 +655,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -648,6 +687,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 123,
        "cost": 0.34945,
@@ -658,6 +698,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 87,
        "cost": 0.283933,
@@ -676,6 +717,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -691,6 +733,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -714,6 +757,7 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -729,6 +773,7 @@
        "run": "h2h-v1/r2",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -760,6 +805,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 175,
        "cost": 0.522465,
@@ -770,6 +816,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 138,
        "cost": 0.397561,
@@ -788,6 +835,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -803,6 +851,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -826,6 +875,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -841,6 +891,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -872,6 +923,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 362,
        "cost": 0.345238,
@@ -882,6 +934,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 89,
        "cost": 0.210104,
@@ -900,6 +953,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -915,6 +969,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -938,6 +993,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -953,6 +1009,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -984,6 +1041,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 406,
        "cost": 0.302429,
@@ -994,6 +1052,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 155,
        "cost": 0.468522,
@@ -1012,6 +1071,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1027,6 +1087,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1050,6 +1111,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1065,6 +1127,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1096,6 +1159,7 @@
        "run": "v0-run2/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 292,
        "cost": 0.227784,
@@ -1106,6 +1170,7 @@
        "run": "v0-run2/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 197,
        "cost": 0.338899,
@@ -1124,6 +1189,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1139,6 +1205,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1162,6 +1229,7 @@
        "run": "h2h-v1/r1",
        "verdict": "wrong",
        "judge_verdict": "wrong",
+       "blind_verdict": "wrong",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1177,6 +1245,7 @@
        "run": "h2h-v1/r2",
        "verdict": "wrong",
        "judge_verdict": "wrong",
+       "blind_verdict": "wrong",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1208,6 +1277,7 @@
        "run": "v1-run1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 144,
        "cost": 0.441335,
@@ -1218,6 +1288,7 @@
        "run": "v1-run1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": true,
        "seconds": 535,
        "cost": 0.571023,
@@ -1236,6 +1307,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1251,6 +1323,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1274,6 +1347,7 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1289,6 +1363,7 @@
        "run": "h2h-v1/r2",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1320,6 +1395,7 @@
        "run": "v1-run1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": true,
        "seconds": 140,
        "cost": 0.363446,
@@ -1330,6 +1406,7 @@
        "run": "v1-run1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": true,
        "seconds": 548,
        "cost": 0.324243,
@@ -1348,6 +1425,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1363,6 +1441,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1386,6 +1465,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1401,6 +1481,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1432,6 +1513,7 @@
        "run": "v1-run1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 202,
        "cost": 0.686726,
@@ -1442,6 +1524,7 @@
        "run": "v1-run1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 444,
        "cost": 0.54025,
@@ -1460,6 +1543,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1475,6 +1559,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1498,6 +1583,7 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1513,6 +1599,7 @@
        "run": "h2h-v1/r2",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1544,6 +1631,7 @@
        "run": "v1-run1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 108,
        "cost": 0.242535,
@@ -1554,6 +1642,7 @@
        "run": "v1-run1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 144,
        "cost": 0.38973,
@@ -1572,6 +1661,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1587,6 +1677,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1610,6 +1701,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1625,6 +1717,7 @@
        "run": "h2h-v1/r2",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1656,6 +1749,7 @@
        "run": "v1-run1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 175,
        "cost": 0.591582,
@@ -1666,6 +1760,7 @@
        "run": "v1-run1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 118,
        "cost": 0.35377,
@@ -1684,6 +1779,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1699,6 +1795,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1722,6 +1819,7 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1737,6 +1835,7 @@
        "run": "h2h-v1/r2",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1768,6 +1867,7 @@
        "run": "v1-run1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 140,
        "cost": 0.40405,
@@ -1778,6 +1878,7 @@
        "run": "v1-run1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 205,
        "cost": 0.56062,
@@ -1796,6 +1897,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1811,6 +1913,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1834,6 +1937,7 @@
        "run": "h2h-v1/r1",
        "verdict": "wrong",
        "judge_verdict": "wrong",
+       "blind_verdict": "wrong",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1849,6 +1953,7 @@
        "run": "h2h-v1/r2",
        "verdict": "wrong",
        "judge_verdict": "wrong",
+       "blind_verdict": "wrong",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1880,6 +1985,7 @@
        "run": "v1-run1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 201,
        "cost": 0.312088,
@@ -1890,6 +1996,7 @@
        "run": "v1-run1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 86,
        "cost": 0.196479,
@@ -1908,6 +2015,7 @@
        "run": "h2h-v1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1923,6 +2031,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -1946,6 +2055,7 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1961,6 +2071,7 @@
        "run": "h2h-v1/r2",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -1992,6 +2103,7 @@
        "run": "v1-run1/r1",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 158,
        "cost": 0.400898,
@@ -2002,6 +2114,7 @@
        "run": "v1-run1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 160,
        "cost": 0.483707,
@@ -2020,6 +2133,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -2035,6 +2149,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -2058,6 +2173,7 @@
        "run": "h2h-v1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "wrong",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -2073,6 +2189,7 @@
        "run": "h2h-v1/r2",
        "verdict": "wrong",
        "judge_verdict": "wrong",
+       "blind_verdict": "wrong",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -2104,6 +2221,7 @@
        "run": "v1-run1/r1",
        "verdict": "partial",
        "judge_verdict": "partial",
+       "blind_verdict": "partial",
        "reviewed": true,
        "seconds": 280,
        "cost": 0.389664,
@@ -2114,6 +2232,7 @@
        "run": "v1-run1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "correct",
        "reviewed": true,
        "seconds": 253,
        "cost": 0.839121,
@@ -2132,6 +2251,7 @@
        "run": "h2h-v1/r1",
        "verdict": "wrong",
        "judge_verdict": "wrong",
+       "blind_verdict": "wrong",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -2147,6 +2267,7 @@
        "run": "h2h-v1/r2",
        "verdict": "correct",
        "judge_verdict": "correct",
+       "blind_verdict": "partial",
        "reviewed": false,
        "no_problems": false,
        "ai_review": {
@@ -2170,6 +2291,7 @@
        "run": "h2h-v1/r1",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {
@@ -2185,6 +2307,7 @@
        "run": "h2h-v1/r2",
        "verdict": "no_answer",
        "judge_verdict": "no_answer",
+       "blind_verdict": "no_answer",
        "reviewed": false,
        "no_problems": true,
        "ai_review": {

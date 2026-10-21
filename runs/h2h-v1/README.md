@@ -47,3 +47,14 @@ The run's actual output was graded on 2026-10-21 with the same judge and
 prompt: partial again, evidence now quotes the file. Totals unchanged.
 Aurora (human reviewed, 2 repeats, 2026-10-02): 34 correct, 4 partial of 38.
 The table is `benchmark/results.json` and aurorasre.ai/benchmark.
+
+Blind check (2026-10-21). `runner/grade_blind.py` graded all 114 answers
+(Aurora's 38 too) again with the same judge and prompt but with the agent's
+name, its tool names, the cluster name and the K8sGPT stand-in sentence
+removed. Blind verdict equals the published one in 38 of 38 for Aurora, 37 of
+38 for HolmesGPT (r2/19 correct to partial, for the mechanism error the judge
+had already noted), 36 of 38 for K8sGPT (r1/05 partial to no_answer, r1/18
+partial to wrong). All three moved down. The blind judge still called r1/18
+"generic k8sgpt-style output", so the format identifies K8sGPT even with the
+name gone. Published verdicts are unchanged; the blind grades sit next to each
+run as `*.blind.grade.json` and the list is `runs/blind-regrade.md`.

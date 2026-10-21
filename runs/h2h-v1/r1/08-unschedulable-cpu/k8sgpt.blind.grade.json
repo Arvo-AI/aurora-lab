@@ -1,0 +1,24 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "Error: 0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu."
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "partial",
+      "evidence": "Solution: 1) Add tolerations to pod for tainted node 2) Reduce pod CPU requests 3) Add nodes to cluster 4) Remove unused pods to free CPU"
+    }
+  ],
+  "wrong_answers_asserted": [
+    "Taints, node selectors or affinity",
+    "Adding nodes as the primary fix without noting the request is the error"
+  ],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA never mentions the 64-core request. It frames the problem as nodes lacking CPU plus a taint, and makes adding tolerations the first fix. 'Reduce pod CPU requests' appears only as one hedged option among four, with no target value such as 50m. A reviewer may consider fix_acceptable borderline, since the correct fix is listed but not prioritized.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "k8sgpt"
+}

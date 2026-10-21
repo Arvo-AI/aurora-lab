@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The new ReplicaSet cannot create pods (FailedCreate) because the ResourceQuota compute-resources requests.memory limit is exhausted",
+      "result": "met",
+      "evidence": "With zero headroom in the quota, every attempt by `replicaset/api-6d96cc9f88` to create that pod was rejected by the API server with \"exceeded quota: compute-resources, requested: requests.memory=32Mi, used: requests.memory=200Mi, limited: requests.memory=200Mi,\" confirmed by repeated `FailedCreate` events on the ReplicaSet [8, 10, 14, 15]."
+    },
+    {
+      "item": "It is a stuck rollout with the old pods still serving, not an outage and not a pod crash",
+      "result": "met",
+      "evidence": "The deployment's old ReplicaSet remained healthy throughout, with both `api` pods reporting 1/1 Running and the deployment reporting `Available: True`, meaning there was no service outage [5, 6, 7]. The impact was limited to the rollout being unable to progress"
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA gives no remediation, so the fix cannot be graded. It also has minor factual slips: it calls the alert high-severity when it was a warning, and it reports '1 unavailable' while also saying 2 replicas were available.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

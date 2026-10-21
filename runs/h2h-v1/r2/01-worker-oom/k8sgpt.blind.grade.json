@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "Error: the termination reason is OOMKilled exitCode=137 container=worker pod=worker-86f68b9bf6-dvxbd"
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA correctly identifies OOMKilled but never mentions BATCH_SIZE or why memory use grew. Its fix is a generic checklist. 'Increase memory limits' has no stated reason tied to the batch working set, and it sits alongside 'Check for memory leaks', which is listed as a step rather than asserted as the cause. No commands were recorded, so the output looks like templated analyzer text.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "k8sgpt"
+}

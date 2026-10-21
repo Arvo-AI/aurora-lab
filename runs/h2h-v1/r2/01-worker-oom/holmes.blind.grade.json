@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "Pod worker-86f68b9bf6-dvxbd in namespace shop is in CrashLoopBackOff, restart count 3, last 2 terminations: OOMKilled / exit code 137."
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "met",
+      "evidence": "The live pod spec has BATCH_SIZE=2500, 5x higher than the last-applied config \u2014 this value was changed (e.g. via kubectl edit/kubectl set env or a direct patch) without updating memory limits accordingly."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA says the last-applied-configuration annotation shows BATCH_SIZE=500. That is consistent with an imperative `kubectl set env`, which does not update the annotation, but a reviewer may want to confirm it against the truncated deployment YAML. The primary fix is to revert BATCH_SIZE to 500, and the alternative of raising the limit includes a stated reason.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

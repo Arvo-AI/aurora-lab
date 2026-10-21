@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "nginx fails to start with an [emerg] unknown directive error",
+      "result": "met",
+      "evidence": "Container logs confirm nginx fails to parse this as an unknown directive at startup and exits with error (emerg level, exit code 1) [6]."
+    },
+    {
+      "item": "The bad directive is proxy_conect_timeout in the frontend-nginx ConfigMap",
+      "result": "met",
+      "evidence": "The root cause was a typo in the frontend-nginx ConfigMap's default.conf, where `proxy_conect_timeout` was used instead of `proxy_connect_timeout` [8]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The fix is only implied: the RCA mentions a 'ConfigMap fix', an unapplied 'remediation patch' and a 'rollout restart', and names the correct directive spelling, but never states the fix explicitly. The readiness probe failure is correctly framed as a consequence, not a cause.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

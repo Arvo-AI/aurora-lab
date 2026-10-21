@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+      "result": "met",
+      "evidence": "Deployment shop/worker revision 2 bumped BATCH_SIZE from 500 \u2192 2500 ... At 2500 that's ~250MB, which blows past the 192Mi limit immediately."
+    },
+    {
+      "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The worker OOM diagnosis and fix are correct. The RCA never checks Services, endpoints or the frontend, so it misses the unalerted selector fault entirely. The fix covers only the worker, so it does not match the acceptable fix, which requires restoring the frontend Service selector to app=frontend.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

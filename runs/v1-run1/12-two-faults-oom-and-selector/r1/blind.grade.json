@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+      "result": "met",
+      "evidence": "The root cause was a configuration change introduced in deployment revision 2 of `worker`, which raised the `BATCH_SIZE` environment variable from 500 to 2500 while leaving the 192Mi memory limit unchanged [9, 10]."
+    },
+    {
+      "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "partial",
+  "notes": "The RCA says the frontend 'remained healthy and unaffected', which is wrong; the frontend Service selector fault was never checked (no get svc/endpoints commands). No explicit remediation was recommended.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

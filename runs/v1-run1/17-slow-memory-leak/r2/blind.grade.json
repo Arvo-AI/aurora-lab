@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+      "result": "met",
+      "evidence": "Pod `worker-64bddfdcf-8x9rs` started at 21:04:56 and was terminated at 21:07:16 (Exit Code 137, OOMKilled), with Restart Count 1 recorded on describe [9]."
+    },
+    {
+      "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+      "result": "met",
+      "evidence": "The root cause was a memory leak in the worker application code. The ConfigMap `api-code` containing `worker.py` shows a `recent` list intended as a bounded \"tail of recent batches,\" but the code only ever calls `recent.extend(buf[-50:])` inside the main loop and never trims the list [10]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA has no explicit remediation section. It mentions 'either validated fix (ConfigMap patch or memory limit increase)' only under Not Checked, so it offers a limit increase as an equal alternative rather than as the sole fix. A reviewer may want to confirm this counts as recommending the code fix.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The new api pods exit because the name redis does not resolve",
+      "result": "met",
+      "evidence": "The api container tries to resolve REDIS_HOST=redis at startup; with ndots:5 the resolver tries redis.shop.svc.cluster.internal, redis.svc.cluster.internal, redis.cluster.internal, then bare redis \u2014 all fail \u2014 producing: redis connection failed (attempt 1/5): [Errno -2] Name does not resolve ... The process then calls sys.exit(1)"
+    },
+    {
+      "item": "The cause is the pod's dnsPolicy None / dnsConfig search domains (cluster.internal), not REDIS_HOST, the redis Service or CoreDNS",
+      "result": "met",
+      "evidence": "But the search domain suffix is wrong: it uses cluster.internal instead of the cluster's actual domain cluster.local. ... Redis itself is healthy and unrelated: service redis (ClusterIP 10.96.245.188) has a live endpoint ... This is purely a DNS-resolution break introduced by the new pod spec, not a Redis outage."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA explicitly clears the redis Service and confirms the nameserver IP is correct, which clears CoreDNS by implication. It treats REDIS_HOST=redis as a valid short name without stating outright that it is fine. The fix offers removing the dnsConfig, correcting the domains to cluster.local, or rollout undo, and all three are acceptable.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

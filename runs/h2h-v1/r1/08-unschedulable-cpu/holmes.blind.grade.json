@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The pod is Pending with FailedScheduling Insufficient cpu",
+      "result": "met",
+      "evidence": "FailedScheduling event for worker-7fdf4ffb67-p9pwt: \"0/3 nodes are available: 1 node(s) had untolerated taint(s), 2 Insufficient cpu. preemption: not helpful.\""
+    },
+    {
+      "item": "The cause is the 64-core CPU request, above any node's allocatable CPU",
+      "result": "met",
+      "evidence": "Both worker nodes (acme-lab-worker, acme-lab-worker2) have only 10 allocatable CPUs each (confirmed via node status) \u2014 nowhere near the requested 64 cores."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The control-plane taint is mentioned only as expected and unrelated, not as a cause. The alternative fix of '64m' rests on a speculative typo theory, but it would also fit, and the primary fix of 50m matches ground truth. The 'light actual usage' remark cites kubectl top pods for a node-level claim, which is a minor overreach.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

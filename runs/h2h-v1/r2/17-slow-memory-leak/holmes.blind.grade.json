@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (reason OOMKilled, exit code 137), not crashing on an error",
+      "result": "met",
+      "evidence": "Restart count 1, last container state OOMKilled, exit code 137, started 2026-10-16T08:45:38Z."
+    },
+    {
+      "item": "The cause is a memory leak in the new worker code (items retained across batches in a list that is never cleared), not the batch size",
+      "result": "met",
+      "evidence": "recent is intended to hold only a bounded \"tail\" of recent items, but it's never trimmed \u2014 extend() keeps appending ~5MiB per 5-second loop forever."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA says 'not a config change' and 'nothing changed in the deployment spec', so it never names the ConfigMap code edit as the triggering change, though it correctly places the leak in worker.py from api-code. Raising the memory limit is offered only as a stopgap, explicitly secondary to the code fix.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

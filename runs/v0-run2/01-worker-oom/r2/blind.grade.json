@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker container is OOMKilled (terminated reason OOMKilled), not crashing for another reason",
+      "result": "met",
+      "evidence": "This caused the kubelet to OOMKill the container (Exit Code 137) on each cycle, producing the observed CrashLoopBackOff [7]."
+    },
+    {
+      "item": "The trigger is the BATCH_SIZE change from 500 to 2500 (or the larger batch exceeding the limit)",
+      "result": "met",
+      "evidence": "The root cause was an out-of-band change to the worker deployment's BATCH_SIZE environment variable from 500 to 2500 [10], confirmed by pod logs showing the container started with batch size 2500 [6]. Per the api-code ConfigMap's worker.py logic, memory usage scales as batch \u00d7 100KiB, meaning BATCH_SIZE=2500 requires ~244MiB while the container's memory limit is 192Mi [8, 10]."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": null,
+  "verdict": "correct",
+  "notes": "The RCA recommends no remediation, so fix_acceptable is null; a reviewer may want to confirm that reverting BATCH_SIZE was communicated elsewhere. It attributes the OOM kill to the kubelet rather than the kernel OOM killer, a minor technical imprecision that does not affect the diagnosis.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

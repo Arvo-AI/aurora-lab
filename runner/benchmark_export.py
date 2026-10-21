@@ -49,7 +49,8 @@ def main():
             for rdir in sorted((ROOT / "runs" / run / sdir.name).glob("r*")) if (ROOT / "runs" / run / sdir.name).exists() else []:
                 g = json.loads((rdir / "grade.json").read_text()) if (rdir / "grade.json").exists() else {}
                 r = json.loads((rdir / "result.json").read_text()) if (rdir / "result.json").exists() else {}
-                tools["aurora"].append({"run": f"{run}/{rdir.name}", "verdict": verdict_of(g), "judge_verdict": g.get("verdict"), "reviewed": bool(g.get("human_verdict")),
+                b = json.loads((rdir / "blind.grade.json").read_text()) if (rdir / "blind.grade.json").exists() else {}
+                tools["aurora"].append({"run": f"{run}/{rdir.name}", "verdict": verdict_of(g), "judge_verdict": g.get("verdict"), "blind_verdict": b.get("verdict"), "reviewed": bool(g.get("human_verdict")),
                                         "seconds": r.get("duration_seconds"), "cost": r.get("cost_usd"), "tool_calls": r.get("tool_calls"),
                                         "link": f"{GITHUB}/runs/{run}/{sdir.name}/{rdir.name}"})
         for h2h in sorted((ROOT / "runs").glob("h2h-*")):
@@ -64,9 +65,11 @@ def main():
                     gf = d / f"{'holmes' if tool == 'holmesgpt' else 'k8sgpt'}.grade.json"
                     g = json.loads(gf.read_text()) if gf.exists() else {}
                     rv = g.get("reviewer_ai") or {}
+                    bf = d / f"{'holmes' if tool == 'holmesgpt' else 'k8sgpt'}.blind.grade.json"
+                    b = json.loads(bf.read_text()) if bf.exists() else {}
                     raw = d / ("holmes.md" if tool == "holmesgpt" else "k8sgpt.txt")
                     no_problems = tool == "k8sgpt" and raw.exists() and "No problems detected" in raw.read_text(errors="replace")
-                    tools[tool].append({"run": f"{h2h.name}/{rep.name}", "verdict": verdict_of(g), "judge_verdict": g.get("verdict"), "reviewed": bool(g.get("human_verdict")),
+                    tools[tool].append({"run": f"{h2h.name}/{rep.name}", "verdict": verdict_of(g), "judge_verdict": g.get("verdict"), "blind_verdict": b.get("verdict"), "reviewed": bool(g.get("human_verdict")),
                                         "no_problems": no_problems,
                                         "ai_review": ({"agree": rv.get("agree"), "verdict": rv.get("verdict")} if rv else None),
                                         "seconds": meta.get("seconds"), "cost": None, "model": meta.get("model"),
@@ -98,6 +101,9 @@ def main():
                      "wrong_only": sum(1 for x in graded if x["verdict"] == "wrong"),
                      "no_answer": sum(1 for x in graded if x["verdict"] == "no_answer"),
                      "no_problems": sum(1 for x in runs if x.get("no_problems")),
+                     "blind_graded": sum(1 for x in graded if x.get("blind_verdict")),
+                     "blind_agreed": sum(1 for x in graded if x.get("blind_verdict") and x["blind_verdict"] == x["verdict"]),
+                     "blind_correct": sum(1 for x in graded if x.get("blind_verdict") == "correct"),
                      "median_seconds": median([x["seconds"] for x in runs]), "median_cost": median([x["cost"] for x in runs])}
     out = {"generated": __import__("datetime").date.today().isoformat(), "cluster": "kind v0.33.0, Kubernetes v1.37.0, 3 nodes",
            "judge": "us.anthropic.claude-opus-5-5", "tools": tools_meta, "totals": totals, "scenarios": scenarios}

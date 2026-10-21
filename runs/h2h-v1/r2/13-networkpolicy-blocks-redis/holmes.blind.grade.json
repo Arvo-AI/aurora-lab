@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The api cannot reach redis (connection timeouts), which is why /api/ returns 5xx; redis itself is healthy",
+      "result": "met",
+      "evidence": "redis_ping() times out (2s) because the NetworkPolicy drops packets from api pods to redis:6379. ... redis itself is healthy (clean startup logs, 6m CPU / 4Mi mem, no errors)"
+    },
+    {
+      "item": "The cause is the NetworkPolicy redis, which allows ingress to redis only from app=worker, not from the api",
+      "result": "met",
+      "evidence": "NetworkPolicy redis in shop restricts ingress to the redis pod (label app=redis) to only pods matching app: worker ... The api pods (label app=api) are not in the allow-list, so their traffic to redis:6379 is silently dropped by the policy."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA says the change was a namespace-wide redeploy at 08:31:15Z that 'shipped with' the policy. The scenario says the change was applying the NetworkPolicy itself, so the timeline framing may be speculative. The RCA also says 'every redeploy reintroduces this breakage', which is an unsupported inference. Neither point affects the core diagnosis or the fix.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The worker is OOMKilled because BATCH_SIZE was raised from 500 to 2500",
+      "result": "met",
+      "evidence": "a configuration change increased the `worker` deployment's `BATCH_SIZE` environment variable from 500 (original revision, retained in ReplicaSet `worker-6cf88d4b58`) [14] to 2500 in the live spec ... at `BATCH_SIZE=2500` it consumes ~244MiB, exceeding the limit and triggering an OOM kill almost immediately after startup"
+    },
+    {
+      "item": "Separately, the frontend Service has no endpoints because its selector (tier=web) matches no pods, so the frontend is down for users",
+      "result": "missed",
+      "evidence": ""
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": false,
+  "verdict": "partial",
+  "notes": "The RCA states the frontend was 'running normally and unaffected' and scopes impact to the worker only. It never inspected the frontend Service or its endpoints, so it missed the user-facing outage. Its only remediation mention is a hedged 'rollback or limit increase' that was not executed. Even read as a recommendation, it omits reverting the Service selector to app=frontend, so it does not meet the acceptable fix.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "aurora"
+}

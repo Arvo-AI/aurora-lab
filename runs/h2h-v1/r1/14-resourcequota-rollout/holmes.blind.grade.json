@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "The new ReplicaSet cannot create pods (FailedCreate) because the ResourceQuota compute-resources requests.memory limit is exhausted",
+      "result": "met",
+      "evidence": "Deployment shop/api rollout is stuck because the new ReplicaSet can't create pods \u2014 the namespace's ResourceQuota is exhausted."
+    },
+    {
+      "item": "It is a stuck rollout with the old pods still serving, not an outage and not a pod crash",
+      "result": "met",
+      "evidence": "NewReplicaSet: api-67cc856b45 (0/1 replicas created), old RS api-f64486c4c still holding 2/2 \u2014 classic stuck rolling update due to quota, not a bad image/config."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The RCA never says 'not an outage' or 'old pods still serving' in so many words. It does say the old RS holds 2/2 running pods and that this is a stuck rolling update, not a bad image/config, so the second item is judged met. The maxSurge 0 / maxUnavailable 1 option was not mentioned, but the primary fix of raising the quota is acceptable.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}

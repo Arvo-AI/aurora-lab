@@ -1,0 +1,21 @@
+{
+  "must_identify": [
+    {
+      "item": "New pods are in CreateContainerConfigError",
+      "result": "met",
+      "evidence": "New pod api-5f7c48ddc6-w2bpc (RS api-5f7c48ddc6): stuck CreateContainerConfigError, event Error: secret \"api-secrets\" not found (repeated 8x). This is the cause of the stuck rollout."
+    },
+    {
+      "item": "The cause is the missing Secret api-secrets referenced by the DB_PASSWORD env var",
+      "result": "met",
+      "evidence": "Deployment api in namespace shop was updated (generation 2, revision 2) to add an env var DB_PASSWORD sourced from secretKeyRef: api-secrets/db-password. ... The secret api-secrets does not exist in namespace shop (kubectl get secrets -n shop \u2192 no resources found)."
+    }
+  ],
+  "wrong_answers_asserted": [],
+  "fix_acceptable": true,
+  "verdict": "correct",
+  "notes": "The primary fix is creating Secret api-secrets with key db-password, and the alternative is a rollback; both are acceptable. A reviewer may want to check the minor claim that the pod will 'restart automatically': in practice the kubelet retries container creation once the Secret exists.",
+  "judge_model": "us.anthropic.claude-opus-5-5",
+  "blinded": true,
+  "tool": "holmes"
+}
