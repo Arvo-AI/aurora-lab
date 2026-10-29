@@ -1,4 +1,4 @@
-# Name does not resolve with dnsPolicy None: the search domains are wrong (Kubernetes)
+# Kubernetes dnsPolicy None: Name does not resolve, the fix
 
 *New pods log Name does not resolve for a Service that exists. The template set dnsPolicy None with search domains for another cluster domain. Lab-tested.*
 

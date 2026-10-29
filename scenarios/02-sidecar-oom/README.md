@@ -1,4 +1,4 @@
-# Sidecar OOMKilled, app healthy: the pod drops out of its Service (Kubernetes)
+# Kubernetes sidecar OOMKilled: pod 1/2 Ready, app healthy
 
 *A sidecar OOMKilled under its own 16Mi limit left a healthy api 1/2 Ready and its Service empty. Find the container, fix its limit, verify. Lab-tested.*
 
@@ -17,7 +17,7 @@ Then investigate with any tool you like; `scenario.yaml` holds the ground truth 
 | Verified on | Kubernetes server v1.37.0, kind v0.33.0, python:3.12-alpine, 2026-10-02 |
 | Lab folder | [scenarios/02-sidecar-oom](https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/02-sidecar-oom), runs in [runs/v0-run2/02-sidecar-oom](https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/02-sidecar-oom) |
 
-**When a pod shows `1/2` under READY and `OOMKilled` under STATUS while the app's own logs look fine, find out which container is being killed before you touch the app: Kubernetes keeps a separate state, `lastState` and `restartCount` for every container, but readiness is decided for the whole pod, so one dying sidecar takes a healthy app out of its Service.** Confirm it with `kubectl describe pod <pod>` and read `Last State` and `Restart Count` under each container name. The fix belongs to the sidecar: raise its own memory limit, shrink its buffer, or roll it back. The kill itself is covered in [OOMKilled: container exceeded its memory limit](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes).
+**When a pod shows `1/2` under READY and `OOMKilled` under STATUS while the app's own logs look fine, find out which container is being killed before you touch the app: Kubernetes keeps a separate state, `lastState` and `restartCount` for every container, but readiness is decided for the whole pod, so one dying sidecar takes a healthy app out of its Service.** Confirm it with `kubectl describe pod <pod>` and read `Last State` and `Restart Count` under each container name. The fix belongs to the sidecar: raise its own memory limit, shrink its buffer, or roll it back. The kill itself is covered in [Kubernetes OOMKilled (exit code 137)](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes).
 
 ## At a glance
 
@@ -258,7 +258,7 @@ Aurora receives the alert and investigates with read-only `kubectl` behind a com
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 - **See it on an incident:** [Aurora root cause analysis](https://www.aurorasre.ai/rca)
 
-Related: [OOMKilled: container exceeded its memory limit](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [OOMKilled from a slow memory leak](https://www.aurorasre.ai/runbooks/fix-memory-leak-oomkilled-kubernetes), [Service has no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [how to fix CrashLoopBackOff](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes), and the [lab report on 19 Kubernetes failures](https://www.aurorasre.ai/blog/aurora-lab-report-kubernetes-19-failures).
+Related: [Kubernetes OOMKilled (exit code 137)](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [OOMKilled from a slow memory leak](https://www.aurorasre.ai/runbooks/fix-memory-leak-oomkilled-kubernetes), [Service has no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [how to fix CrashLoopBackOff](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes), and the [lab report on 19 Kubernetes failures](https://www.aurorasre.ai/blog/aurora-lab-report-kubernetes-19-failures).
 
 ## Sources and verification
 

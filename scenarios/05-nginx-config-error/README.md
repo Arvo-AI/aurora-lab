@@ -1,4 +1,4 @@
-# nginx [emerg] unknown directive: a ConfigMap typo crash-loops the pod (Kubernetes)
+# nginx [emerg] unknown directive in Kubernetes: cause and fix
 
 *nginx [emerg] unknown directive means a config line nginx does not know, usually a typo in a mounted ConfigMap. Find the line, fix it, restart, check.*
 
@@ -25,7 +25,7 @@ Then investigate with any tool you like; `scenario.yaml` holds the ground truth 
 |---|---|---|---|
 | `CrashLoopBackOff`, exit code 1, `[emerg] unknown directive` in the previous log | A directive is misspelled or unsupported in the mounted config | `kubectl logs <pod> --previous` then `kubectl get configmap <name> -o yaml` | Correct the directive, restart the Deployment |
 | `[emerg]` names a directive that exists, but the module is missing | The image was built without that module | `nginx -V` in a healthy pod of the same image | Use an image with the module, or remove the directive |
-| Exit code 137, no `[emerg]` line | OOMKilled, not a config problem | `kubectl describe pod` shows `Reason: OOMKilled` | See [how to fix OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes) |
+| Exit code 137, no `[emerg]` line | OOMKilled, not a config problem | `kubectl describe pod` shows `Reason: OOMKilled` | See [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes) |
 | Pod Running, `Readiness probe failed`, no restarts | The app is up but the probe path or port is wrong | `kubectl describe pod` events, `kubectl logs` with no `[emerg]` | Fix the probe, not the config |
 
 ## How do you confirm it is a config error?
@@ -214,7 +214,7 @@ Aurora receives the alert, connects to the cluster read-only through an uploaded
 - **GitHub:** [github.com/Arvo-AI/aurora](https://github.com/Arvo-AI/aurora)
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 
-Related: [how to fix OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [how to fix CrashLoopBackOff](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes), [a ConfigMap change that reached only some pods](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and what an [Aurora root cause analysis](https://www.aurorasre.ai/rca) looks like.
+Related: [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [how to fix CrashLoopBackOff](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes), [a ConfigMap change that reached only some pods](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and what an [Aurora root cause analysis](https://www.aurorasre.ai/rca) looks like.
 
 ## Sources and verification
 

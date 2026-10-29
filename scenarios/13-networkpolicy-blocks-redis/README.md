@@ -1,4 +1,4 @@
-# Connections time out: a NetworkPolicy blocks the app from its dependency (Kubernetes)
+# Kubernetes NetworkPolicy blocking traffic: timeouts and the fix
 
 *Requests time out while every pod is Running: a NetworkPolicy lets only other pods reach the dependency. Read the error, find the policy, fix it.*
 

@@ -1,4 +1,4 @@
-# Name does not resolve: a wrong Service hostname crash-loops the app (Kubernetes)
+# Kubernetes Name does not resolve: wrong Service name, the fix
 
 *The app exits with Name does not resolve because an env var names a Service that does not exist. Confirm it, rule out CoreDNS, fix the name. Lab-tested.*
 

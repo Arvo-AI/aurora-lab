@@ -1,4 +1,4 @@
-# Service has no endpoints: the selector matches no pods, upstream returns 502 (Kubernetes)
+# Kubernetes Service has no endpoints: meaning and how to fix it
 
 *A Service with no endpoints has a selector that matches no pods, so its ClusterIP refuses connections and the proxy returns 502. Confirm it and fix it.*
 
@@ -231,7 +231,7 @@ Aurora receives the alert, connects to the cluster read-only through an uploaded
 - **GitHub:** [github.com/Arvo-AI/aurora](https://github.com/Arvo-AI/aurora)
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 
-Related: [how to fix OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [how to fix ImagePullBackOff](https://www.aurorasre.ai/runbooks/fix-imagepullbackoff-kubernetes), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), [a Service whose targetPort does not match the container](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [a ConfigMap change that reached only some pods](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [a Service selecting pods from the wrong Deployment](https://www.aurorasre.ai/runbooks/fix-service-selects-wrong-pods-label-overlap-kubernetes), [a second fault the alert did not cover](https://www.aurorasre.ai/runbooks/fix-second-fault-alert-covers-only-one-kubernetes), and what an [Aurora root cause analysis](https://www.aurorasre.ai/rca) looks like.
+Related: [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [how to fix ImagePullBackOff](https://www.aurorasre.ai/runbooks/fix-imagepullbackoff-kubernetes), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), [a Service whose targetPort does not match the container](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [a ConfigMap change that reached only some pods](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [a Service selecting pods from the wrong Deployment](https://www.aurorasre.ai/runbooks/fix-service-selects-wrong-pods-label-overlap-kubernetes), [a second fault the alert did not cover](https://www.aurorasre.ai/runbooks/fix-second-fault-alert-covers-only-one-kubernetes), and what an [Aurora root cause analysis](https://www.aurorasre.ai/rca) looks like.
 
 ## Sources and verification
 

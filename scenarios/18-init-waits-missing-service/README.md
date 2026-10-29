@@ -1,4 +1,4 @@
-# Pod stuck in Init:0/1: an init container never finishes (Kubernetes)
+# Kubernetes pod stuck in Init:0/1: why and how to fix it
 
 *A pod stuck in Init:0/1 has an init container that never exits, often a wait loop on a missing Service. Read its logs, check the Service, fix the spec.*
 

@@ -1,4 +1,4 @@
-# Pod Pending with FailedScheduling: Insufficient cpu, the request fits no node (Kubernetes)
+# Kubernetes pod Pending, FailedScheduling Insufficient cpu: fix
 
 *A pod Pending with FailedScheduling Insufficient cpu asks for more CPU than any node has. Read the event, compare request and nodes, fix the request.*
 
@@ -251,7 +251,7 @@ Aurora receives the alert, lists the pods, reads the pending pod's scheduling ev
 - **GitHub:** [github.com/Arvo-AI/aurora](https://github.com/Arvo-AI/aurora)
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 
-Related: [how to fix OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [how to fix CreateContainerConfigError](https://www.aurorasre.ai/runbooks/fix-createcontainerconfigerror-kubernetes), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and [how Aurora investigates an incident](https://www.aurorasre.ai/rca).
+Related: [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [how to fix CreateContainerConfigError](https://www.aurorasre.ai/runbooks/fix-createcontainerconfigerror-kubernetes), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and [how Aurora investigates an incident](https://www.aurorasre.ai/rca).
 
 ## Sources and verification
 

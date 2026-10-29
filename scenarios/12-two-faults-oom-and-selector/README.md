@@ -1,4 +1,4 @@
-# Alert fixed, users still see errors: a second fault the alert did not cover (Kubernetes)
+# Kubernetes alert fixed, errors continue: find the second fault
 
 *The alerted pod is explained, yet users still get errors: a second, unalerted fault. Scope past the alert with real lab output from two faults at once.*
 
@@ -253,7 +253,7 @@ Aurora receives the alert, connects to the cluster read-only through an uploaded
 - **GitHub:** [github.com/Arvo-AI/aurora](https://github.com/Arvo-AI/aurora)
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 
-Related: [how to fix OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [a Service with no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [a Service whose targetPort does not match the container](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [HolmesGPT vs K8sGPT](https://www.aurorasre.ai/blog/holmesgpt-vs-k8sgpt), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and the [benchmark](https://www.aurorasre.ai/benchmark) with every graded run.
+Related: [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [a Service with no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [a Service whose targetPort does not match the container](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [HolmesGPT vs K8sGPT](https://www.aurorasre.ai/blog/holmesgpt-vs-k8sgpt), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and the [benchmark](https://www.aurorasre.ai/benchmark) with every graded run.
 
 ## Sources and verification
 

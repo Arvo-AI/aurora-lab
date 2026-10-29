@@ -1,4 +1,4 @@
-# PVC Pending: the StorageClass does not exist and the dependent app fails (Kubernetes)
+# Kubernetes PVC Pending: StorageClass not found, how to fix it
 
 *A PVC stays Pending when its storageClassName names a class the cluster lacks. The pod never schedules and whatever depends on it fails. Lab-tested.*
 

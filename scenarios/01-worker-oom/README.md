@@ -1,4 +1,4 @@
-# OOMKilled (exit code 137): container exceeded its memory limit (Kubernetes)
+# Kubernetes OOMKilled (exit code 137): meaning and how to fix it
 
 *OOMKilled means the kernel killed a container for exceeding its memory limit. Confirm it, find the change behind it, fix and verify, with real lab output.*
 

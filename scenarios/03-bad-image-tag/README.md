@@ -1,4 +1,4 @@
-# ImagePullBackOff: the image could not be pulled and Kubernetes is backing off (Kubernetes)
+# Kubernetes ImagePullBackOff: what it means and how to fix it
 
 *ImagePullBackOff means the kubelet could not pull the image and is retrying, up to 5 minutes apart. Read the event, fix the reference, verify. Lab-tested.*
 
@@ -58,7 +58,7 @@ frontend-7b6c998456-phg6r   0/1     ImagePullBackOff   0          75s   10.244.1
 
 Two pods from the old ReplicaSet (`76d98597b9`) are serving. One pod from the new ReplicaSet (`7b6c998456`) never started. `RESTARTS 0` is a useful tell: the container has not run once, so this is not a crash and `kubectl logs` has nothing to show.
 
-Look-alikes: `CrashLoopBackOff` has a restart count climbing and logs to read, see [how to fix OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes) for the memory variant. `Pending` with `FailedScheduling` means the pod has no node yet; here the pod was scheduled (`PodScheduled True`) and only the pull failed.
+Look-alikes: `CrashLoopBackOff` has a restart count climbing and logs to read, see [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes) for the memory variant. `Pending` with `FailedScheduling` means the pod has no node yet; here the pod was scheduled (`PodScheduled True`) and only the pull failed.
 
 ## Scope: is anything down?
 

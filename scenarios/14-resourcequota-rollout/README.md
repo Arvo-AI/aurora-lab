@@ -1,4 +1,4 @@
-# Exceeded quota: a ResourceQuota blocks the rollout's surge pod (Kubernetes)
+# Kubernetes exceeded quota: ResourceQuota blocks a rollout, fix
 
 *A Deployment rollout that never progresses, with FailedCreate and exceeded quota on the new ReplicaSet. Confirm the quota, give it headroom, verify.*
 

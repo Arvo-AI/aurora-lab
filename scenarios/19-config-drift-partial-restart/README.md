@@ -1,4 +1,4 @@
-# ConfigMap change not applied to all pods: replicas serve different configs (Kubernetes)
+# Kubernetes ConfigMap change not applied to all pods: the fix
 
 *After a ConfigMap edit, only pods started since the edit run the new config; others keep what they loaded at startup. Compare per-pod logs, fix, restart.*
 

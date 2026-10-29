@@ -1,4 +1,4 @@
-# CreateContainerConfigError: the Secret or ConfigMap is missing (Kubernetes)
+# Kubernetes CreateContainerConfigError: meaning and how to fix it
 
 *CreateContainerConfigError means a Secret or ConfigMap the pod references is missing. Read the event, create the object or roll back, verify. Lab-tested.*
 

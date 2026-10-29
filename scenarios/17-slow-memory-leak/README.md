@@ -1,4 +1,4 @@
-# OOMKilled on a steady interval: a memory leak, not a small limit (Kubernetes)
+# Kubernetes memory leak OOMKilled: tell a leak from a small limit
 
 *OOMKilled on a steady interval with clean logs and no spec change is a leak. Tell it from a small limit by cycle length and growth, then fix the code.*
 
@@ -24,7 +24,7 @@ Then investigate with any tool you like; `scenario.yaml` holds the ground truth 
 | Signal | Likely cause | Confirm with | Fix |
 |---|---|---|---|
 | `OOMKilled`, `Exit Code: 137`, the previous container ran for minutes and the same length each cycle, `--previous` logs stop mid-work, live spec equals `last-applied-configuration` | Memory retained across iterations (a leak), usually in code that arrived with the last restart | `Started` to `Finished` gap in `describe pod`; two `kubectl top pod --containers` samples a minute apart | Fix or revert the code, roll out, verify for longer than one old cycle |
-| `OOMKilled` within seconds of `Started`, every time, after a config or image change | The working set exceeds the limit from the first iteration | Live spec against `last-applied-configuration` | See [OOMKilled: container exceeded its memory limit](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes) |
+| `OOMKilled` within seconds of `Started`, every time, after a config or image change | The working set exceeds the limit from the first iteration | Live spec against `last-applied-configuration` | See [Kubernetes OOMKilled (exit code 137)](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes) |
 | `OOMKilled` only during traffic peaks, usage falls back afterwards | Load-proportional working set, no leak | `kubectl top` through a quiet period | Size the limit for the peak, or bound concurrency |
 | Restarts with `Reason: Error` and a traceback at the end of `--previous` | An application crash, not a kill | `kubectl logs <pod> --previous` | See [how to fix CrashLoopBackOff](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes) |
 

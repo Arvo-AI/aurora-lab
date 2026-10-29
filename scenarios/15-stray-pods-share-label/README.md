@@ -1,4 +1,4 @@
-# One in three requests to a Service fails: its selector also matches pods from another Deployment (Kubernetes)
+# Kubernetes Service selects the wrong pods: label overlap fix
 
 *A Service selects pods by label, not by Deployment. Its endpoints list one pod more than the Deployment runs and that pod returns 500. Confirm and fix it.*
 

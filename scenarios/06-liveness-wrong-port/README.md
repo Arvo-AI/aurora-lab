@@ -1,4 +1,4 @@
-# Liveness probe failed: wrong port, healthy app restarted (Kubernetes)
+# Kubernetes liveness probe failed, connection refused: the fix
 
 *Liveness probe failed with connection refused while the app serves traffic: the probe points at a port nothing listens on. Confirm, fix the port, verify.*
 

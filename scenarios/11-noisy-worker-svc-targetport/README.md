@@ -1,4 +1,4 @@
-# Service has endpoints but connections are refused: targetPort does not match the container port (Kubernetes)
+# Kubernetes Service connection refused: targetPort mismatch fix
 
 *Endpoints list the pod IPs, yet nginx logs Connection refused and returns 502: the Service targetPort points where nothing listens. Confirm it and fix it.*
 
