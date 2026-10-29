@@ -2326,6 +2326,64 @@
      "median_cost": null
     }
    }
+  },
+  {
+   "id": "20-nginx-502-upstream-closed-connection",
+   "title": "frontend returns 502 because the api closes the connection without answering; Service, endpoints and pods all healthy",
+   "alert": "HighErrorRate [critical] namespace=shop service=frontend: 100% of requests to /api/ returned 502 over the last 5 minutes (threshold 5%). All pods are Running and Ready.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/20-nginx-502-upstream-closed-connection",
+   "tools": {
+    "aurora": {
+     "runs": [],
+     "correct": 0,
+     "graded": 0,
+     "median_seconds": null,
+     "median_cost": null
+    },
+    "holmesgpt": {
+     "runs": [],
+     "correct": 0,
+     "graded": 0,
+     "median_seconds": null,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [],
+     "correct": 0,
+     "graded": 0,
+     "median_seconds": null,
+     "median_cost": null
+    }
+   }
+  },
+  {
+   "id": "21-api-slow-upstream-timeout",
+   "title": "frontend returns 504 because an api release waits on a dependency with no timeout; pods, Service and endpoints all healthy",
+   "alert": "HighErrorRate [critical] namespace=shop service=frontend: requests to /api/ are failing with 504 or timing out over the last 5 minutes (threshold 5%). All pods are Running and Ready.",
+   "link": "https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/21-api-slow-upstream-timeout",
+   "tools": {
+    "aurora": {
+     "runs": [],
+     "correct": 0,
+     "graded": 0,
+     "median_seconds": null,
+     "median_cost": null
+    },
+    "holmesgpt": {
+     "runs": [],
+     "correct": 0,
+     "graded": 0,
+     "median_seconds": null,
+     "median_cost": null
+    },
+    "k8sgpt": {
+     "runs": [],
+     "correct": 0,
+     "graded": 0,
+     "median_seconds": null,
+     "median_cost": null
+    }
+   }
   }
  ]
 }
