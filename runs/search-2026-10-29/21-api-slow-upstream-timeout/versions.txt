@@ -1,0 +1,11 @@
+Recorded 2026-10-29 (UTC 15:56 to 16:20), MacBook, Docker Engine 29.4.0 (OrbStack), kernel 7.0.11-orbstack
+kind v0.33.0 go1.27.1 darwin/arm64, cluster r504 (3 nodes), kindest/node:v1.37.0
+kubectl client v1.35.3, server v1.37.0
+net.ipv4.tcp_syn_retries = 6 on the kind nodes
+lab images: nginx:1.27-alpine (nginx/1.27.5), python:3.12-alpine (Python 3.12.16 in the cluster), redis:7.4-alpine, busybox:1.37
+docker repro images:
+  nginx:1.27-alpine nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10 (nginx/1.27.5, Alpine 3.21.3, musl)
+  nginx:1.27 nginx@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d (nginx/1.27.5, Debian 12, glibc)
+  python:3.12-alpine python@sha256:4c47124a8391cb7a9f571164147d154777cf012a4ece5f86097130d7a4478111 (Python 3.12.14)
+ingress-nginx controller v1.15.1 (build 0df02f2c, nginx/1.27.1), deploy/static/provider/kind/deploy.yaml at tag controller-v1.15.1
+curl 8.7.1 on the Mac

@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: pager-log, namespace: monitoring}
+data:
+  srv.py: |
+    import http.server, json, sys, datetime
+    class H(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            body = self.rfile.read(int(self.headers.get('Content-Length', 0)))
+            d = json.loads(body)
+            rec = {"received": datetime.datetime.utcnow().isoformat() + "Z", "status": d.get("status"),
+                   "groupLabels": d.get("groupLabels"),
+                   "alerts": [{"status": a["status"], "labels": a["labels"], "startsAt": a["startsAt"]} for a in d.get("alerts", [])]}
+            print(json.dumps(rec), flush=True)
+            self.send_response(200); self.end_headers()
+        def log_message(self, *a): pass
+    http.server.HTTPServer(("", 8080), H).serve_forever()
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: pager-log, namespace: monitoring}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: pager-log}}
+  template:
+    metadata: {labels: {app: pager-log}}
+    spec:
+      containers:
+      - name: srv
+        image: python:3.13-alpine
+        command: ["python", "-u", "/app/srv.py"]
+        volumeMounts: [{name: app, mountPath: /app}]
+      volumes: [{name: app, configMap: {name: pager-log}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: pager-log, namespace: monitoring}
+spec:
+  selector: {app: pager-log}
+  ports: [{port: 8080, targetPort: 8080}]

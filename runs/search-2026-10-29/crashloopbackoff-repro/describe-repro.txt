@@ -1,0 +1,345 @@
+Thu 29 Oct 2026 16:14:38 UTC
+$ kubectl -n crash describe pod -l app=exit1
+Name:             exit1-7cd4f4c959-xz7f7
+Namespace:        crash
+Priority:         0
+Service Account:  default
+Node:             rcrash-worker2/192.168.148.23
+Start Time:       Thu, 29 Oct 2026 12:11:51 -0400
+Labels:           app=exit1
+                  pod-template-hash=7cd4f4c959
+Annotations:      <none>
+Status:           Running
+IP:               10.244.3.11
+IPs:
+  IP:           10.244.3.11
+Controlled By:  ReplicaSet/exit1-7cd4f4c959
+Containers:
+  app:
+    Container ID:  containerd://6a5d89abf8fc2edf0f0b37cf15e6f5f7c5f6e05bad4178500496877e2d5baf23
+    Image:         busybox:1.37
+    Image ID:      docker.io/library/busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo starting; echo 'fatal: config file /etc/app/app.yaml not found' >&2; exit 1
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Thu, 29 Oct 2026 12:13:20 -0400
+      Finished:     Thu, 29 Oct 2026 12:13:20 -0400
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Thu, 29 Oct 2026 12:12:36 -0400
+      Finished:     Thu, 29 Oct 2026 12:12:36 -0400
+    Ready:          False
+    Restart Count:  4
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-sdzc5 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-sdzc5:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                  From               Message
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  2m46s                default-scheduler  Successfully assigned crash/exit1-7cd4f4c959-xz7f7 to rcrash-worker2
+  Normal   Pulled     78s (x5 over 2m46s)  kubelet            spec.containers{app}: Container image "busybox:1.37" already present on machine and can be accessed by the pod
+  Normal   Created    78s (x5 over 2m46s)  kubelet            spec.containers{app}: Container created
+  Normal   Started    78s (x5 over 2m46s)  kubelet            spec.containers{app}: Container started
+  Warning  BackOff    78s (x4 over 2m45s)  kubelet            spec.containers{app}: Back-off restarting failed container app in pod exit1-7cd4f4c959-xz7f7_crash(a74f58e6-afd4-4ced-bfb9-34e013cea2f7)
+$ kubectl -n crash describe pod -l app=exit127
+Name:             exit127-787659dffb-4n9cj
+Namespace:        crash
+Priority:         0
+Service Account:  default
+Node:             rcrash-worker2/192.168.148.23
+Start Time:       Thu, 29 Oct 2026 11:52:59 -0400
+Labels:           app=exit127
+                  pod-template-hash=787659dffb
+Annotations:      <none>
+Status:           Running
+IP:               10.244.3.3
+IPs:
+  IP:           10.244.3.3
+Controlled By:  ReplicaSet/exit127-787659dffb
+Containers:
+  app:
+    Container ID:  containerd://d70ccaa47595088c0079b79b7ef29ec89a8f048ad1f0c1eb23c0e9b0858631c6
+    Image:         busybox:1.37
+    Image ID:      docker.io/library/busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      exec start-server --port 8080
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    127
+      Started:      Thu, 29 Oct 2026 12:14:26 -0400
+      Finished:     Thu, 29 Oct 2026 12:14:26 -0400
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    127
+      Started:      Thu, 29 Oct 2026 12:09:04 -0400
+      Finished:     Thu, 29 Oct 2026 12:09:04 -0400
+    Ready:          False
+    Restart Count:  9
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-xr5r7 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-xr5r7:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                  From               Message
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  21m                  default-scheduler  Successfully assigned crash/exit127-787659dffb-4n9cj to rcrash-worker2
+  Normal   Pulling    21m                  kubelet            spec.containers{app}: Pulling image "busybox:1.37"
+  Normal   Pulled     21m                  kubelet            spec.containers{app}: Successfully pulled image "busybox:1.37" in 396ms (1.553s including waiting). Image size: 1911395 bytes.
+  Normal   Created    5m34s (x9 over 21m)  kubelet            spec.containers{app}: Container created
+  Normal   Started    5m34s (x9 over 21m)  kubelet            spec.containers{app}: Container started
+  Normal   Pulled     12s (x9 over 21m)    kubelet            spec.containers{app}: Container image "busybox:1.37" already present on machine and can be accessed by the pod
+  Warning  BackOff    12s (x22 over 21m)   kubelet            spec.containers{app}: Back-off restarting failed container app in pod exit127-787659dffb-4n9cj_crash(6bb3ffc4-2cdd-4b77-9c96-b09f9b13cfd4)
+$ kubectl -n crash describe pod -l app=nobinary
+Name:             nobinary-699784c959-rvxvc
+Namespace:        crash
+Priority:         0
+Service Account:  default
+Node:             rcrash-worker2/192.168.148.23
+Start Time:       Thu, 29 Oct 2026 11:52:59 -0400
+Labels:           app=nobinary
+                  pod-template-hash=699784c959
+Annotations:      <none>
+Status:           Running
+IP:               10.244.3.2
+IPs:
+  IP:           10.244.3.2
+Controlled By:  ReplicaSet/nobinary-699784c959
+Containers:
+  app:
+    Container ID:  containerd://90742d4aa8731505cdde4906de7756813c0ad1ab4e58067119999c9f5e5a93a0
+    Image:         busybox:1.37
+    Image ID:      docker.io/library/busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /app/server
+    State:          Waiting
+      Reason:       RunContainerError
+    Last State:     Terminated
+      Reason:       StartError
+      Message:      failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: exec: "/app/server": stat /app/server: no such file or directory
+      Exit Code:    128
+      Started:      Wed, 31 Dec 1969 19:00:00 -0500
+      Finished:     Thu, 29 Oct 2026 12:14:07 -0400
+    Ready:          False
+    Restart Count:  9
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-f2xj4 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-f2xj4:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                   From               Message
+  ----     ------     ----                  ----               -------
+  Normal   Scheduled  21m                   default-scheduler  Successfully assigned crash/nobinary-699784c959-rvxvc to rcrash-worker2
+  Normal   Pulling    21m                   kubelet            spec.containers{app}: Pulling image "busybox:1.37"
+  Normal   Pulled     21m                   kubelet            spec.containers{app}: Successfully pulled image "busybox:1.37" in 1.167s (1.167s including waiting). Image size: 1911395 bytes.
+  Warning  BackOff    5m52s (x19 over 21m)  kubelet            spec.containers{app}: Back-off restarting failed container app in pod nobinary-699784c959-rvxvc_crash(c8d115bc-a0c6-43d6-ab1b-b44aaf677616)
+  Normal   Created    31s (x10 over 21m)    kubelet            spec.containers{app}: Container created
+  Warning  Failed     31s (x10 over 21m)    kubelet            spec.containers{app}: Error: failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: exec: "/app/server": stat /app/server: no such file or directory
+  Normal   Pulled     31s (x9 over 21m)     kubelet            spec.containers{app}: Container image "busybox:1.37" already present on machine and can be accessed by the pod
+$ kubectl -n crash describe pod -l app=exit0
+Name:             exit0-65f8b9dbd-8wdbf
+Namespace:        crash
+Priority:         0
+Service Account:  default
+Node:             rcrash-worker/192.168.148.25
+Start Time:       Thu, 29 Oct 2026 11:52:59 -0400
+Labels:           app=exit0
+                  pod-template-hash=65f8b9dbd
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.3
+IPs:
+  IP:           10.244.1.3
+Controlled By:  ReplicaSet/exit0-65f8b9dbd
+Containers:
+  app:
+    Container ID:  containerd://197d1e5e63c60fa5a007968d0c88b64bdbeabbbfc03389db31dd4380f2488b22
+    Image:         busybox:1.37
+    Image ID:      docker.io/library/busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo migration done; exit 0
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 29 Oct 2026 12:14:13 -0400
+      Finished:     Thu, 29 Oct 2026 12:14:13 -0400
+    Last State:     Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Thu, 29 Oct 2026 12:09:03 -0400
+      Finished:     Thu, 29 Oct 2026 12:09:03 -0400
+    Ready:          False
+    Restart Count:  9
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-ckk5q (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-ckk5q:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                  From               Message
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  21m                  default-scheduler  Successfully assigned crash/exit0-65f8b9dbd-8wdbf to rcrash-worker
+  Normal   Pulling    21m                  kubelet            spec.containers{app}: Pulling image "busybox:1.37"
+  Normal   Pulled     21m                  kubelet            spec.containers{app}: Successfully pulled image "busybox:1.37" in 1.342s (1.343s including waiting). Image size: 1911395 bytes.
+  Normal   Created    5m35s (x9 over 21m)  kubelet            spec.containers{app}: Container created
+  Normal   Started    5m35s (x9 over 21m)  kubelet            spec.containers{app}: Container started
+  Normal   Pulled     25s (x9 over 21m)    kubelet            spec.containers{app}: Container image "busybox:1.37" already present on machine and can be accessed by the pod
+  Warning  BackOff    25s (x22 over 21m)   kubelet            spec.containers{app}: Back-off restarting failed container app in pod exit0-65f8b9dbd-8wdbf_crash(42e9f3fd-de24-4e9c-864e-f228dad33a91)
+$ kubectl -n crash describe pod -l app=oom
+Name:             oom-f47d67486-vcc8v
+Namespace:        crash
+Priority:         0
+Service Account:  default
+Node:             rcrash-worker2/192.168.148.23
+Start Time:       Thu, 29 Oct 2026 11:52:59 -0400
+Labels:           app=oom
+                  pod-template-hash=f47d67486
+Annotations:      <none>
+Status:           Running
+IP:               10.244.3.4
+IPs:
+  IP:           10.244.3.4
+Controlled By:  ReplicaSet/oom-f47d67486
+Containers:
+  app:
+    Container ID:  containerd://7afc123dd4d45640e449a5d2e59fd2e5a554bd844038817f7be79e5def38e2af
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:5789aa194f757888f41fa3d48e14b6feaa1b57c0af0b56fcb1372d6474d3bff0
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      -c
+      print('loading cache', flush=True); b=[bytearray(1024*1024) for _ in range(400)]
+    State:          Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 12:13:46 -0400
+      Finished:     Thu, 29 Oct 2026 12:13:46 -0400
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 12:08:43 -0400
+      Finished:     Thu, 29 Oct 2026 12:08:43 -0400
+    Ready:          False
+    Restart Count:  9
+    Limits:
+      memory:  64Mi
+    Requests:
+      memory:     64Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-tpxwg (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-tpxwg:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                  From               Message
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  21m                  default-scheduler  Successfully assigned crash/oom-f47d67486-vcc8v to rcrash-worker2
+  Normal   Pulling    21m                  kubelet            spec.containers{app}: Pulling image "python:3.12-alpine"
+  Normal   Pulled     21m                  kubelet            spec.containers{app}: Successfully pulled image "python:3.12-alpine" in 3.545s (5.078s including waiting). Image size: 18544611 bytes.
+  Normal   Created    5m55s (x9 over 21m)  kubelet            spec.containers{app}: Container created
+  Normal   Started    5m55s (x9 over 21m)  kubelet            spec.containers{app}: Container started
+  Normal   Pulled     52s (x9 over 21m)    kubelet            spec.containers{app}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Warning  BackOff    52s (x24 over 21m)   kubelet            spec.containers{app}: Back-off restarting failed container app in pod oom-f47d67486-vcc8v_crash(3d5af152-e76f-41e1-9ad0-b22510c037db)

@@ -1,0 +1,22 @@
+# 2026-10-29T16:22:13Z fix.sh
+configmap/api-code configured
+deployment.apps/api restarted
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+# 2026-10-29T16:22:21Z verify.sh
+2026-10-29T16:22:32Z GET /api/items -> 200
+2026-10-29T16:22:34Z GET /api/items -> 200
+2026-10-29T16:22:36Z GET /api/items -> 200
+2026-10-29T16:22:38Z GET /api/items -> 200
+2026-10-29T16:22:40Z GET /api/items -> 200
+2026-10-29T16:22:42Z GET /api/items -> 200
+2026-10-29T16:22:44Z GET /api/items -> 200
+2026-10-29T16:22:46Z GET /api/items -> 200
+2026-10-29T16:22:48Z GET /api/items -> 200
+2026-10-29T16:22:50Z GET /api/items -> 200
+prematurely closed lines in the last 30 s: 0
+verify exit code: 0

@@ -1,0 +1,4 @@
+# 2026-10-29T19:38:17Z LAB_CLUSTER=r502b ./lab.sh selftest 20-nginx-502-upstream-closed-connection
+broken 20-nginx-502-upstream-closed-connection after 0s
+selftest: 1 passed, 0 failed, evidence in runs/selftest-20261029T193817Z-r502b
+exit 0

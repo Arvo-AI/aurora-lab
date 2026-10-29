@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: exit1-fallback, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: exit1-fallback}}
+  template:
+    metadata: {labels: {app: exit1-fallback}}
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.37
+          command: ["sh", "-c", "echo starting; echo 'fatal: config file /etc/app/app.yaml not found' >&2; exit 1"]
+          terminationMessagePolicy: FallbackToLogsOnError

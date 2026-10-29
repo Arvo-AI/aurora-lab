@@ -1,0 +1,19 @@
+# 2026-10-29T19:43:44Z common mistake: roll the api back without touching the ConfigMap
+$ kubectl -n shop rollout undo deploy/api
+deployment.apps/api rolled back
+$ kubectl -n shop rollout status deploy/api --timeout=120s
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+# 2026-10-29T19:43:46Z sleep 20
+$ kubectl -n shop logs deploy/loadgen --tail=5
+2026-10-29T19:43:57Z GET /api/items -> 502
+2026-10-29T19:43:59Z GET /api/items -> 502
+2026-10-29T19:44:01Z GET /api/items -> 502
+2026-10-29T19:44:03Z GET /api/items -> 502
+2026-10-29T19:44:05Z GET /api/items -> 502
+$ kubectl -n shop logs -l app=frontend --since=15s --tail=-1 | grep -c "upstream prematurely closed connection"
+7

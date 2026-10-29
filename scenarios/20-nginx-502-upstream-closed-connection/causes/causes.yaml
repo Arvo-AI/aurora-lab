@@ -1,0 +1,219 @@
+# Side experiment for the 502 runbook: one nginx (the same image as the shop
+# frontend) with one location per 502 cause, in its own namespace. Run with
+# causes/run.sh; it is not part of the graded scenario.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: r502x
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: r502x
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: backend}
+  template:
+    metadata:
+      labels: {app: backend}
+    spec:
+      containers:
+        - name: backend
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          readinessProbe:
+            tcpSocket: {port: 8085}
+            periodSeconds: 2
+          volumeMounts:
+            - {name: code, mountPath: /code}
+            - {name: tls, mountPath: /tls}
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+        - name: tls
+          secret: {secretName: backend-tls}
+---
+# Same pods' twin, fenced off by a NetworkPolicy (packets dropped, not refused)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fenced
+  namespace: r502x
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: fenced}
+  template:
+    metadata:
+      labels: {app: fenced}
+    spec:
+      containers:
+        - name: backend
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          volumeMounts:
+            - {name: code, mountPath: /code}
+            - {name: tls, mountPath: /tls}
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+        - name: tls
+          secret: {secretName: backend-tls}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: fenced
+  namespace: r502x
+spec:
+  podSelector:
+    matchLabels: {app: fenced}
+  policyTypes: [Ingress]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: r502x
+spec:
+  selector: {app: backend}
+  ports:
+    - {name: ok, port: 8085, targetPort: 8085}
+    - {name: close, port: 8081, targetPort: 8081}
+    - {name: reset, port: 8082, targetPort: 8082}
+    - {name: bighdr, port: 8083, targetPort: 8083}
+    - {name: tls, port: 8084, targetPort: 8084}
+    - {name: slow, port: 8086, targetPort: 8086}
+    - {name: nolistener, port: 8090, targetPort: 9999}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-headless
+  namespace: r502x
+spec:
+  clusterIP: None
+  selector: {app: backend}
+  ports:
+    - {name: ok, port: 8085, targetPort: 8085}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fenced
+  namespace: r502x
+spec:
+  selector: {app: fenced}
+  ports:
+    - {name: ok, port: 8085, targetPort: 8085}
+---
+# Only ever reached through a variable, so no static upstream shadows the name
+apiVersion: v1
+kind: Service
+metadata:
+  name: dynonly
+  namespace: r502x
+spec:
+  selector: {app: backend}
+  ports:
+    - {name: ok, port: 8085, targetPort: 8085}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noep
+  namespace: r502x
+spec:
+  selector: {app: nobody}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: noep2
+  namespace: r502x
+spec:
+  selector: {app: nobody}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-nginx
+  namespace: r502x
+data:
+  default.conf: |
+    upstream pair {
+        server noep:8080;
+        server noep2:8080;
+    }
+    upstream headless {
+        server backend-headless:8085;
+    }
+    upstream headless_resolve {
+        zone headless_resolve 64k;
+        resolver 10.96.0.10 valid=10s;
+        server backend-headless.r502x.svc.cluster.local:8085 resolve;
+    }
+    server {
+        listen 80;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 2s;
+        location /ok/         { proxy_pass http://backend:8085/; }
+        location /noep/       { proxy_pass http://noep:8080/; }
+        location /nolistener/ { proxy_pass http://backend:8090/; }
+        location /unexposed/  { proxy_pass http://backend:9999/; }
+        location /fenced/     { proxy_pass http://fenced:8085/; }
+        location /pair/       { proxy_pass http://pair/; }
+        location /headless/   { proxy_pass http://headless/; }
+        location /headless-resolve/ { proxy_pass http://headless_resolve/; }
+        location /close/      { proxy_pass http://backend:8081/; }
+        location /reset/      { proxy_pass http://backend:8082/; }
+        location /bighdr/     { proxy_pass http://backend:8083/; }
+        location /plain-to-tls/ { proxy_pass http://backend:8084/; }
+        location /tls-to-plain/ { proxy_pass https://api.shop.svc.cluster.local:8080/; }
+        location /slow/       { proxy_pass http://backend:8086/; }
+        location /redis/      { proxy_pass http://redis.shop.svc.cluster.local:6379/; }
+        location /noresolver/ {
+            set $u http://backend.r502x.svc.cluster.local:8085;
+            proxy_pass $u;
+        }
+        location /shortname/ {
+            resolver 10.96.0.10 valid=10s;
+            set $u http://dynonly:8085;
+            proxy_pass $u;
+        }
+        location /fqdn/ {
+            resolver 10.96.0.10 valid=10s;
+            set $u http://dynonly.r502x.svc.cluster.local:8085;
+            proxy_pass $u;
+        }
+        location /typo/ {
+            resolver 10.96.0.10 valid=10s;
+            set $u http://bakend.r502x.svc.cluster.local:8085;
+            proxy_pass $u;
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  namespace: r502x
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: proxy}
+  template:
+    metadata:
+      labels: {app: proxy}
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          volumeMounts: [{name: conf, mountPath: /etc/nginx/conf.d}]
+      volumes:
+        - name: conf
+          configMap: {name: proxy-nginx}

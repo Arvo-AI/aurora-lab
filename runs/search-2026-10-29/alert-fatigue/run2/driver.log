@@ -1,0 +1,12 @@
+2026-10-29T19:37:31Z phase baseline start
+2026-10-29T19:57:34Z phase baseline end
+2026-10-29T19:57:34Z phase 01-worker-oom break start
+broken 01-worker-oom after 5s
+2026-10-29T19:59:15Z phase 01-worker-oom broken
+2026-10-29T20:17:19Z phase 01-worker-oom end
+2026-10-29T20:17:19Z phase 12-two-faults-oom-and-selector break start
+broken 12-two-faults-oom-and-selector after 5s
+2026-10-29T20:19:00Z phase 12-two-faults-oom-and-selector broken
+2026-10-29T20:37:06Z phase 12-two-faults-oom-and-selector end
+2026-10-29T20:37:56Z final reset ok
+2026-10-29T20:37:56Z done

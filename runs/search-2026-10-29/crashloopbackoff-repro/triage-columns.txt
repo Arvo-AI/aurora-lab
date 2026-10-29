@@ -1,0 +1,31 @@
+Thu 29 Oct 2026 15:56:34 UTC
+$ kubectl -n crash get pod/oom-fallback-6ddf9cd97d-nx4rx -o jsonpath='{.status.containerStatuses[0].lastState.terminated}'
+{"containerID":"containerd://f34df9895e6ea4a5809d41f12d5a2252c12e77ad995cb256d28ee91443bb1f10","exitCode":137,"finishedAt":"2026-10-29T15:56:07Z","message":"loading cache\n","reason":"OOMKilled","startedAt":"2026-10-29T15:56:07Z"}
+
+$ kubectl -n crash get pods -o custom-columns='POD:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount,WAITING:.status.containerStatuses[0].state.waiting.reason,LAST:.status.containerStatuses[0].lastState.terminated.reason,EXIT:.status.containerStatuses[0].lastState.terminated.exitCode'
+POD                               RESTARTS   WAITING             LAST         EXIT
+exit0-65f8b9dbd-8wdbf             5          <none>              Completed    0
+exit1-7cd4f4c959-4j5lg            5          <none>              Error        1
+exit1-fallback-58fc76cdbf-f8dh4   5          <none>              Error        1
+exit127-787659dffb-4n9cj          5          <none>              Error        127
+nobinary-699784c959-rvxvc         5          RunContainerError   StartError   128
+oom-f47d67486-vcc8v               5          <none>              OOMKilled    137
+oom-fallback-6ddf9cd97d-nx4rx     2          CrashLoopBackOff    OOMKilled    137
+$ kubectl -n crash get pods
+NAME                              READY   STATUS              RESTARTS       AGE
+exit0-65f8b9dbd-8wdbf             0/1     Completed           5 (2m2s ago)   3m37s
+exit1-7cd4f4c959-4j5lg            0/1     Error               5 (119s ago)   3m37s
+exit1-fallback-58fc76cdbf-f8dh4   0/1     Error               5 (84s ago)    2m46s
+exit127-787659dffb-4n9cj          0/1     Error               5 (113s ago)   3m37s
+nobinary-699784c959-rvxvc         0/1     RunContainerError   5 (38s ago)    3m37s
+oom-f47d67486-vcc8v               0/1     OOMKilled           5 (2m2s ago)   3m37s
+oom-fallback-6ddf9cd97d-nx4rx     0/1     CrashLoopBackOff    2 (29s ago)    43s
+$ kubectl -n crash get events --field-selector reason=BackOff
+LAST SEEN   TYPE      REASON    OBJECT                                MESSAGE
+40s         Warning   BackOff   pod/exit0-65f8b9dbd-8wdbf             Back-off restarting failed container app in pod exit0-65f8b9dbd-8wdbf_crash(42e9f3fd-de24-4e9c-864e-f228dad33a91)
+36s         Warning   BackOff   pod/exit1-7cd4f4c959-4j5lg            Back-off restarting failed container app in pod exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)
+3s          Warning   BackOff   pod/exit1-fallback-58fc76cdbf-f8dh4   Back-off restarting failed container app in pod exit1-fallback-58fc76cdbf-f8dh4_crash(66ac8605-b468-4f69-a775-23f247951879)
+26s         Warning   BackOff   pod/exit127-787659dffb-4n9cj          Back-off restarting failed container app in pod exit127-787659dffb-4n9cj_crash(6bb3ffc4-2cdd-4b77-9c96-b09f9b13cfd4)
+37s         Warning   BackOff   pod/nobinary-699784c959-rvxvc         Back-off restarting failed container app in pod nobinary-699784c959-rvxvc_crash(c8d115bc-a0c6-43d6-ab1b-b44aaf677616)
+40s         Warning   BackOff   pod/oom-f47d67486-vcc8v               Back-off restarting failed container app in pod oom-f47d67486-vcc8v_crash(3d5af152-e76f-41e1-9ad0-b22510c037db)
+29s         Warning   BackOff   pod/oom-fallback-6ddf9cd97d-nx4rx     Back-off restarting failed container app in pod oom-fallback-6ddf9cd97d-nx4rx_crash(02c37cbc-b1fd-4a00-b02e-8b0f3288a94f)

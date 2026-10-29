@@ -1,0 +1,14 @@
++(eval):1> k -n oom get pods -l 'app=steady'
++k:0> kubectl --context kind-room -n oom get pods -l 'app=steady'
+NAME                      READY   STATUS      RESTARTS        AGE
+steady-6756d67fc8-cqgzn   0/1     OOMKilled   6 (3m44s ago)   6m42s
++(eval):1> k -n oom set resources deploy/steady -c steady '--requests=memory=192Mi' '--limits=memory=192Mi'
++k:0> kubectl --context kind-room -n oom set resources deploy/steady -c steady '--requests=memory=192Mi' '--limits=memory=192Mi'
+deployment.apps/steady resource requirements updated
++(eval):1> k -n oom rollout status deploy/steady '--timeout=120s'
++k:0> kubectl --context kind-room -n oom rollout status deploy/steady '--timeout=120s'
+Waiting for deployment "steady" rollout to finish: 0 out of 1 new replicas have been updated...
+Waiting for deployment "steady" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "steady" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "steady" rollout to finish: 1 old replicas are pending termination...
+deployment "steady" successfully rolled out

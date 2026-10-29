@@ -1,0 +1,7 @@
++(eval):1> docker run --name fix-oomkilled-kubernetes-a --memory 128m --memory-swap 128m python:3.12-alpine python -c 'b = b"\x01" * (200 << 20); print("allocated")'
++(eval):1> echo 'exit=137'
+exit=137
++(eval):1> docker inspect fix-oomkilled-kubernetes-a --format '{{json .State}}'
+{"Status":"exited","Running":false,"Paused":false,"Restarting":false,"OOMKilled":true,"Dead":false,"Pid":0,"ExitCode":137,"Error":"","StartedAt":"2026-10-29T15:56:22.569618306Z","FinishedAt":"2026-10-29T15:56:22.758797505Z"}
++(eval):1> docker rm fix-oomkilled-kubernetes-a
+fix-oomkilled-kubernetes-a

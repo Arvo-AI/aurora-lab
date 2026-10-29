@@ -1,0 +1,76 @@
+Name:             stubborn-65c47b744f-nxbw4
+Namespace:        oom
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 11:53:33 -0400
+Labels:           app=stubborn
+                  pod-template-hash=65c47b744f
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.4
+IPs:
+  IP:           10.244.1.4
+Controlled By:  ReplicaSet/stubborn-65c47b744f
+Containers:
+  stubborn:
+    Container ID:  containerd://70b31006536db3c2686111500495e9eef4b4c70e45266464d9133ff83bcce1e7
+    Image:         busybox:1.37
+    Image ID:      docker.io/library/busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+    Args:
+      trap 'echo "got SIGTERM, ignoring it"' TERM
+      echo "started"
+      while true; do sleep 1; done
+      
+    State:          Running
+      Started:      Thu, 29 Oct 2026 11:54:24 -0400
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 11:53:59 -0400
+      Finished:     Thu, 29 Oct 2026 11:54:23 -0400
+    Ready:          True
+    Restart Count:  2
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        10m
+      memory:     16Mi
+    Liveness:     exec [cat /tmp/healthy] delay=5s timeout=1s period=5s #success=1 #failure=2
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-ddx2s (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-ddx2s:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              kubernetes.io/hostname=room-worker
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  54s                default-scheduler  Successfully assigned oom/stubborn-65c47b744f-nxbw4 to room-worker
+  Normal   Pulling    54s                kubelet            spec.containers{stubborn}: Pulling image "busybox:1.37"
+  Normal   Pulled     49s                kubelet            spec.containers{stubborn}: Successfully pulled image "busybox:1.37" in 1.504s (4.4s including waiting). Image size: 1911395 bytes.
+  Warning  Unhealthy  14s (x4 over 44s)  kubelet            spec.containers{stubborn}: Liveness probe failed: cat: can't open '/tmp/healthy': No such file or directory
+  Normal   Killing    14s (x2 over 39s)  kubelet            spec.containers{stubborn}: Container stubborn failed liveness probe, will be restarted
+  Normal   Created    3s (x3 over 49s)   kubelet            spec.containers{stubborn}: Container created
+  Normal   Started    3s (x3 over 49s)   kubelet            spec.containers{stubborn}: Container started
+  Normal   Pulled     3s (x2 over 28s)   kubelet            spec.containers{stubborn}: Container image "busybox:1.37" already present on machine and can be accessed by the pod

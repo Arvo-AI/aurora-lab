@@ -1,0 +1,150 @@
+### 2026-10-29T15:53:43Z
+$ k version
+Client Version: v1.35.3
+Kustomize Version: v5.7.1
+Server Version: v1.37.0
+Warning: version difference between client (1.35) and server (1.37) exceeds the supported minor version skew of +/-1
+
+### 2026-10-29T15:53:43Z
+$ k -n shop get deploy frontend -o wide
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS   IMAGES             SELECTOR
+frontend   2/2     1            2           4m36s   nginx        nginx:1.27-alpne   app=frontend
+
+### 2026-10-29T15:53:43Z
+$ k -n shop get pods -l app=frontend -o wide
+NAME                        READY   STATUS             RESTARTS   AGE     IP           NODE            NOMINATED NODE   READINESS GATES
+frontend-76d98597b9-fzgzx   1/1     Running            0          4m24s   10.244.1.2   rpull-worker    <none>           <none>
+frontend-76d98597b9-vvb9h   1/1     Running            0          4m24s   10.244.3.3   rpull-worker2   <none>           <none>
+frontend-7b6c998456-mc594   0/1     ImagePullBackOff   0          4m2s    10.244.1.7   rpull-worker    <none>           <none>
+
+### 2026-10-29T15:53:43Z
+$ k -n shop describe pod frontend-7b6c998456-mc594
+Name:             frontend-7b6c998456-mc594
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             rpull-worker/192.168.148.8
+Start Time:       Thu, 29 Oct 2026 11:49:41 -0400
+Labels:           app=frontend
+                  pod-template-hash=7b6c998456
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.1.7
+IPs:
+  IP:           10.244.1.7
+Controlled By:  ReplicaSet/frontend-7b6c998456
+Containers:
+  nginx:
+    Container ID:   
+    Image:          nginx:1.27-alpne
+    Image ID:       
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rhrkq (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  conf:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      frontend-nginx
+    Optional:  false
+  kube-api-access-rhrkq:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                   From               Message
+  ----     ------     ----                  ----               -------
+  Normal   Scheduled  4m2s                  default-scheduler  Successfully assigned shop/frontend-7b6c998456-mc594 to rpull-worker
+  Warning  Failed     94s (x10 over 3m24s)  kubelet            spec.containers{nginx}: Error: failed to record image pull intent: failed to create temporary file "/var/lib/kubelet/image_manager/pulling/sha256-75357163e8e36fbb5af87c3934a9a17da12dc25ecdcdc418f914f78cd23e0986.tmp": open /var/lib/kubelet/image_manager/pulling/sha256-75357163e8e36fbb5af87c3934a9a17da12dc25ecdcdc418f914f78cd23e0986.tmp: no space left on device
+  Normal   Pulling    38s (x4 over 4m2s)    kubelet            spec.containers{nginx}: Pulling image "nginx:1.27-alpne"
+  Warning  Failed     34s (x4 over 4m1s)    kubelet            spec.containers{nginx}: Failed to pull image "nginx:1.27-alpne": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/nginx:1.27-alpne": failed to resolve reference "docker.io/library/nginx:1.27-alpne": docker.io/library/nginx:1.27-alpne: not found
+  Warning  Failed     34s (x4 over 4m1s)    kubelet            spec.containers{nginx}: Error: ErrImagePull
+  Normal   BackOff    7s (x6 over 4m1s)     kubelet            spec.containers{nginx}: Back-off pulling image "nginx:1.27-alpne"
+  Warning  Failed     7s (x6 over 4m1s)     kubelet            spec.containers{nginx}: Error: ImagePullBackOff
+
+### 2026-10-29T15:59:05Z
+$ k -n shop describe deploy frontend
+Name:                   frontend
+Namespace:              shop
+CreationTimestamp:      Thu, 29 Oct 2026 11:49:07 -0400
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 2
+Selector:               app=frontend
+Replicas:               2 desired | 1 updated | 3 total | 2 available | 1 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=frontend
+  Containers:
+   nginx:
+    Image:      nginx:1.27-alpne
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+  Volumes:
+   conf:
+    Type:          ConfigMap (a volume populated by a ConfigMap)
+    Name:          frontend-nginx
+    Optional:      false
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetCreated
+OldReplicaSets:  frontend-76d98597b9 (2/2 replicas created)
+NewReplicaSet:   frontend-7b6c998456 (1/1 replicas created)
+Events:
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  9m47s  deployment-controller  Scaled up replica set frontend-76d98597b9 from 0 to 2
+  Normal  ScalingReplicaSet  9m24s  deployment-controller  Scaled up replica set frontend-7b6c998456 from 0 to 1
+
+### 2026-10-29T15:59:05Z
+$ k -n shop get rs -l app=frontend -o jsonpath={range .items[*]}{.metadata.name}{" "}{.spec.template.spec.containers[0].image}{" replicas="}{.spec.replicas}{" ready="}{.status.readyReplicas}{"
+"}{end}
+frontend-76d98597b9 nginx:1.27-alpine replicas=2 ready=2
+frontend-7b6c998456 nginx:1.27-alpne replicas=1 ready=
+
+### 2026-10-29T15:59:05Z
+$ k -n shop get pods -l app=frontend -o wide
+NAME                        READY   STATUS             RESTARTS   AGE     IP           NODE            NOMINATED NODE   READINESS GATES
+frontend-76d98597b9-fzgzx   1/1     Running            0          9m46s   10.244.1.2   rpull-worker    <none>           <none>
+frontend-76d98597b9-vvb9h   1/1     Running            0          9m46s   10.244.3.3   rpull-worker2   <none>           <none>
+frontend-7b6c998456-mc594   0/1     ImagePullBackOff   0          9m24s   10.244.1.7   rpull-worker    <none>           <none>
+

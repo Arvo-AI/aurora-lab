@@ -1,0 +1,25 @@
+# Restored from the console output of causes/run.sh (run started 2026-10-29T15:56:42Z),
+# an earlier config with no `resolver` anywhere except inside /shortname/, /fqdn/
+# and /typo/. Kept for the /noresolver/ case. In this run /shortname/ used
+# http://backend:8085, a name nginx already knew from a static proxy_pass, so it
+# returned 200 without DNS; the later config uses a name only reached through a
+# variable (dynonly). /tls-to-plain/ pointed at the shop api on 8080.
+# 2026-10-29T15:56:42Z context kind-r502
+nginx version: nginx/1.27.5
+### GET /noresolver/ -> 502
+2026/10/29 15:57:04 [error] 25#25: *31 no resolver defined to resolve backend.r502x.svc.cluster.local, client: 127.0.0.1, server: , request: "GET /noresolver/ HTTP/1.1", host: "localhost"
+
+### GET /shortname/ -> 200
+
+### stale headless IPs: restart backend pods, nginx keeps the IPs it resolved at start
+10.244.1.9 10.244.2.9
+10.244.1.10 10.244.2.11
+### GET /headless/ -> 504
+2026/10/29 15:57:59 [warn] 25#25: *41 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.1.9:8085/", host: "localhost"
+2026/10/29 15:57:59 [error] 25#25: *41 upstream timed out (110: Operation timed out) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.1.9:8085/", host: "localhost"
+2026/10/29 15:58:01 [warn] 25#25: *41 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.2.9:8085/", host: "localhost"
+2026/10/29 15:58:01 [error] 25#25: *41 upstream timed out (110: Operation timed out) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.2.9:8085/", host: "localhost"
+
+### GET /headless/ -> 502
+2026/10/29 15:58:02 [error] 25#25: *44 no live upstreams while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://headless/", host: "localhost"
+# (other cases of this run trimmed; they matched the 16:24 run line for line apart from IPs, PIDs and times)

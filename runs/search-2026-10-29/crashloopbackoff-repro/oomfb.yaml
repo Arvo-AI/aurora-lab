@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: oom-fallback, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: oom-fallback}}
+  template:
+    metadata: {labels: {app: oom-fallback}}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "-c", "print('loading cache', flush=True); b=[bytearray(1024*1024) for _ in range(400)]"]
+          terminationMessagePolicy: FallbackToLogsOnError
+          resources:
+            limits: {memory: 64Mi}

@@ -1,0 +1,21 @@
+Thu 29 Oct 2026 15:53:41 UTC
+$ kubectl -n crash get pods
+NAME                        READY   STATUS              RESTARTS      AGE
+exit0-65f8b9dbd-8wdbf       0/1     Completed           3 (25s ago)   42s
+exit1-7cd4f4c959-4j5lg      0/1     Error               2 (39s ago)   42s
+exit127-787659dffb-4n9cj    0/1     Error               2 (38s ago)   42s
+nobinary-699784c959-rvxvc   0/1     RunContainerError   3 (0s ago)    42s
+oom-f47d67486-vcc8v         0/1     OOMKilled           2 (29s ago)   42s
+$ kubectl -n crash get pod/exit1-7cd4f4c959-4j5lg -o jsonpath='{.status.containerStatuses[0].state}'
+{"terminated":{"containerID":"containerd://099f8792f1e9912fb36e5bbac899d69fefb5e3b5be6ecf4f5debceb548ca572f","exitCode":1,"finishedAt":"2026-10-29T15:53:17Z","reason":"Error","startedAt":"2026-10-29T15:53:17Z"}}
+$ kubectl -n crash logs pod/exit1-7cd4f4c959-4j5lg
+starting
+fatal: config file /etc/app/app.yaml not found
+$ kubectl -n crash logs pod/exit1-7cd4f4c959-4j5lg --previous
+unable to retrieve container logs for containerd://b2f40f8bf8ac02c756ac2369ce88ca892f7d42daebdff3341aa8b226c7af9b90
+$ kubectl -n crash get pod/oom-f47d67486-vcc8v -o jsonpath='{.status.containerStatuses[0].state}'
+{"terminated":{"containerID":"containerd://a78460230ff0eaed6835c1e761f41f45e0b250334cc247f649af1069e48a7e9f","exitCode":137,"finishedAt":"2026-10-29T15:53:26Z","reason":"OOMKilled","startedAt":"2026-10-29T15:53:26Z"}}
+$ kubectl -n crash logs pod/oom-f47d67486-vcc8v
+loading cache
+$ kubectl -n crash logs pod/oom-f47d67486-vcc8v --previous
+unable to retrieve container logs for containerd://46b1ed7c966d4da2e9b49be2f6bc500bbe4b00af1c727ac1a6576ab713a749e2

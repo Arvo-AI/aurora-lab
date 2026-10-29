@@ -1,0 +1,59 @@
+
+## baseline  snaps=40 err=0 window=2026-10-29T15:54:51Z..2026-10-29T16:14:33Z
+  background (also in baseline): 44
+  FIRING  KubeControllerManagerInstanceUnreachable namespace=kube-system workload=kube-controller-manager-rfat-control-plane container=kube-controller-manager job=kube-controller-manager
+  FIRING  KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-mclvj job=kube-proxy
+  FIRING  KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-ngscw job=kube-proxy
+  FIRING  KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-xdl7t job=kube-proxy
+  FIRING  KubeSchedulerInstanceUnreachable namespace=kube-system workload=kube-scheduler-rfat-control-plane container=kube-scheduler job=kube-scheduler
+  FIRING  TargetDown namespace=kube-system job=kube-controller-manager
+  FIRING  TargetDown namespace=kube-system job=kube-etcd
+  FIRING  TargetDown namespace=kube-system job=kube-proxy
+  FIRING  TargetDown namespace=kube-system job=kube-scheduler
+  FIRING  etcdInsufficientMembers namespace=kube-system container=etcd job=kube-etcd
+  FIRING  etcdMembersDown namespace=kube-system container=etcd job=kube-etcd
+  pending KubeAPIDown job=apiserver
+  pending KubeProxyDown job=kube-proxy
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hostname
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hostname
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hostname
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hosts
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hosts
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hosts
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/resolv.conf
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/resolv.conf
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/resolv.conf
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/var
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/var
+  pending NodeFilesystemAlmostOutOfSpace namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/var
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hostname
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hostname
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hostname
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hostname
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hosts
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hosts
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hosts
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/hosts
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/resolv.conf
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/resolv.conf
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/resolv.conf
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/etc/resolv.conf
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/var
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/var
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/var
+  pending NodeFilesystemSpaceFillingUp namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter mountpoint=/var
+  pending NodeSystemSaturation namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+  pending NodeSystemSaturation namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+  pending NodeSystemSaturation namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+
+## 01-worker-oom  snaps=21 err=2 window=2026-10-29T16:16:42Z..2026-10-29T16:29:03Z
+  background (also in baseline): 11
+  pending KubeDeploymentReplicasMismatch namespace=shop workload=kps-kube-state-metrics deployment=worker container=kube-state-metrics
+  pending KubePodCrashLooping namespace=shop workload=worker container=worker reason=CrashLoopBackOff
+  pending KubePodNotReady namespace=shop workload=worker
+  pending NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+  pending NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+  pending NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+
+## 02-sidecar-oom  snaps=0 err=1 window=None..None
+  background (also in baseline): 0

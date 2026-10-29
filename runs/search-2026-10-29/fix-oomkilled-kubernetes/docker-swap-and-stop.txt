@@ -1,0 +1,22 @@
++(eval):1> docker run --name fix-oomkilled-kubernetes-b --memory 128m python:3.12-alpine python -c 'b = b"\x01" * (200 << 20); print("allocated 200 MiB under a 128m limit")'
+allocated 200 MiB under a 128m limit
++(eval):1> echo 'exit=0'
+exit=0
++(eval):1> docker inspect fix-oomkilled-kubernetes-b --format '{{json .State}} memory={{.HostConfig.Memory}} memoryswap={{.HostConfig.MemorySwap}}'
+{"Status":"exited","Running":false,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":0,"ExitCode":0,"Error":"","StartedAt":"2026-10-29T15:56:30.557561312Z","FinishedAt":"2026-10-29T15:56:30.700765442Z"} memory=134217728 memoryswap=268435456
++(eval):1> docker rm fix-oomkilled-kubernetes-b
+fix-oomkilled-kubernetes-b
++(eval):2> docker run -d --name fix-oomkilled-kubernetes-c busybox:1.37 sh -c 'trap "echo got SIGTERM, ignoring it" TERM; echo started; while true; do sleep 1; done'
+9a47d1d2b5dd98725c12069c1ff20b3c4bb01368cd4d52eef6662135de64e5ce
++(eval):2> sleep 2
++(eval):2> docker stop fix-oomkilled-kubernetes-c
+fix-oomkilled-kubernetes-c
+docker stop fix-oomkilled-kubernetes-c  0.01s user 0.01s system 0% cpu 10.170 total
++(eval):2> docker logs fix-oomkilled-kubernetes-c
+started
+got SIGTERM, ignoring it
++(eval):2> docker inspect fix-oomkilled-kubernetes-c --format '{{json .State}}'
+{"Status":"exited","Running":false,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":0,"ExitCode":137,"Error":"","StartedAt":"2026-10-29T15:56:30.953912676Z","FinishedAt":"2026-10-29T15:56:43.057384451Z"}
++(eval):2> docker rm fix-oomkilled-kubernetes-c
+fix-oomkilled-kubernetes-c
+client 29.4.0 server 29.4.0

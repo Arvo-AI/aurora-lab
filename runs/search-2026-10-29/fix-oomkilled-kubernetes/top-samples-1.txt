@@ -1,0 +1,19 @@
+15:54:46Z
+POD                         NAME       CPU(cores)   MEMORY(bytes)   
+spiky-7cb5877b97-s6bjg      spiky      9m           12Mi            
+stubborn-65c47b744f-nxbw4   stubborn   6m           0Mi             
+15:55:01Z
+POD                      NAME    CPU(cores)   MEMORY(bytes)   
+spiky-7cb5877b97-s6bjg   spiky   0m           12Mi            
+15:55:16Z
+POD                         NAME       CPU(cores)   MEMORY(bytes)   
+stubborn-65c47b744f-nxbw4   stubborn   3m           0Mi             
+15:55:31Z
+error: metrics not available yet
+15:55:46Z
+POD                         NAME       CPU(cores)   MEMORY(bytes)   
+spiky-7cb5877b97-s6bjg      spiky      3m           11Mi            
+stubborn-65c47b744f-nxbw4   stubborn   2m           0Mi             
+15:56:01Z
+POD                      NAME    CPU(cores)   MEMORY(bytes)   
+spiky-7cb5877b97-s6bjg   spiky   0m           11Mi            

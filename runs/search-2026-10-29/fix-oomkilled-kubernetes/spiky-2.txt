@@ -1,0 +1,21 @@
++(eval):1> k -n oom get pods -l 'app=spiky'
++k:0> kubectl --context kind-room -n oom get pods -l 'app=spiky'
+NAME                     READY   STATUS      RESTARTS        AGE
+spiky-7cb5877b97-s6bjg   0/1     OOMKilled   5 (2m23s ago)   7m16s
++(eval):1> k -n oom logs deploy/spiky --previous
++k:0> kubectl --context kind-room -n oom logs deploy/spiky --previous
+unable to retrieve container logs for containerd://03aea4dbe46dd62d82a00aec42d44386b67f7fde3f604dcfe28558c586f7100c+(eval):1> k -n oom describe pod -l 'app=spiky'
++k:0> kubectl --context kind-room -n oom describe pod -l 'app=spiky'
++(eval):1> sed -n '/State:/,/Restart Count/p'
+    State:          Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 11:59:51 -0400
+      Finished:     Thu, 29 Oct 2026 12:00:31 -0400
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 11:57:46 -0400
+      Finished:     Thu, 29 Oct 2026 11:58:26 -0400
+    Ready:          False
+    Restart Count:  5

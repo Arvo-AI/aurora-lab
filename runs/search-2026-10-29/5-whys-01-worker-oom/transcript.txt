@@ -1,0 +1,134 @@
+$ kubectl -n shop get pods
+Error from server (Timeout): the server was unable to return a response in the time allotted, but may still be processing the request (get pods)
+
+$ kubectl -n shop get pod -l app=worker -o jsonpath='{range .items[*]}{.metadata.name}{" reason="}{.status.containerStatuses[0].lastState.terminated.reason}{" exitCode="}{.status.containerStatuses[0].lastState.terminated.exitCode}{" restarts="}{.status.containerStatuses[0].restartCount}{"\n"}{end}'
+Unable to connect to the server: EOF
+
+$ kubectl -n shop get deploy worker -o jsonpath='{.spec.template.spec.containers[0].resources}{"\n"}'
+error: Get "https://127.0.0.1:54479/apis/apps/v1/namespaces/shop/deployments/worker": net/http: TLS handshake timeout - error from a previous attempt: EOF
+
+$ kubectl -n shop logs deploy/worker
+Error from server (Forbidden): deployments.apps "worker" is forbidden: User "kubernetes-admin" cannot get resource "deployments" in API group "apps" in the namespace "shop"
+
+$ kubectl -n shop get cm api-code -o jsonpath='{.data.worker\.py}'
+import os, time
+batch = int(os.environ.get("BATCH_SIZE", "500"))
+print(f"worker started, batch size {batch}", flush=True)
+while True:
+    # Each queued item holds about 100 KiB while the batch is processed.
+    buf = [bytearray(100 * 1024) for _ in range(batch)]
+    print(f"processed batch of {len(buf)} items", flush=True)
+    del buf
+    time.sleep(5)
+
+$ kubectl -n shop rollout history deploy/worker
+deployment.apps/worker 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+
+
+$ kubectl -n shop get rs -l app=worker -o custom-columns='NAME:.metadata.name,REVISION:.metadata.annotations.deployment\.kubernetes\.io/revision,BATCH_SIZE:.spec.template.spec.containers[0].env[0].value,MEM_LIMIT:.spec.template.spec.containers[0].resources.limits.memory,CREATED:.metadata.creationTimestamp'
+NAME                REVISION   BATCH_SIZE   MEM_LIMIT   CREATED
+worker-6cf88d4b58   1          500          192Mi       2026-10-29T15:49:28Z
+worker-86f68b9bf6   2          2500         192Mi       2026-10-29T15:49:48Z
+
+$ kubectl -n shop rollout history deploy/worker --revision=1
+deployment.apps/worker with revision #1
+Pod Template:
+  Labels:	app=worker
+	pod-template-hash=6cf88d4b58
+  Containers:
+   worker:
+    Image:	python:3.12-alpine
+    Port:	<none>
+    Host Port:	<none>
+    Command:
+      python
+      -u
+      /code/worker.py
+    Limits:
+      memory:	192Mi
+    Requests:
+      cpu:	50m
+      memory:	64Mi
+    Environment:
+      BATCH_SIZE:	500
+    Mounts:
+      /code from code (rw)
+  Volumes:
+   code:
+    Type:	ConfigMap (a volume populated by a ConfigMap)
+    Name:	api-code
+    Optional:	false
+  Node-Selectors:	<none>
+  Tolerations:	<none>
+
+
+$ kubectl -n shop rollout history deploy/worker --revision=2
+deployment.apps/worker with revision #2
+Pod Template:
+  Labels:	app=worker
+	pod-template-hash=86f68b9bf6
+  Containers:
+   worker:
+    Image:	python:3.12-alpine
+    Port:	<none>
+    Host Port:	<none>
+    Command:
+      python
+      -u
+      /code/worker.py
+    Limits:
+      memory:	192Mi
+    Requests:
+      cpu:	50m
+      memory:	64Mi
+    Environment:
+      BATCH_SIZE:	2500
+    Mounts:
+      /code from code (rw)
+  Volumes:
+   code:
+    Type:	ConfigMap (a volume populated by a ConfigMap)
+    Name:	api-code
+    Optional:	false
+  Node-Selectors:	<none>
+  Tolerations:	<none>
+
+
+$ kubectl -n shop get events --field-selector involvedObject.kind=Pod --sort-by=.lastTimestamp | grep worker
+3m5s        Normal    Scheduled       pod/api-f64486c4c-zwhj6         Successfully assigned shop/api-f64486c4c-zwhj6 to fivewhys-worker
+3m5s        Normal    Scheduled       pod/redis-59458f55d8-tbplw      Successfully assigned shop/redis-59458f55d8-tbplw to fivewhys-worker
+3m5s        Normal    Scheduled       pod/api-f64486c4c-7cs55         Successfully assigned shop/api-f64486c4c-7cs55 to fivewhys-worker2
+3m5s        Normal    Scheduled       pod/worker-6cf88d4b58-vfskp     Successfully assigned shop/worker-6cf88d4b58-vfskp to fivewhys-worker
+3m4s        Normal    Pulling         pod/worker-6cf88d4b58-vfskp     Pulling image "python:3.12-alpine"
+3m4s        Normal    Scheduled       pod/frontend-76d98597b9-rzd5w   Successfully assigned shop/frontend-76d98597b9-rzd5w to fivewhys-worker
+3m4s        Normal    Scheduled       pod/loadgen-7c6676864-p72gr     Successfully assigned shop/loadgen-7c6676864-p72gr to fivewhys-worker2
+3m4s        Normal    Scheduled       pod/frontend-76d98597b9-mjrwc   Successfully assigned shop/frontend-76d98597b9-mjrwc to fivewhys-worker2
+2m54s       Normal    Pulled          pod/worker-6cf88d4b58-vfskp     Successfully pulled image "python:3.12-alpine" in 342ms (9.481s including waiting). Image size: 18544611 bytes.
+2m54s       Normal    Started         pod/worker-6cf88d4b58-vfskp     Container started
+2m54s       Normal    Created         pod/worker-6cf88d4b58-vfskp     Container created
+2m45s       Normal    Scheduled       pod/worker-86f68b9bf6-8zzh2     Successfully assigned shop/worker-86f68b9bf6-8zzh2 to fivewhys-worker
+2m44s       Normal    Created         pod/worker-86f68b9bf6-8zzh2     Container created
+2m44s       Normal    Started         pod/worker-86f68b9bf6-8zzh2     Container started
+73s         Normal    Pulled          pod/worker-86f68b9bf6-8zzh2     Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+73s         Warning   Failed          pod/worker-86f68b9bf6-8zzh2     Error: open /var/lib/kubelet/pods/739a8317-de57-4909-af96-f00a3f9cc1ee/etc-hosts: no space left on device
+60s         Warning   BackOff         pod/worker-86f68b9bf6-8zzh2     Back-off restarting failed container worker in pod worker-86f68b9bf6-8zzh2_shop(739a8317-de57-4909-af96-f00a3f9cc1ee)
+14s         Warning   FailedKillPod   pod/worker-6cf88d4b58-vfskp     error killing pod: failed to "KillContainer" for "worker" with KillContainerError: "rpc error: code = DeadlineExceeded desc = context deadline exceeded"
+13s         Normal    Killing         pod/worker-6cf88d4b58-vfskp     Stopping container worker
+
+$ kubectl describe node fivewhys-worker | grep -A6 'Conditions:'
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Thu, 29 Oct 2026 11:50:05 -0400   Thu, 29 Oct 2026 11:48:32 -0400   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Thu, 29 Oct 2026 11:50:05 -0400   Thu, 29 Oct 2026 11:48:32 -0400   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Thu, 29 Oct 2026 11:50:05 -0400   Thu, 29 Oct 2026 11:48:32 -0400   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Thu, 29 Oct 2026 11:50:05 -0400   Thu, 29 Oct 2026 11:48:47 -0400   KubeletReady                 kubelet is posting ready status
+
+# NOTE (2026-10-29): the Docker VM disk shared by several kind clusters on this Mac was at 99%
+# (overlay 78G, 77G used) during this capture, which caused the API timeouts at the top and the
+# "no space left on device" event above. Only the rollout history, ReplicaSet and ConfigMap
+# outputs from this transcript are used on the page; the OOMKilled evidence is taken from
+# runs/v0-run2/01-worker-oom/r1/ (the graded run). Cluster deleted right after this capture.

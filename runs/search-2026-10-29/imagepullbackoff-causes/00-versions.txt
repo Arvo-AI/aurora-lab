@@ -1,0 +1,30 @@
+### 2026-10-29T16:11:55Z
+$ k version
+Client Version: v1.35.3
+Kustomize Version: v5.7.1
+Server Version: v1.37.0
+Warning: version difference between client (1.35) and server (1.37) exceeds the supported minor version skew of +/-1
+
+### 2026-10-29T16:11:55Z
+$ kind version
+kind v0.33.0 go1.27.1 darwin/arm64
+
+### 2026-10-29T16:11:55Z
+$ k get nodes -o wide
+NAME                  STATUS   ROLES           AGE   VERSION   INTERNAL-IP      EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                                CONTAINER-RUNTIME
+rpull-control-plane   Ready    control-plane   25m   v1.37.0   192.168.148.10   <none>        Debian GNU/Linux 13 (trixie)   7.0.11-orbstack-00354-gde2ab3f9e944 (arm64)   containerd://2.3.4
+rpull-worker          Ready    <none>          25m   v1.37.0   192.168.148.8    <none>        Debian GNU/Linux 13 (trixie)   7.0.11-orbstack-00354-gde2ab3f9e944 (arm64)   containerd://2.3.4
+rpull-worker2         Ready    <none>          25m   v1.37.0   192.168.148.9    <none>        Debian GNU/Linux 13 (trixie)   7.0.11-orbstack-00354-gde2ab3f9e944 (arm64)   containerd://2.3.4
+
+### 2026-10-29T16:11:55Z
+$ docker exec rpull-worker2 containerd --version
+containerd github.com/containerd/containerd/v2 v2.3.4 db8809540e1a7a9da5d518876894933ff55692ab
+
+### 2026-10-29T16:11:55Z
+$ docker image inspect registry:2 --format {{index .RepoDigests 0}}
+registry@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
+
+### 2026-10-29T16:11:55Z
+$ docker buildx version
+github.com/docker/buildx v0.33.0 Homebrew
+

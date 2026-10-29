@@ -1,0 +1,51 @@
+Name:             hog-6cf7f544db-gpjnd
+Namespace:        oom
+Priority:         0
+Service Account:  default
+Node:             room-worker2/
+Start Time:       Thu, 29 Oct 2026 11:57:44 -0400
+Labels:           app=hog
+                  pod-template-hash=6cf7f544db
+Annotations:      <none>
+Status:           Failed
+Reason:           Evicted
+Message:          Pod was rejected: The node had condition: [MemoryPressure]. 
+IP:               
+IPs:              <none>
+Controlled By:    ReplicaSet/hog-6cf7f544db
+Containers:
+  hog:
+    Image:      python:3.12-alpine
+    Port:       <none>
+    Host Port:  <none>
+    Command:
+      python
+      -u
+      -c
+    Args:
+      import time
+      chunks = []
+      while True:
+          chunks.append(b"\x01" * (50 << 20))
+          print(f"holding {len(chunks) * 50} MiB", flush=True)
+          time.sleep(3)
+      
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-kn5zv (ro)
+Volumes:
+  kube-api-access-kn5zv:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              kubernetes.io/hostname=room-worker2
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age   From               Message
+  ----     ------     ----  ----               -------
+  Normal   Scheduled  8s    default-scheduler  Successfully assigned oom/hog-6cf7f544db-gpjnd to room-worker2
+  Warning  Evicted    8s    kubelet            The node had condition: [MemoryPressure].

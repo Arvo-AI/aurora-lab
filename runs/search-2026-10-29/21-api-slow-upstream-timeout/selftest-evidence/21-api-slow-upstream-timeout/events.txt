@@ -1,0 +1,65 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+111s        Normal    Scheduled           pod/api-7bf64db696-c28td         Successfully assigned shop/api-7bf64db696-c28td to r504-worker2
+2m1s        Normal    Scheduled           pod/frontend-76d98597b9-jbtbd    Successfully assigned shop/frontend-76d98597b9-jbtbd to r504-worker2
+2m1s        Normal    Scheduled           pod/api-f64486c4c-ktb4f          Successfully assigned shop/api-f64486c4c-ktb4f to r504-worker2
+2m1s        Normal    Scheduled           pod/worker-6cf88d4b58-mbn7b      Successfully assigned shop/worker-6cf88d4b58-mbn7b to r504-worker
+2m1s        Normal    Scheduled           pod/frontend-76d98597b9-64p9g    Successfully assigned shop/frontend-76d98597b9-64p9g to r504-worker
+112s        Normal    Scheduled           pod/api-7bf64db696-wmn2f         Successfully assigned shop/api-7bf64db696-wmn2f to r504-worker
+2m1s        Normal    Scheduled           pod/api-f64486c4c-4fvqf          Successfully assigned shop/api-f64486c4c-4fvqf to r504-worker
+2m1s        Normal    Scheduled           pod/redis-59458f55d8-b92r6       Successfully assigned shop/redis-59458f55d8-b92r6 to r504-worker
+2m1s        Normal    Scheduled           pod/loadgen-7c6676864-vxskk      Successfully assigned shop/loadgen-7c6676864-vxskk to r504-worker
+2m2s        Normal    SuccessfulCreate    replicaset/loadgen-7c6676864     Created pod: loadgen-7c6676864-vxskk
+2m2s        Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+2m2s        Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7c6676864 from 0 to 1
+2m2s        Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-4fvqf
+2m2s        Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+2m2s        Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-jbtbd
+2m2s        Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-64p9g
+2m2s        Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-b92r6
+2m2s        Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+2m2s        Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-mbn7b
+2m2s        Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+2m2s        Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-ktb4f
+2m1s        Normal    Created             pod/loadgen-7c6676864-vxskk      Container created
+2m1s        Normal    Pulled              pod/frontend-76d98597b9-64p9g    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+2m1s        Normal    Started             pod/worker-6cf88d4b58-mbn7b      Container started
+2m1s        Normal    Started             pod/api-f64486c4c-ktb4f          Container started
+2m1s        Normal    Created             pod/api-f64486c4c-ktb4f          Container created
+2m1s        Normal    Created             pod/worker-6cf88d4b58-mbn7b      Container created
+2m1s        Normal    Pulled              pod/worker-6cf88d4b58-mbn7b      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+2m1s        Normal    Pulled              pod/api-f64486c4c-ktb4f          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+2m1s        Normal    Started             pod/redis-59458f55d8-b92r6       Container started
+2m1s        Normal    Created             pod/redis-59458f55d8-b92r6       Container created
+2m1s        Normal    Pulled              pod/redis-59458f55d8-b92r6       Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+2m1s        Warning   Unhealthy           pod/api-f64486c4c-ktb4f          Readiness probe failed: Get "http://10.244.2.17:8080/healthz": dial tcp 10.244.2.17:8080: connect: connection refused
+2m1s        Normal    Started             pod/loadgen-7c6676864-vxskk      Container started
+2m1s        Normal    Pulled              pod/loadgen-7c6676864-vxskk      Container image "busybox:1.37" already present on machine and can be accessed by the pod
+2m1s        Normal    Created             pod/frontend-76d98597b9-64p9g    Container created
+2m1s        Normal    Started             pod/frontend-76d98597b9-64p9g    Container started
+2m1s        Warning   Unhealthy           pod/frontend-76d98597b9-64p9g    Readiness probe failed: Get "http://10.244.1.26:80/healthz": dial tcp 10.244.1.26:80: connect: connection refused
+2m1s        Warning   Unhealthy           pod/api-f64486c4c-4fvqf          Readiness probe failed: Get "http://10.244.1.24:8080/healthz": dial tcp 10.244.1.24:8080: connect: connection refused
+2m1s        Normal    Pulled              pod/frontend-76d98597b9-jbtbd    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+2m1s        Normal    Created             pod/frontend-76d98597b9-jbtbd    Container created
+2m1s        Normal    Started             pod/frontend-76d98597b9-jbtbd    Container started
+2m1s        Warning   Unhealthy           pod/frontend-76d98597b9-jbtbd    Readiness probe failed: Get "http://10.244.2.18:80/healthz": dial tcp 10.244.2.18:80: connect: connection refused
+2m1s        Normal    Started             pod/api-f64486c4c-4fvqf          Container started
+2m1s        Normal    Created             pod/api-f64486c4c-4fvqf          Container created
+2m1s        Normal    Pulled              pod/api-f64486c4c-4fvqf          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+113s        Normal    Created             pod/api-7bf64db696-wmn2f         Container created
+113s        Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-7bf64db696 from 0 to 1
+113s        Normal    SuccessfulCreate    replicaset/api-7bf64db696        Created pod: api-7bf64db696-wmn2f
+113s        Normal    Pulled              pod/api-7bf64db696-wmn2f         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+113s        Warning   Unhealthy           pod/api-7bf64db696-wmn2f         Readiness probe failed: Get "http://10.244.1.28:8080/healthz": dial tcp 10.244.1.28:8080: connect: connection refused
+113s        Normal    Started             pod/api-7bf64db696-wmn2f         Container started
+112s        Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-7bf64db696 from 1 to 2
+112s        Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-f64486c4c from 2 to 1
+112s        Normal    SuccessfulCreate    replicaset/api-7bf64db696        Created pod: api-7bf64db696-c28td
+112s        Normal    Killing             pod/api-f64486c4c-4fvqf          Stopping container api
+112s        Normal    SuccessfulDelete    replicaset/api-f64486c4c         Deleted pod: api-f64486c4c-4fvqf
+111s        Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-f64486c4c from 1 to 0
+111s        Warning   Unhealthy           pod/api-7bf64db696-c28td         Readiness probe failed: Get "http://10.244.2.19:8080/healthz": dial tcp 10.244.2.19:8080: connect: connection refused
+111s        Normal    Started             pod/api-7bf64db696-c28td         Container started
+111s        Normal    SuccessfulDelete    replicaset/api-f64486c4c         Deleted pod: api-f64486c4c-ktb4f
+111s        Normal    Killing             pod/api-f64486c4c-ktb4f          Stopping container api
+111s        Normal    Created             pod/api-7bf64db696-c28td         Container created
+111s        Normal    Pulled              pod/api-7bf64db696-c28td         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod

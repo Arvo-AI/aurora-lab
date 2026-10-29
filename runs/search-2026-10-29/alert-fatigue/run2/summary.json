@@ -1,0 +1,75 @@
+{
+ "baseline": {
+  "window": [
+   "2026-10-29T19:37:31Z",
+   "2026-10-29T19:57:04Z"
+  ],
+  "snapshots": 40,
+  "errors": 0,
+  "new_firing": [
+   "KubeControllerManagerInstanceUnreachable namespace=kube-system workload=kube-controller-manager-rfat-control-plane container=kube-controller-manager job=kube-controller-manager",
+   "KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-mclvj job=kube-proxy",
+   "KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-ngscw job=kube-proxy",
+   "KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-xdl7t job=kube-proxy",
+   "KubeSchedulerInstanceUnreachable namespace=kube-system workload=kube-scheduler-rfat-control-plane container=kube-scheduler job=kube-scheduler",
+   "TargetDown namespace=kube-system job=kube-controller-manager",
+   "TargetDown namespace=kube-system job=kube-etcd",
+   "TargetDown namespace=kube-system job=kube-proxy",
+   "TargetDown namespace=kube-system job=kube-scheduler",
+   "etcdInsufficientMembers namespace=kube-system container=etcd job=kube-etcd",
+   "etcdMembersDown namespace=kube-system container=etcd job=kube-etcd"
+  ],
+  "new_pending_only": [
+   "AlertmanagerClusterDown namespace=monitoring",
+   "KubeAggregatedAPIDown namespace=default",
+   "KubeControllerManagerInstanceUnreachable namespace=kube-system workload=kube-controller-manager-rfat-control-plane container=kube-controller-manager job=kube-controller-manager",
+   "NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter",
+   "NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter",
+   "NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter"
+  ],
+  "shop_alerts": [],
+  "background_alerts": 17
+ },
+ "01-worker-oom": {
+  "window": [
+   "2026-10-29T19:59:15Z",
+   "2026-10-29T20:16:49Z"
+  ],
+  "snapshots": 36,
+  "errors": 0,
+  "new_firing": [
+   "KubePodNotReady namespace=shop workload=worker"
+  ],
+  "new_pending_only": [
+   "KubeDeploymentReplicasMismatch namespace=shop workload=kps-kube-state-metrics deployment=worker container=kube-state-metrics",
+   "KubePodCrashLooping namespace=shop workload=worker container=worker reason=CrashLoopBackOff"
+  ],
+  "shop_alerts": [
+   "KubeDeploymentReplicasMismatch namespace=shop workload=kps-kube-state-metrics deployment=worker container=kube-state-metrics",
+   "KubePodCrashLooping namespace=shop workload=worker container=worker reason=CrashLoopBackOff",
+   "KubePodNotReady namespace=shop workload=worker"
+  ],
+  "background_alerts": 11
+ },
+ "12-two-faults-oom-and-selector": {
+  "window": [
+   "2026-10-29T20:19:00Z",
+   "2026-10-29T20:36:36Z"
+  ],
+  "snapshots": 36,
+  "errors": 0,
+  "new_firing": [
+   "KubePodCrashLooping namespace=shop workload=worker container=worker reason=CrashLoopBackOff",
+   "KubePodNotReady namespace=shop workload=worker"
+  ],
+  "new_pending_only": [
+   "KubeDeploymentReplicasMismatch namespace=shop workload=kps-kube-state-metrics deployment=worker container=kube-state-metrics"
+  ],
+  "shop_alerts": [
+   "KubeDeploymentReplicasMismatch namespace=shop workload=kps-kube-state-metrics deployment=worker container=kube-state-metrics",
+   "KubePodCrashLooping namespace=shop workload=worker container=worker reason=CrashLoopBackOff",
+   "KubePodNotReady namespace=shop workload=worker"
+  ],
+  "background_alerts": 11
+ }
+}

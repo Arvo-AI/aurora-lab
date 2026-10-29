@@ -1,0 +1,101 @@
+# ingress-nginx controller v1.15.1 (kind provider manifest) in front of the broken api, 2026-10-29T16:10:51Z
+$ cat /tmp/r504/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api
+  namespace: shop
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "10"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /items
+            pathType: Prefix
+            backend:
+              service: {name: api, port: {number: 8080}}
+
+$ kubectl apply -f /tmp/r504/ingress.yaml
+Error from server (InternalError): error when creating "/tmp/r504/ingress.yaml": Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": failed to call webhook: Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": dial tcp 10.96.231.9:443: connect: connection refused
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /nginx-ingress-controller --version
+-------------------------------------------------------------------------------
+NGINX Ingress controller
+  Release:       v1.15.1
+  Build:         0df02f2cfcf5fe4ad3cf31492bca770ac2a1606a
+  Repository:    https://github.com/kubernetes/ingress-nginx
+  nginx version: nginx/1.27.1
+
+-------------------------------------------------------------------------------
+
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -S -O /dev/null -T 200 http://ingress-nginx-controller.ingress-nginx.svc/items"
+  HTTP/1.1 404 Not Found
+wget: server returned error: HTTP/1.1 404 Not Found
+Command exited with non-zero status 1
+real	0m 0.00s
+user	0m 0.00s
+sys	0m 0.00s
+command terminated with exit code 1
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=20 | grep -e items -e upstream
+
+# retry after the admission webhook came up, 2026-10-29T16:11:14Z
+$ kubectl apply -f /tmp/r504/ingress.yaml
+ingress.networking.k8s.io/api created
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -S -O /dev/null -T 200 http://ingress-nginx-controller.ingress-nginx.svc/items"
+  HTTP/1.1 504 Gateway Time-out
+wget: server returned error: HTTP/1.1 504 Gateway Time-out
+Command exited with non-zero status 1
+real	0m 30.00s
+user	0m 0.00s
+sys	0m 0.00s
+command terminated with exit code 1
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=30 | grep -e "/items" 
+2026/10/29 16:11:34 [error] 383#383: *1125 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 10.244.1.15, server: _, request: "GET /items HTTP/1.1", upstream: "http://10.244.1.21:8080/items", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/10/29 16:11:44 [error] 383#383: *1125 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 10.244.1.15, server: _, request: "GET /items HTTP/1.1", upstream: "http://10.244.2.16:8080/items", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/10/29 16:11:54 [error] 383#383: *1125 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 10.244.1.15, server: _, request: "GET /items HTTP/1.1", upstream: "http://10.244.1.21:8080/items", host: "ingress-nginx-controller.ingress-nginx.svc"
+10.244.1.15 - - [29/Oct/2026:16:11:54 +0000] "GET /items HTTP/1.1" 504 160 "-" "Wget" 110 30.002 [shop-api-8080] [] 10.244.1.21:8080, 10.244.2.16:8080, 10.244.1.21:8080 0, 0, 0 10.001, 10.001, 10.000 504, 504, 504 fe8729b1278e55a4dd47db6ce3f5437e
+
+# turn off retry on timeout for this Ingress, 2026-10-29T16:12:03Z
+$ kubectl -n shop annotate ingress api nginx.ingress.kubernetes.io/proxy-next-upstream="error" --overwrite
+ingress.networking.k8s.io/api annotated
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -S -O /dev/null -T 200 http://ingress-nginx-controller.ingress-nginx.svc/items"
+  HTTP/1.1 504 Gateway Time-out
+wget: server returned error: HTTP/1.1 504 Gateway Time-out
+Command exited with non-zero status 1
+real	0m 10.00s
+user	0m 0.00s
+sys	0m 0.00s
+command terminated with exit code 1
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=5 | grep -e "/items" 
+2026/10/29 16:12:23 [error] 724#724: *2640 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 10.244.1.15, server: _, request: "GET /items HTTP/1.1", upstream: "http://10.244.1.21:8080/items", host: "ingress-nginx-controller.ingress-nginx.svc"
+10.244.1.15 - - [29/Oct/2026:16:12:23 +0000] "GET /items HTTP/1.1" 504 160 "-" "Wget" 110 10.002 [shop-api-8080] [] 10.244.1.21:8080 0 10.002 504 13c423d79a9bfc63ad9ec2d819fcd7cb
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- grep -n -A40 "location /items" /etc/nginx/nginx.conf | grep -e proxy_next_upstream -e proxy_read_timeout -e proxy_connect_timeout -e proxy_send_timeout
+command terminated with exit code 1
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- sh -c "grep -n -E \"location .*/items|proxy_(connect|read|send)_timeout|proxy_next_upstream\" /etc/nginx/nginx.conf | tail -12"
+377:			proxy_connect_timeout                   5s;
+378:			proxy_send_timeout                      60s;
+379:			proxy_read_timeout                      10s;
+394:			proxy_next_upstream                     error;
+395:			proxy_next_upstream_timeout             0;
+396:			proxy_next_upstream_tries               3;
+476:			proxy_connect_timeout                   5s;
+477:			proxy_send_timeout                      60s;
+478:			proxy_read_timeout                      60s;
+493:			proxy_next_upstream                     error timeout;
+494:			proxy_next_upstream_timeout             0;
+495:			proxy_next_upstream_tries               3;
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- sh -c "grep -n log_format /etc/nginx/nginx.conf"
+100:	log_format upstreaminfo '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr $upstream_response_length $upstream_response_time $upstream_status $req_id';
+593:	log_format log_stream '[$remote_addr] [$time_local] $protocol $status $bytes_sent $bytes_received $session_time';
+

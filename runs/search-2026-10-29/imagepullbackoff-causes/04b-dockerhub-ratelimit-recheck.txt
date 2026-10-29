@@ -1,0 +1,6 @@
+# 2026-10-29T18:45:26Z anonymous HEAD, per docs.docker.com/docker-hub/usage/pulls/ (source IP header dropped)
+$ curl -sI -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest | grep -i ratelimit
+x-ratelimit-limit: 100;w=3600
+ratelimit-limit: 100;w=3600
+x-ratelimit-remaining: 100;w=3600
+ratelimit-remaining: 100;w=3600

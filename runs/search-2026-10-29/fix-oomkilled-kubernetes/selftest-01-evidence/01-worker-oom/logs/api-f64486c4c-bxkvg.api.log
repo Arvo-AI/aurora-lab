@@ -1,0 +1,34 @@
+redis connection failed (attempt 1/5): [Errno 111] Connection refused
+redis connection failed (attempt 2/5): [Errno 111] Connection refused
+connected to redis at redis:6379
+api listening on :8080
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.51 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.51 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.51 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.51 "GET /items HTTP/1.0" 200 -
+10.244.1.51 "GET /items HTTP/1.0" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.48 "GET /items HTTP/1.0" 200 -
+10.244.1.51 "GET /items HTTP/1.0" 200 -

@@ -1,0 +1,43 @@
+
+## baseline  snaps=40 err=0 window=2026-10-29T19:37:31Z..2026-10-29T19:57:04Z
+  background (also in baseline): 17
+  FIRING  KubeControllerManagerInstanceUnreachable namespace=kube-system workload=kube-controller-manager-rfat-control-plane container=kube-controller-manager job=kube-controller-manager
+  FIRING  KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-mclvj job=kube-proxy
+  FIRING  KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-ngscw job=kube-proxy
+  FIRING  KubeProxyInstanceUnreachable namespace=kube-system workload=kube-proxy-xdl7t job=kube-proxy
+  FIRING  KubeSchedulerInstanceUnreachable namespace=kube-system workload=kube-scheduler-rfat-control-plane container=kube-scheduler job=kube-scheduler
+  FIRING  TargetDown namespace=kube-system job=kube-controller-manager
+  FIRING  TargetDown namespace=kube-system job=kube-etcd
+  FIRING  TargetDown namespace=kube-system job=kube-proxy
+  FIRING  TargetDown namespace=kube-system job=kube-scheduler
+  FIRING  etcdInsufficientMembers namespace=kube-system container=etcd job=kube-etcd
+  FIRING  etcdMembersDown namespace=kube-system container=etcd job=kube-etcd
+  pending AlertmanagerClusterDown namespace=monitoring
+  pending KubeAggregatedAPIDown namespace=default
+  pending KubeControllerManagerInstanceUnreachable namespace=kube-system workload=kube-controller-manager-rfat-control-plane container=kube-controller-manager job=kube-controller-manager
+  pending NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+  pending NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+  pending NodeClockNotSynchronising namespace=monitoring workload=kps-prometheus-node container=node-exporter job=node-exporter
+
+## 01-worker-oom  snaps=36 err=0 window=2026-10-29T19:59:15Z..2026-10-29T20:16:49Z
+  background (also in baseline): 11
+  FIRING  KubePodNotReady namespace=shop workload=worker
+  pending KubeDeploymentReplicasMismatch namespace=shop workload=kps-kube-state-metrics deployment=worker container=kube-state-metrics
+  pending KubePodCrashLooping namespace=shop workload=worker container=worker reason=CrashLoopBackOff
+
+## 12-two-faults-oom-and-selector  snaps=36 err=0 window=2026-10-29T20:19:00Z..2026-10-29T20:36:36Z
+  background (also in baseline): 11
+  FIRING  KubePodCrashLooping namespace=shop workload=worker container=worker reason=CrashLoopBackOff
+  FIRING  KubePodNotReady namespace=shop workload=worker
+  pending KubeDeploymentReplicasMismatch namespace=shop workload=kps-kube-state-metrics deployment=worker container=kube-state-metrics
+
+## notifications
+  2026-10-29T19:55:27 [baseline] firing group={'namespace': 'kube-system'} firing=['KubeControllerManagerInstanceUnreachable', 'KubeProxyInstanceUnreachable', 'KubeSchedulerInstanceUnreachable', 'TargetDown', 'etcdInsufficientMembers'] n_alerts=10
+  2026-10-29T20:00:27 [01-worker-oom] firing group={'namespace': 'kube-system'} firing=['KubeControllerManagerInstanceUnreachable', 'KubeProxyInstanceUnreachable', 'KubeSchedulerInstanceUnreachable', 'TargetDown', 'etcdInsufficientMembers', 'etcdMembersDown'] n_alerts=11
+  2026-10-29T20:14:29 [01-worker-oom] firing group={'namespace': 'shop'} firing=['KubePodNotReady'] n_alerts=1
+  2026-10-29T20:19:29 [12-two-faults-oom-and-selector] firing group={'namespace': 'shop'} firing=['KubePodCrashLooping'] n_alerts=2
+  2026-10-29T20:24:29 [12-two-faults-oom-and-selector] resolved group={'namespace': 'shop'} firing=[] n_alerts=2
+  2026-10-29T20:34:29 [12-two-faults-oom-and-selector] firing group={'namespace': 'shop'} firing=['KubePodNotReady'] n_alerts=2
+
+per phase: {'baseline': 1, '01-worker-oom': 2, '12-two-faults-oom-and-selector': 3}
+shop group per phase: {'01-worker-oom': 1, '12-two-faults-oom-and-selector': 3}

@@ -1,0 +1,282 @@
+# 20 one-shot pods, each allocates 150 MiB under a 128Mi limit and is OOM killed once.
+# Used to count how often the kubelet reports reason OOMKilled vs Error.
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-01, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-02, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-03, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-04, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-05, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-06, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-07, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-08, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-09, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-10, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-11, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-12, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-13, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-14, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-15, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-16, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-17, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-18, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-19, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: tally-20, namespace: oom, labels: {app: tally}}
+spec:
+  restartPolicy: Never
+  nodeSelector: {kubernetes.io/hostname: room-worker}
+  containers:
+  - name: tally
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = b'\\x01' * (150 << 20); print('allocated')"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}

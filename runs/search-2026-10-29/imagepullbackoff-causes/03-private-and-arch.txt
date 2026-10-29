@@ -1,0 +1,391 @@
+### 2026-10-29T15:58:32Z
+$ k -n pulltest get pods -o wide
+NAME                READY   STATUS                  RESTARTS   AGE     IP            NODE            NOMINATED NODE   READINESS GATES
+arch-index          0/1     ImagePullBackOff        0          18s     10.244.3.15   rpull-worker2   <none>           <none>
+arch-single         1/1     Running                 0          18s     10.244.3.16   rpull-worker2   <none>           <none>
+bad-host            0/1     ImagePullBackOff        0          4m35s   10.244.3.7    rpull-worker2   <none>           <none>
+init-bad-tag        0/1     Init:ImagePullBackOff   0          4m35s   10.244.3.9    rpull-worker2   <none>           <none>
+invalid-name        0/1     InvalidImageName        0          4m35s   10.244.3.10   rpull-worker2   <none>           <none>
+never-pull          0/1     ErrImageNeverPull       0          4m35s   10.244.3.8    rpull-worker2   <none>           <none>
+private-nosecret    0/1     ImagePullBackOff        0          19s     10.244.3.11   rpull-worker2   <none>           <none>
+private-ok          1/1     Running                 0          18s     10.244.3.14   rpull-worker2   <none>           <none>
+private-otherns     0/1     ImagePullBackOff        0          19s     10.244.3.13   rpull-worker2   <none>           <none>
+private-wrongpass   0/1     ImagePullBackOff        0          19s     10.244.3.12   rpull-worker2   <none>           <none>
+repo-missing        0/1     ImagePullBackOff        0          4m35s   10.244.3.5    rpull-worker2   <none>           <none>
+
+### 2026-10-29T15:58:32Z
+$ k -n pulltest describe pod private-nosecret
+Name:             private-nosecret
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:58:13 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.3.11
+IPs:
+  IP:  10.244.3.11
+Containers:
+  app:
+    Container ID:  
+    Image:         rpull-registry:5000/private/busybox:1.37
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-5sznl (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-5sznl:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason   Age               From     Message
+  ----     ------   ----              ----     -------
+  Normal   BackOff  18s               kubelet  spec.containers{app}: Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed   18s               kubelet  spec.containers{app}: Error: ImagePullBackOff
+  Normal   Pulling  5s (x2 over 18s)  kubelet  spec.containers{app}: Pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed   5s (x2 over 18s)  kubelet  spec.containers{app}: Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+  Warning  Failed   5s (x2 over 18s)  kubelet  spec.containers{app}: Error: ErrImagePull
+
+### 2026-10-29T15:58:32Z
+$ k -n pulltest describe pod private-wrongpass
+Name:             private-wrongpass
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:58:13 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.3.12
+IPs:
+  IP:  10.244.3.12
+Containers:
+  app:
+    Container ID:  
+    Image:         rpull-registry:5000/private/busybox:1.37
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7hffh (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-7hffh:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason   Age               From     Message
+  ----     ------   ----              ----     -------
+  Normal   BackOff  18s               kubelet  spec.containers{app}: Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed   18s               kubelet  spec.containers{app}: Error: ImagePullBackOff
+  Normal   Pulling  5s (x2 over 18s)  kubelet  spec.containers{app}: Pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed   5s (x2 over 18s)  kubelet  spec.containers{app}: Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": unexpected status from HEAD request to http://rpull-registry:5000/v2/private/busybox/manifests/1.37: 401 Unauthorized
+  Warning  Failed   5s (x2 over 18s)  kubelet  spec.containers{app}: Error: ErrImagePull
+
+### 2026-10-29T15:58:32Z
+$ k -n pulltest describe pod private-otherns
+Name:             private-otherns
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:58:13 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.3.13
+IPs:
+  IP:  10.244.3.13
+Containers:
+  app:
+    Container ID:  
+    Image:         rpull-registry:5000/private/busybox:1.37
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-965s7 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-965s7:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason                           Age               From     Message
+  ----     ------                           ----              ----     -------
+  Normal   BackOff                          18s               kubelet  spec.containers{app}: Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed                           18s               kubelet  spec.containers{app}: Error: ImagePullBackOff
+  Normal   Pulling                          4s (x2 over 18s)  kubelet  spec.containers{app}: Pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed                           4s (x2 over 18s)  kubelet  spec.containers{app}: Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+  Warning  Failed                           4s (x2 over 18s)  kubelet  spec.containers{app}: Error: ErrImagePull
+  Warning  FailedToRetrieveImagePullSecret  4s (x2 over 18s)  kubelet  Unable to retrieve some image pull secrets (othercred); attempting to pull the image may not succeed.
+
+### 2026-10-29T15:58:32Z
+$ k -n pulltest describe pod private-ok
+Name:             private-ok
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:58:14 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.3.14
+IPs:
+  IP:  10.244.3.14
+Containers:
+  app:
+    Container ID:  containerd://a2a7cd7207b096f623580c46ac428f6114fc290f05033a6ba2d0ec9377f6b188
+    Image:         rpull-registry:5000/private/busybox:1.37
+    Image ID:      rpull-registry:5000/private/busybox@sha256:d82c2ab94640ded77cf76514ce6a84870761105058a4a9e51b05a8a79be97a6c
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Running
+      Started:      Thu, 29 Oct 2026 11:58:14 -0400
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-kkbhl (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-kkbhl:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason   Age   From     Message
+  ----    ------   ----  ----     -------
+  Normal  Pulling  18s   kubelet  spec.containers{app}: Pulling image "rpull-registry:5000/private/busybox:1.37"
+  Normal  Pulled   18s   kubelet  spec.containers{app}: Successfully pulled image "rpull-registry:5000/private/busybox:1.37" in 106ms (211ms including waiting). Image size: 1901860 bytes.
+  Normal  Created  18s   kubelet  spec.containers{app}: Container created
+  Normal  Started  18s   kubelet  spec.containers{app}: Container started
+
+### 2026-10-29T15:58:32Z
+$ k -n pulltest describe pod arch-index
+Name:             arch-index
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:58:14 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.3.15
+IPs:
+  IP:  10.244.3.15
+Containers:
+  app:
+    Container ID:  
+    Image:         rpull-registry:5000/private/busybox-amd64index:1.37
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7hhtp (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-7hhtp:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason   Age               From     Message
+  ----     ------   ----              ----     -------
+  Normal   BackOff  18s               kubelet  spec.containers{app}: Back-off pulling image "rpull-registry:5000/private/busybox-amd64index:1.37"
+  Warning  Failed   18s               kubelet  spec.containers{app}: Error: ImagePullBackOff
+  Normal   Pulling  3s (x2 over 18s)  kubelet  spec.containers{app}: Pulling image "rpull-registry:5000/private/busybox-amd64index:1.37"
+  Warning  Failed   3s (x2 over 18s)  kubelet  spec.containers{app}: Failed to pull image "rpull-registry:5000/private/busybox-amd64index:1.37": rpc error: code = NotFound desc = failed to pull and unpack image "rpull-registry:5000/private/busybox-amd64index:1.37": no match for platform in manifest: not found
+  Warning  Failed   3s (x2 over 18s)  kubelet  spec.containers{app}: Error: ErrImagePull
+
+### 2026-10-29T15:58:32Z
+$ k -n pulltest describe pod arch-single
+Name:             arch-single
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:58:14 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.3.16
+IPs:
+  IP:  10.244.3.16
+Containers:
+  app:
+    Container ID:  containerd://5d7932490b08ce6d71592b6e28794b9a88ab5a4200835a3f49faa2a31e5b2f5e
+    Image:         rpull-registry:5000/private/busybox-amd64only:1.37
+    Image ID:      rpull-registry:5000/private/busybox-amd64only@sha256:66a6306db78bf2dbf3487f293aa8d6990d8e506fdffab9cc43fe422becf886e4
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Running
+      Started:      Thu, 29 Oct 2026 11:58:14 -0400
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-7mb9d (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-7mb9d:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason   Age   From     Message
+  ----    ------   ----  ----     -------
+  Normal  Pulling  18s   kubelet  spec.containers{app}: Pulling image "rpull-registry:5000/private/busybox-amd64only:1.37"
+  Normal  Pulled   18s   kubelet  spec.containers{app}: Successfully pulled image "rpull-registry:5000/private/busybox-amd64only:1.37" in 123ms (303ms including waiting). Image size: 2212583 bytes.
+  Normal  Created  18s   kubelet  spec.containers{app}: Container created
+  Normal  Started  18s   kubelet  spec.containers{app}: Container started
+
+### 2026-10-29T15:58:32Z
+$ k -n pulltest logs arch-single
+
+### 2026-10-29T15:59:40Z
+$ k -n pulltest exec arch-single -- uname -m
+x86_64
+
+### 2026-10-29T15:59:40Z
+$ k -n pulltest exec private-ok -- uname -m
+aarch64
+
+### 2026-10-29T15:59:40Z
+$ k get nodes -o jsonpath={range .items[*]}{.metadata.name}{" "}{.status.nodeInfo.architecture}{"
+"}{end}
+rpull-control-plane arm64
+rpull-worker arm64
+rpull-worker2 arm64
+
+
+### 2026-10-29 ~15:47Z, copied from the terminal session (run on the Mac against the registry's host port, before the pods were created; not captured with cap)
+$ docker buildx imagetools inspect 127.0.0.1:5055/private/busybox-amd64index:1.37
+Name:      127.0.0.1:5055/private/busybox-amd64index:1.37
+MediaType: application/vnd.oci.image.index.v1+json
+Digest:    sha256:1174a737dac1dc0b60d3e57a043646fd3ad1c1753a560ee5179956f4a16659cf
+           
+Manifests: 
+  Name:      127.0.0.1:5055/private/busybox-amd64index:1.37@sha256:66a6306db78bf2dbf3487f293aa8d6990d8e506fdffab9cc43fe422becf886e4
+  MediaType: application/vnd.oci.image.manifest.v1+json
+  Platform:  linux/amd64

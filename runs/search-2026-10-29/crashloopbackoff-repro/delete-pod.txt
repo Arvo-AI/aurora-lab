@@ -1,0 +1,30 @@
+Thu 29 Oct 2026 16:11:51 UTC
+exit1-7cd4f4c959-4j5lg  
+$ kubectl -n crash delete pod -l app=exit1
+pod "exit1-7cd4f4c959-4j5lg" deleted from crash namespace
+Thu 29 Oct 2026 16:11:52 UTC
+Thu 29 Oct 2026 16:12:08 UTC
+$ kubectl -n crash get pods -l app=exit1
+NAME                     READY   STATUS   RESTARTS      AGE
+exit1-7cd4f4c959-xz7f7   0/1     Error    2 (16s ago)   17s
+      Started:      Thu, 29 Oct 2026 12:12:07 -0400
+      Finished:     Thu, 29 Oct 2026 12:12:07 -0400
+      Started:      Thu, 29 Oct 2026 12:11:52 -0400
+      Finished:     Thu, 29 Oct 2026 12:11:52 -0400
+    Restart Count:  2
+$ kubectl -n crash get pods -l app=initcrash
+NAME                        READY   STATUS       RESTARTS      AGE
+initcrash-9c5cbd456-92h5x   0/1     Init:Error   2 (21s ago)   22s
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    1
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    1
+    Restart Count:  2
+$ kubectl -n crash logs deploy/initcrash -c migrate
+migrate: cannot connect to db
+Thu 29 Oct 2026 16:14:26 UTC
+$ kubectl -n crash get pods -l app=initcrash
+NAME                        READY   STATUS                  RESTARTS      AGE
+initcrash-9c5cbd456-92h5x   0/1     Init:CrashLoopBackOff   4 (69s ago)   2m40s

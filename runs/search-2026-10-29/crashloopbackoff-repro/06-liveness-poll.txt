@@ -1,0 +1,92 @@
+== 15:55:41
+NAME                  READY   STATUS    RESTARTS      AGE
+api-c7b987b4d-4v44f   1/1     Running   1 (20s ago)   90s
+api-c7b987b4d-vbv4d   1/1     Running   1 (18s ago)   89s
+== 15:56:34
+NAME                  READY   STATUS    RESTARTS     AGE
+api-c7b987b4d-4v44f   1/1     Running   2 (3s ago)   2m23s
+api-c7b987b4d-vbv4d   1/1     Running   2 (1s ago)   2m22s
+== 15:57:43
+NAME                  READY   STATUS    RESTARTS     AGE
+api-c7b987b4d-4v44f   1/1     Running   3 (2s ago)   3m32s
+api-c7b987b4d-vbv4d   1/1     Running   3 (1s ago)   3m31s
+== 15:59:02
+NAME                  READY   STATUS    RESTARTS      AGE
+api-c7b987b4d-4v44f   1/1     Running   4 (10s ago)   4m51s
+api-c7b987b4d-vbv4d   1/1     Running   4 (7s ago)    4m50s
+== 16:00:14
+NAME                  READY   STATUS    RESTARTS     AGE
+api-c7b987b4d-4v44f   1/1     Running   5 (3s ago)   6m3s
+api-c7b987b4d-vbv4d   1/1     Running   5 (1s ago)   6m2s
+== 16:01:22
+NAME                  READY   STATUS             RESTARTS      AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   5 (1s ago)    7m11s
+api-c7b987b4d-vbv4d   1/1     Running            5 (69s ago)   7m10s
+== 16:01:26
+NAME                  READY   STATUS             RESTARTS     AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   5 (5s ago)   7m15s
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   5 (3s ago)   7m14s
+== 16:02:47
+NAME                  READY   STATUS             RESTARTS      AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   5 (86s ago)   8m36s
+api-c7b987b4d-vbv4d   0/1     Running            6 (84s ago)   8m35s
+== 16:02:50
+NAME                  READY   STATUS    RESTARTS      AGE
+api-c7b987b4d-4v44f   1/1     Running   6 (89s ago)   8m39s
+api-c7b987b4d-vbv4d   0/1     Running   6 (87s ago)   8m38s
+== 16:02:53
+NAME                  READY   STATUS    RESTARTS      AGE
+api-c7b987b4d-4v44f   1/1     Running   6 (92s ago)   8m42s
+api-c7b987b4d-vbv4d   1/1     Running   6 (90s ago)   8m41s
+== 16:03:55
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   1/1     Running            6 (2m34s ago)   9m44s
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   6 (2s ago)      9m43s
+== 16:04:01
+NAME                  READY   STATUS             RESTARTS     AGE
+api-c7b987b4d-4v44f   0/1     Running            7 (1s ago)   9m51s
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   6 (9s ago)   9m50s
+== 16:04:08
+NAME                  READY   STATUS             RESTARTS      AGE
+api-c7b987b4d-4v44f   1/1     Running            7 (7s ago)    9m57s
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   6 (15s ago)   9m56s
+== 16:05:14
+NAME                  READY   STATUS             RESTARTS      AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   7 (3s ago)    11m
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   6 (81s ago)   11m
+== 16:06:42
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   7 (91s ago)     12m
+api-c7b987b4d-vbv4d   0/1     Running            7 (2m49s ago)   12m
+== 16:06:45
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   7 (94s ago)     12m
+api-c7b987b4d-vbv4d   1/1     Running            7 (2m52s ago)   12m
+== 16:07:56
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   7 (2m46s ago)   13m
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   7 (4s ago)      13m
+== 16:10:41
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   0/1     Running            8 (5m30s ago)   16m
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   7 (2m48s ago)   16m
+== 16:10:44
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   1/1     Running            8 (5m33s ago)   16m
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   7 (2m51s ago)   16m
+== 16:11:52
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   1/1     Running            9 (1s ago)      17m
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   7 (3m59s ago)   17m
+== 16:13:03
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   9 (2s ago)      18m
+api-c7b987b4d-vbv4d   0/1     CrashLoopBackOff   7 (5m10s ago)   18m
+== 16:13:09
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   9 (8s ago)      18m
+api-c7b987b4d-vbv4d   0/1     Running            8 (5m16s ago)   18m
+== 16:13:12
+NAME                  READY   STATUS             RESTARTS        AGE
+api-c7b987b4d-4v44f   0/1     CrashLoopBackOff   9 (11s ago)     19m
+api-c7b987b4d-vbv4d   1/1     Running            8 (5m19s ago)   19m

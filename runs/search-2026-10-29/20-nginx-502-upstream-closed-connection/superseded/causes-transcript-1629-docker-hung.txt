@@ -1,0 +1,43 @@
+# 2026-10-29T16:29:08Z context kind-r502
+nginx version: nginx/1.27.5
+### GET /ok/ -> 200
+
+### GET /noep/ -> 502
+
+### GET /nolistener/ -> 502
+
+### GET /unexposed/ -> 504
+
+### GET /fenced/ -> 504
+
+### GET /pair/ -> 502
+
+### GET /pair/ -> 502
+
+### GET /close/ -> 
+
+### GET /reset/ -> 
+
+### GET /bighdr/ -> 
+
+### GET /plain-to-tls/ -> 
+
+### GET /tls-to-plain/ -> 
+
+### GET /slow/ -> 
+
+### GET /redis/ -> 
+
+### GET /noresolver/ -> 
+
+### GET /shortname/ -> 
+
+### GET /fqdn/ -> 
+
+### GET /typo/ -> 
+
+### GET /headless/ -> 
+
+### GET /headless-resolve/ -> 
+
+### stale headless IPs: restart backend pods, nginx keeps the IPs it resolved at start

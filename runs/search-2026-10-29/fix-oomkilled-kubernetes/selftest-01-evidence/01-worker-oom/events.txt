@@ -1,0 +1,56 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+59s         Normal    Scheduled           pod/worker-6cf88d4b58-8bl28      Successfully assigned shop/worker-6cf88d4b58-8bl28 to room-worker
+59s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-c78c2
+59s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+59s         Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-8bl28
+59s         Normal    Scheduled           pod/api-f64486c4c-msmhc          Successfully assigned shop/api-f64486c4c-msmhc to room-worker
+59s         Normal    Scheduled           pod/loadgen-7c6676864-kbrqg      Successfully assigned shop/loadgen-7c6676864-kbrqg to room-worker
+59s         Normal    Scheduled           pod/api-f64486c4c-bxkvg          Successfully assigned shop/api-f64486c4c-bxkvg to room-worker
+59s         Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+59s         Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-xfg44
+59s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-msmhc
+59s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-bxkvg
+59s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+59s         Normal    Scheduled           pod/frontend-76d98597b9-7npkk    Successfully assigned shop/frontend-76d98597b9-7npkk to room-worker
+59s         Normal    Scheduled           pod/redis-59458f55d8-xfg44       Successfully assigned shop/redis-59458f55d8-xfg44 to room-worker
+59s         Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7c6676864 from 0 to 1
+59s         Normal    SuccessfulCreate    replicaset/loadgen-7c6676864     Created pod: loadgen-7c6676864-kbrqg
+59s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+59s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-7npkk
+59s         Normal    Scheduled           pod/frontend-76d98597b9-c78c2    Successfully assigned shop/frontend-76d98597b9-c78c2 to room-worker
+58s         Normal    Pulled              pod/worker-6cf88d4b58-8bl28      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+58s         Normal    Started             pod/api-f64486c4c-bxkvg          Container started
+58s         Normal    Created             pod/api-f64486c4c-bxkvg          Container created
+58s         Normal    Pulled              pod/loadgen-7c6676864-kbrqg      Container image "busybox:1.37" already present on machine and can be accessed by the pod
+58s         Normal    Pulling             pod/frontend-76d98597b9-c78c2    Pulling image "nginx:1.27-alpine"
+58s         Normal    Started             pod/worker-6cf88d4b58-8bl28      Container started
+58s         Normal    Created             pod/worker-6cf88d4b58-8bl28      Container created
+58s         Normal    Pulled              pod/api-f64486c4c-bxkvg          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+58s         Normal    Pulled              pod/api-f64486c4c-msmhc          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+58s         Normal    Started             pod/api-f64486c4c-msmhc          Container started
+58s         Normal    Started             pod/loadgen-7c6676864-kbrqg      Container started
+58s         Normal    Created             pod/api-f64486c4c-msmhc          Container created
+58s         Normal    Created             pod/loadgen-7c6676864-kbrqg      Container created
+58s         Normal    Pulling             pod/frontend-76d98597b9-7npkk    Pulling image "nginx:1.27-alpine"
+58s         Normal    Pulling             pod/redis-59458f55d8-xfg44       Pulling image "redis:7.4-alpine"
+58s         Warning   Unhealthy           pod/api-f64486c4c-msmhc          Readiness probe failed: Get "http://10.244.1.47:8080/healthz": dial tcp 10.244.1.47:8080: connect: connection refused
+55s         Normal    Created             pod/redis-59458f55d8-xfg44       Container created
+55s         Normal    Started             pod/redis-59458f55d8-xfg44       Container started
+55s         Normal    Pulled              pod/redis-59458f55d8-xfg44       Successfully pulled image "redis:7.4-alpine" in 2.876s (2.876s including waiting). Image size: 16773686 bytes.
+52s         Normal    Created             pod/frontend-76d98597b9-c78c2    Container created
+52s         Normal    Started             pod/frontend-76d98597b9-c78c2    Container started
+52s         Normal    Pulled              pod/frontend-76d98597b9-c78c2    Successfully pulled image "nginx:1.27-alpine" in 3.165s (6.028s including waiting). Image size: 21832241 bytes.
+51s         Normal    Pulled              pod/frontend-76d98597b9-7npkk    Successfully pulled image "nginx:1.27-alpine" in 546ms (6.546s including waiting). Image size: 21832241 bytes.
+51s         Normal    Created             pod/frontend-76d98597b9-7npkk    Container created
+51s         Normal    Started             pod/frontend-76d98597b9-7npkk    Container started
+51s         Warning   Unhealthy           pod/frontend-76d98597b9-7npkk    Readiness probe failed: Get "http://10.244.1.51:80/healthz": dial tcp 10.244.1.51:80: connect: connection refused
+50s         Normal    SuccessfulDelete    replicaset/worker-6cf88d4b58     Deleted pod: worker-6cf88d4b58-8bl28
+50s         Normal    Killing             pod/worker-6cf88d4b58-8bl28      Stopping container worker
+50s         Normal    SuccessfulCreate    replicaset/worker-86f68b9bf6     Created pod: worker-86f68b9bf6-ngcmj
+50s         Normal    Scheduled           pod/worker-86f68b9bf6-ngcmj      Successfully assigned shop/worker-86f68b9bf6-ngcmj to room-worker
+50s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-86f68b9bf6 from 0 to 1
+50s         Normal    ScalingReplicaSet   deployment/worker                Scaled down replica set worker-6cf88d4b58 from 1 to 0
+11s         Normal    Pulled              pod/worker-86f68b9bf6-ngcmj      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+11s         Normal    Created             pod/worker-86f68b9bf6-ngcmj      Container created
+11s         Normal    Started             pod/worker-86f68b9bf6-ngcmj      Container started
+10s         Warning   BackOff             pod/worker-86f68b9bf6-ngcmj      Back-off restarting failed container worker in pod worker-86f68b9bf6-ngcmj_shop(ba855ecb-5f2e-4c47-a054-e7cb921f660c)

@@ -1,0 +1,49 @@
+# Case D: node memory pressure on room-worker2 (kubelet evictionHard
+# memory.available<19100Mi, so pressure starts near 900Mi node working set).
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: hog, namespace: oom}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: hog}}
+  template:
+    metadata: {labels: {app: hog}}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: room-worker2}
+      containers:
+      - name: hog
+        image: python:3.12-alpine
+        command: ["python", "-u", "-c"]
+        args:
+        - |
+          import time
+          chunks = []
+          while True:
+              chunks.append(b"\x01" * (50 << 20))
+              print(f"holding {len(chunks) * 50} MiB", flush=True)
+              time.sleep(3)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: steady-guaranteed, namespace: oom}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: steady-guaranteed}}
+  template:
+    metadata: {labels: {app: steady-guaranteed}}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: room-worker2}
+      containers:
+      - name: app
+        image: python:3.12-alpine
+        command: ["python", "-u", "-c"]
+        args:
+        - |
+          import time
+          data = b"\x01" * (40 << 20)
+          print("holding 40 MiB", flush=True)
+          while True:
+              time.sleep(60)
+        resources:
+          requests: {memory: 64Mi, cpu: 20m}
+          limits: {memory: 64Mi, cpu: 20m}

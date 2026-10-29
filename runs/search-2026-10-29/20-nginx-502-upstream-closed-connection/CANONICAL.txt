@@ -1,0 +1,20 @@
+canonical/ is the canonical capture for the fix-502-bad-gateway-nginx-kubernetes page.
+Every output block on the page is copied from canonical/ (2026-10-29, 19:38 to 19:48 UTC,
+kind cluster r502b, run by the reviewer in one sitting with Docker healthy):
+
+  canonical/selftest.txt               ./lab.sh selftest 20-... (evidence: runs/selftest-20261029T193817Z-r502b)
+  canonical/causes-transcript.txt      causes/run.sh, current causes.yaml (upstream-level resolver), every case in one run
+  canonical/break.txt                  ./lab.sh break 20-...
+  canonical/diagnose.txt               diagnose.sh (Confirm / Scope / Isolate / change)
+  canonical/evidence-before/           ./lab.sh evidence, same broken state
+  canonical/mistake-rollout-undo.txt   kubectl rollout undo, still 502 twenty seconds later
+  canonical/verify-broken.txt          verify.sh against the broken state (exit 1)
+  canonical/fix-verify.txt             fix.sh then verify.sh (exit 0)
+  canonical/extra-checks.txt           resolv.conf in the proxy pod, redis/python/curl/kubectl/kind versions
+  canonical/variable-proxy-pass-shadowing.txt  plain docker run of nginx:1.27-alpine (19:52 UTC): a variable proxy_pass
+                                       resolves through a name a static proxy_pass already uses, with no resolver
+
+The files in this folder outside canonical/ are the drafter's earlier captures on cluster r502
+(15:48 to 16:29 UTC). superseded/causes-transcript-1624.txt and superseded/causes-transcript-1556.txt were restored from
+console output after superseded/causes-transcript-1629-docker-hung.txt overwrote the original file; they are
+kept for the record only and are superseded by canonical/causes-transcript.txt.

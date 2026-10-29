@@ -1,0 +1,13 @@
+[  900.287853]  el0t_64_sync+0x154/0x158
+[  900.287855] memory: usage 131072kB, limit 131072kB, failcnt 36
+[  900.288037] swap: usage 0kB, limit 0kB, failcnt 0
+[  900.288047] Memory cgroup stats for /scon/container/01GQQVF6C60000000000DOCKER.g7gopo/child/docker/902502708eff3e3770181f7c44f9c3964e6939bac16d09d7cd703b1f9ce8c6c5/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-podd78d3f20_4a6c_4a41_97e3_e7c84e363a24.slice/cri-containerd-8997e1f992a5fe74d7ba0b80204d990a71e315aa8e251d17e214cf956ef646a8.scope:
+[  900.288210] anon 134189056
+--
+[  900.289765] Tasks state (memory values in pages):
+[  900.289805] [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+[  900.289832] [ 112291]     0 112291    41208    32763    32761        2         0   315392        0           994 python
+[  900.289851] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=cri-containerd-8997e1f992a5fe74d7ba0b80204d990a71e315aa8e251d17e214cf956ef646a8.scope,mems_allowed=0,oom_memcg=/scon/container/01GQQVF6C60000000000DOCKER.g7gopo/child/docker/902502708eff3e3770181f7c44f9c3964e6939bac16d09d7cd703b1f9ce8c6c5/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-podd78d3f20_4a6c_4a41_97e3_e7c84e363a24.slice/cri-containerd-8997e1f992a5fe74d7ba0b80204d990a71e315aa8e251d17e214cf956ef646a8.scope,task_memcg=/scon/container/01GQQVF6C60000000000DOCKER.g7gopo/child/docker/902502708eff3e3770181f7c44f9c3964e6939bac16d09d7cd703b1f9ce8c6c5/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-podd78d3f20_4a6c_4a41_97e3_e7c84e363a24.slice/cri-containerd-8997e1f992a5fe74d7ba0b80204d990a71e315aa8e251d17e214cf956ef646a8.scope,task=python,pid=112291,uid=0
+[  900.289998] Memory cgroup out of memory: Killed process 112291 (python) total-vm:164832kB, anon-rss:131044kB, file-rss:8kB, shmem-rss:0kB, UID:0 pgtables:308kB oom_score_adj:994
+[  900.290324] Tasks in /scon/container/01GQQVF6C60000000000DOCKER.g7gopo/child/docker/902502708eff3e3770181f7c44f9c3964e6939bac16d09d7cd703b1f9ce8c6c5/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-podd78d3f20_4a6c_4a41_97e3_e7c84e363a24.slice/cri-containerd-8997e1f992a5fe74d7ba0b80204d990a71e315aa8e251d17e214cf956ef646a8.scope are going to be killed due to memory.oom.group set
+[  900.290429] Memory cgroup out of memory: Killed process 112291 (python) total-vm:164832kB, anon-rss:131044kB, file-rss:8kB, shmem-rss:0kB, UID:0 pgtables:308kB oom_score_adj:994

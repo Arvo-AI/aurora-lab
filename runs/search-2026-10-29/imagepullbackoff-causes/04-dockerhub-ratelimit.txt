@@ -1,0 +1,7 @@
+### 2026-10-29T15:59:24Z Docker Hub anonymous rate-limit headers (HEAD does not count as a pull per docs.docker.com/docker-hub/usage/pulls/)
+# (trimmed: only the rate-limit headers are kept; the source IP header value is redacted)
+$ curl --head -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest
+HTTP/2 200 
+docker-ratelimit-source: <our IP, redacted>
+ratelimit-limit: 100;w=3600
+ratelimit-remaining: 50;w=3600

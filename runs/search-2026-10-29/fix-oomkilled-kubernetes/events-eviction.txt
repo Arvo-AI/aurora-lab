@@ -1,0 +1,72 @@
+LAST SEEN   TYPE      REASON              OBJECT                                   MESSAGE
+4m19s       Normal    Pulling             pod/steady-6756d67fc8-cqgzn              Pulling image "python:3.12-alpine"
+4m19s       Normal    ScalingReplicaSet   deployment/steady                        Scaled up replica set steady-6756d67fc8 from 0 to 1
+4m19s       Normal    SuccessfulCreate    replicaset/stubborn-65c47b744f           Created pod: stubborn-65c47b744f-nxbw4
+4m19s       Normal    Pulling             pod/spiky-7cb5877b97-s6bjg               Pulling image "python:3.12-alpine"
+4m19s       Normal    SuccessfulCreate    replicaset/spiky-7cb5877b97              Created pod: spiky-7cb5877b97-s6bjg
+4m19s       Normal    ScalingReplicaSet   deployment/spiky                         Scaled up replica set spiky-7cb5877b97 from 0 to 1
+4m19s       Normal    Scheduled           pod/stubborn-65c47b744f-nxbw4            Successfully assigned oom/stubborn-65c47b744f-nxbw4 to room-worker
+4m19s       Normal    Scheduled           pod/steady-6756d67fc8-cqgzn              Successfully assigned oom/steady-6756d67fc8-cqgzn to room-worker
+4m19s       Normal    Scheduled           pod/spiky-7cb5877b97-s6bjg               Successfully assigned oom/spiky-7cb5877b97-s6bjg to room-worker
+4m19s       Normal    Pulling             pod/stubborn-65c47b744f-nxbw4            Pulling image "busybox:1.37"
+4m19s       Normal    ScalingReplicaSet   deployment/stubborn                      Scaled up replica set stubborn-65c47b744f from 0 to 1
+4m19s       Normal    SuccessfulCreate    replicaset/steady-6756d67fc8             Created pod: steady-6756d67fc8-cqgzn
+4m16s       Normal    Pulled              pod/steady-6756d67fc8-cqgzn              Successfully pulled image "python:3.12-alpine" in 378ms (2.902s including waiting). Image size: 18544611 bytes.
+4m16s       Normal    Pulled              pod/spiky-7cb5877b97-s6bjg               Successfully pulled image "python:3.12-alpine" in 2.536s (2.536s including waiting). Image size: 18544611 bytes.
+4m14s       Normal    Pulled              pod/stubborn-65c47b744f-nxbw4            Successfully pulled image "busybox:1.37" in 1.504s (4.4s including waiting). Image size: 1911395 bytes.
+87s         Normal    Created             pod/stubborn-65c47b744f-nxbw4            Container created
+87s         Normal    Started             pod/stubborn-65c47b744f-nxbw4            Container started
+87s         Normal    Pulled              pod/stubborn-65c47b744f-nxbw4            Container image "busybox:1.37" already present on machine and can be accessed by the pod
+81s         Normal    Created             pod/steady-6756d67fc8-cqgzn              Container created
+81s         Normal    Pulled              pod/steady-6756d67fc8-cqgzn              Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+81s         Normal    Started             pod/steady-6756d67fc8-cqgzn              Container started
+74s         Warning   Unhealthy           pod/stubborn-65c47b744f-nxbw4            Liveness probe failed: cat: can't open '/tmp/healthy': No such file or directory
+74s         Normal    Killing             pod/stubborn-65c47b744f-nxbw4            Container stubborn failed liveness probe, will be restarted
+63s         Warning   BackOff             pod/stubborn-65c47b744f-nxbw4            Back-off restarting failed container stubborn in pod stubborn-65c47b744f-nxbw4_oom(4af1f7c0-518b-4abb-9216-ee0f8d87336a)
+58s         Normal    Scheduled           pod/steady-guaranteed-7678dcb46-bffqq    Successfully assigned oom/steady-guaranteed-7678dcb46-bffqq to room-worker2
+58s         Normal    ScalingReplicaSet   deployment/hog                           Scaled up replica set hog-6cf7f544db from 0 to 1
+58s         Normal    Scheduled           pod/hog-6cf7f544db-r8zj8                 Successfully assigned oom/hog-6cf7f544db-r8zj8 to room-worker2
+58s         Normal    Pulling             pod/hog-6cf7f544db-r8zj8                 Pulling image "python:3.12-alpine"
+58s         Normal    ScalingReplicaSet   deployment/steady-guaranteed             Scaled up replica set steady-guaranteed-7678dcb46 from 0 to 1
+58s         Normal    SuccessfulCreate    replicaset/steady-guaranteed-7678dcb46   Created pod: steady-guaranteed-7678dcb46-bffqq
+58s         Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-r8zj8
+57s         Normal    Pulling             pod/steady-guaranteed-7678dcb46-bffqq    Pulling image "python:3.12-alpine"
+55s         Warning   BackOff             pod/spiky-7cb5877b97-s6bjg               Back-off restarting failed container spiky in pod spiky-7cb5877b97-s6bjg_oom(5988670c-edef-488e-8c75-895c17c1f12e)
+54s         Normal    Pulled              pod/hog-6cf7f544db-r8zj8                 Successfully pulled image "python:3.12-alpine" in 3.769s (3.769s including waiting). Image size: 18544611 bytes.
+54s         Normal    Created             pod/hog-6cf7f544db-r8zj8                 Container created
+54s         Normal    Started             pod/hog-6cf7f544db-r8zj8                 Container started
+53s         Normal    Created             pod/steady-guaranteed-7678dcb46-bffqq    Container created
+53s         Normal    Pulled              pod/steady-guaranteed-7678dcb46-bffqq    Successfully pulled image "python:3.12-alpine" in 463ms (3.504s including waiting). Image size: 18544611 bytes.
+53s         Normal    Started             pod/steady-guaranteed-7678dcb46-bffqq    Container started
+20s         Warning   BackOff             pod/steady-6756d67fc8-cqgzn              Back-off restarting failed container steady in pod steady-6756d67fc8-cqgzn_oom(bc700914-8139-4c52-a1b5-ef76003bc8ce)
+11s         Warning   Evicted             pod/hog-6cf7f544db-r8zj8                 The node was low on resource: memory. Threshold quantity: 19100Mi, available: 19472552Ki. Container hog was using 566836Ki, request is 0, has larger consumption of memory.
+11s         Normal    Killing             pod/hog-6cf7f544db-r8zj8                 Stopping container hog
+9s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-gpjnd
+8s          Normal    Scheduled           pod/hog-6cf7f544db-gpjnd                 Successfully assigned oom/hog-6cf7f544db-gpjnd to room-worker2
+8s          Normal    Scheduled           pod/hog-6cf7f544db-9ttst                 Successfully assigned oom/hog-6cf7f544db-9ttst to room-worker2
+8s          Normal    Scheduled           pod/hog-6cf7f544db-w9hlg                 Successfully assigned oom/hog-6cf7f544db-w9hlg to room-worker2
+8s          Warning   Evicted             pod/hog-6cf7f544db-x79g8                 The node had condition: [MemoryPressure].
+8s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-6thcd
+8s          Warning   Evicted             pod/hog-6cf7f544db-4llxq                 The node had condition: [MemoryPressure].
+8s          Warning   Evicted             pod/hog-6cf7f544db-6thcd                 The node had condition: [MemoryPressure].
+8s          Warning   Evicted             pod/hog-6cf7f544db-zljlg                 The node had condition: [MemoryPressure].
+8s          Normal    Scheduled           pod/hog-6cf7f544db-zljlg                 Successfully assigned oom/hog-6cf7f544db-zljlg to room-worker2
+8s          Normal    Scheduled           pod/hog-6cf7f544db-4llxq                 Successfully assigned oom/hog-6cf7f544db-4llxq to room-worker2
+8s          Normal    Scheduled           pod/hog-6cf7f544db-6thcd                 Successfully assigned oom/hog-6cf7f544db-6thcd to room-worker2
+8s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-9ttst
+8s          Warning   Evicted             pod/hog-6cf7f544db-w9hlg                 The node had condition: [MemoryPressure].
+8s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-w9hlg
+8s          Normal    Scheduled           pod/hog-6cf7f544db-x79g8                 Successfully assigned oom/hog-6cf7f544db-x79g8 to room-worker2
+8s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-x79g8
+8s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-4llxq
+8s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-zljlg
+8s          Warning   Evicted             pod/hog-6cf7f544db-gpjnd                 The node had condition: [MemoryPressure].
+8s          Warning   Evicted             pod/hog-6cf7f544db-9ttst                 The node had condition: [MemoryPressure].
+8s          Normal    Scheduled           pod/hog-6cf7f544db-gcdl8                 Successfully assigned oom/hog-6cf7f544db-gcdl8 to room-worker2
+8s          Warning   Evicted             pod/hog-6cf7f544db-gcdl8                 The node had condition: [MemoryPressure].
+8s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                Created pod: hog-6cf7f544db-gcdl8
+6s          Normal    Pulled              pod/spiky-7cb5877b97-s6bjg               Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+6s          Normal    Created             pod/spiky-7cb5877b97-s6bjg               Container created
+6s          Normal    Started             pod/spiky-7cb5877b97-s6bjg               Container started
+1s          Warning   FailedScheduling    pod/hog-6cf7f544db-f4nvb                 0/3 nodes are available: 1 node(s) didn't match Pod's node affinity/selector, 2 node(s) had untolerated taint(s). preemption: 0/3 nodes are available: 3 Preemption is not helpful for scheduling.
+1s          Normal    SuccessfulCreate    replicaset/hog-6cf7f544db                (combined from similar events): Created pod: hog-6cf7f544db-f4nvb

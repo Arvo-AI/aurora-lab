@@ -1,0 +1,3 @@
+broken 21-api-slow-upstream-timeout after 5s
+selftest: 1 passed, 0 failed, evidence in runs/selftest-20261029T161329Z-r504
+LAB_CLUSTER=r504 ./lab.sh selftest 21-api-slow-upstream-timeout  1.33s user 0.66s system 0% cpu 3:33.88 total

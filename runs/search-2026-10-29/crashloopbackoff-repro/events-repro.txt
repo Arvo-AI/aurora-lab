@@ -1,0 +1,73 @@
+LAST SEEN   TYPE      REASON              OBJECT                                 MESSAGE
+21m         Normal    Scheduled           pod/exit1-7cd4f4c959-4j5lg             Successfully assigned crash/exit1-7cd4f4c959-4j5lg to rcrash-worker
+21m         Normal    Scheduled           pod/oom-f47d67486-vcc8v                Successfully assigned crash/oom-f47d67486-vcc8v to rcrash-worker2
+21m         Normal    Scheduled           pod/nobinary-699784c959-rvxvc          Successfully assigned crash/nobinary-699784c959-rvxvc to rcrash-worker2
+2m52s       Normal    Scheduled           pod/initcrash-9c5cbd456-92h5x          Successfully assigned crash/initcrash-9c5cbd456-92h5x to rcrash-worker
+21m         Normal    Scheduled           pod/exit127-787659dffb-4n9cj           Successfully assigned crash/exit127-787659dffb-4n9cj to rcrash-worker2
+18m         Normal    Scheduled           pod/oom-fallback-6ddf9cd97d-nx4rx      Successfully assigned crash/oom-fallback-6ddf9cd97d-nx4rx to rcrash-worker2
+20m         Normal    Scheduled           pod/exit1-fallback-58fc76cdbf-f8dh4    Successfully assigned crash/exit1-fallback-58fc76cdbf-f8dh4 to rcrash-worker
+21m         Normal    Scheduled           pod/exit0-65f8b9dbd-8wdbf              Successfully assigned crash/exit0-65f8b9dbd-8wdbf to rcrash-worker
+2m46s       Normal    Scheduled           pod/exit1-7cd4f4c959-xz7f7             Successfully assigned crash/exit1-7cd4f4c959-xz7f7 to rcrash-worker2
+21m         Normal    SuccessfulCreate    replicaset/exit127-787659dffb          Created pod: exit127-787659dffb-4n9cj
+21m         Normal    Pulling             pod/exit127-787659dffb-4n9cj           Pulling image "busybox:1.37"
+21m         Normal    ScalingReplicaSet   deployment/nobinary                    Scaled up replica set nobinary-699784c959 from 0 to 1
+21m         Normal    Pulling             pod/exit0-65f8b9dbd-8wdbf              Pulling image "busybox:1.37"
+21m         Normal    Pulling             pod/oom-f47d67486-vcc8v                Pulling image "python:3.12-alpine"
+21m         Normal    Pulling             pod/nobinary-699784c959-rvxvc          Pulling image "busybox:1.37"
+21m         Normal    ScalingReplicaSet   deployment/exit127                     Scaled up replica set exit127-787659dffb from 0 to 1
+21m         Normal    ScalingReplicaSet   deployment/exit0                       Scaled up replica set exit0-65f8b9dbd from 0 to 1
+21m         Normal    SuccessfulCreate    replicaset/nobinary-699784c959         Created pod: nobinary-699784c959-rvxvc
+21m         Normal    SuccessfulCreate    replicaset/exit0-65f8b9dbd             Created pod: exit0-65f8b9dbd-8wdbf
+21m         Normal    Pulling             pod/exit1-7cd4f4c959-4j5lg             Pulling image "busybox:1.37"
+21m         Normal    ScalingReplicaSet   deployment/exit1                       Scaled up replica set exit1-7cd4f4c959 from 0 to 1
+21m         Normal    SuccessfulCreate    replicaset/exit1-7cd4f4c959            Created pod: exit1-7cd4f4c959-4j5lg
+21m         Normal    SuccessfulCreate    replicaset/oom-f47d67486               Created pod: oom-f47d67486-vcc8v
+21m         Normal    ScalingReplicaSet   deployment/oom                         Scaled up replica set oom-f47d67486 from 0 to 1
+21m         Normal    Pulled              pod/exit1-7cd4f4c959-4j5lg             Successfully pulled image "busybox:1.37" in 694ms (2.03s including waiting). Image size: 1911395 bytes.
+21m         Normal    Pulled              pod/nobinary-699784c959-rvxvc          Successfully pulled image "busybox:1.37" in 1.167s (1.167s including waiting). Image size: 1911395 bytes.
+21m         Normal    Pulled              pod/exit0-65f8b9dbd-8wdbf              Successfully pulled image "busybox:1.37" in 1.342s (1.343s including waiting). Image size: 1911395 bytes.
+21m         Normal    Pulled              pod/exit127-787659dffb-4n9cj           Successfully pulled image "busybox:1.37" in 396ms (1.553s including waiting). Image size: 1911395 bytes.
+21m         Normal    Pulled              pod/oom-f47d67486-vcc8v                Successfully pulled image "python:3.12-alpine" in 3.545s (5.078s including waiting). Image size: 18544611 bytes.
+20m         Normal    SuccessfulCreate    replicaset/exit1-fallback-58fc76cdbf   Created pod: exit1-fallback-58fc76cdbf-f8dh4
+20m         Normal    ScalingReplicaSet   deployment/exit1-fallback              Scaled up replica set exit1-fallback-58fc76cdbf from 0 to 1
+18m         Normal    ScalingReplicaSet   deployment/oom-fallback                Scaled up replica set oom-fallback-6ddf9cd97d from 0 to 1
+18m         Normal    SuccessfulCreate    replicaset/oom-fallback-6ddf9cd97d     Created pod: oom-fallback-6ddf9cd97d-nx4rx
+5m55s       Normal    Started             pod/oom-f47d67486-vcc8v                Container started
+5m55s       Normal    Created             pod/oom-f47d67486-vcc8v                Container created
+5m52s       Warning   BackOff             pod/nobinary-699784c959-rvxvc          Back-off restarting failed container app in pod nobinary-699784c959-rvxvc_crash(c8d115bc-a0c6-43d6-ab1b-b44aaf677616)
+5m35s       Normal    Started             pod/exit0-65f8b9dbd-8wdbf              Container started
+5m35s       Normal    Created             pod/exit0-65f8b9dbd-8wdbf              Container created
+5m34s       Normal    Created             pod/exit127-787659dffb-4n9cj           Container created
+5m34s       Normal    Started             pod/exit127-787659dffb-4n9cj           Container started
+5m33s       Normal    Pulled              pod/exit1-7cd4f4c959-4j5lg             Container image "busybox:1.37" already present on machine and can be accessed by the pod
+5m33s       Normal    Created             pod/exit1-7cd4f4c959-4j5lg             Container created
+5m33s       Normal    Started             pod/exit1-7cd4f4c959-4j5lg             Container started
+5m19s       Normal    Started             pod/exit1-fallback-58fc76cdbf-f8dh4    Container started
+3m15s       Warning   BackOff             pod/exit1-7cd4f4c959-4j5lg             Back-off restarting failed container app in pod exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)
+2m52s       Normal    SuccessfulCreate    replicaset/initcrash-9c5cbd456         Created pod: initcrash-9c5cbd456-92h5x
+2m52s       Normal    ScalingReplicaSet   deployment/initcrash                   Scaled up replica set initcrash-9c5cbd456 from 0 to 1
+2m47s       Normal    SuccessfulCreate    replicaset/exit1-7cd4f4c959            Created pod: exit1-7cd4f4c959-xz7f7
+2m18s       Normal    Created             pod/oom-fallback-6ddf9cd97d-nx4rx      Container created
+2m18s       Normal    Pulled              pod/oom-fallback-6ddf9cd97d-nx4rx      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+2m18s       Normal    Started             pod/oom-fallback-6ddf9cd97d-nx4rx      Container started
+81s         Normal    Started             pod/initcrash-9c5cbd456-92h5x          Container started
+81s         Normal    Created             pod/initcrash-9c5cbd456-92h5x          Container created
+81s         Normal    Pulled              pod/initcrash-9c5cbd456-92h5x          Container image "busybox:1.37" already present on machine and can be accessed by the pod
+78s         Normal    Created             pod/exit1-7cd4f4c959-xz7f7             Container created
+78s         Warning   BackOff             pod/exit1-7cd4f4c959-xz7f7             Back-off restarting failed container app in pod exit1-7cd4f4c959-xz7f7_crash(a74f58e6-afd4-4ced-bfb9-34e013cea2f7)
+78s         Normal    Pulled              pod/exit1-7cd4f4c959-xz7f7             Container image "busybox:1.37" already present on machine and can be accessed by the pod
+78s         Normal    Started             pod/exit1-7cd4f4c959-xz7f7             Container started
+63s         Warning   BackOff             pod/oom-fallback-6ddf9cd97d-nx4rx      Back-off restarting failed container app in pod oom-fallback-6ddf9cd97d-nx4rx_crash(02c37cbc-b1fd-4a00-b02e-8b0f3288a94f)
+52s         Normal    Pulled              pod/oom-f47d67486-vcc8v                Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+52s         Warning   BackOff             pod/oom-f47d67486-vcc8v                Back-off restarting failed container app in pod oom-f47d67486-vcc8v_crash(3d5af152-e76f-41e1-9ad0-b22510c037db)
+31s         Warning   Failed              pod/nobinary-699784c959-rvxvc          Error: failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: exec: "/app/server": stat /app/server: no such file or directory
+31s         Normal    Created             pod/nobinary-699784c959-rvxvc          Container created
+31s         Normal    Pulled              pod/nobinary-699784c959-rvxvc          Container image "busybox:1.37" already present on machine and can be accessed by the pod
+25s         Normal    Pulled              pod/exit0-65f8b9dbd-8wdbf              Container image "busybox:1.37" already present on machine and can be accessed by the pod
+25s         Warning   BackOff             pod/exit0-65f8b9dbd-8wdbf              Back-off restarting failed container app in pod exit0-65f8b9dbd-8wdbf_crash(42e9f3fd-de24-4e9c-864e-f228dad33a91)
+18s         Warning   BackOff             pod/exit1-fallback-58fc76cdbf-f8dh4    Back-off restarting failed container app in pod exit1-fallback-58fc76cdbf-f8dh4_crash(66ac8605-b468-4f69-a775-23f247951879)
+18s         Normal    Pulled              pod/exit1-fallback-58fc76cdbf-f8dh4    Container image "busybox:1.37" already present on machine and can be accessed by the pod
+18s         Normal    Created             pod/exit1-fallback-58fc76cdbf-f8dh4    Container created
+14s         Warning   BackOff             pod/initcrash-9c5cbd456-92h5x          Back-off restarting failed container migrate in pod initcrash-9c5cbd456-92h5x_crash(509367fc-4bfd-48cc-8abb-8cf1e423033a)
+12s         Normal    Pulled              pod/exit127-787659dffb-4n9cj           Container image "busybox:1.37" already present on machine and can be accessed by the pod
+12s         Warning   BackOff             pod/exit127-787659dffb-4n9cj           Back-off restarting failed container app in pod exit127-787659dffb-4n9cj_crash(6bb3ffc4-2cdd-4b77-9c96-b09f9b13cfd4)

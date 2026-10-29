@@ -1,0 +1,13 @@
+# 2026-10-29T19:44:06Z verify.sh against the broken state
+2026-10-29T19:44:17Z GET /api/items -> 502
+2026-10-29T19:44:19Z GET /api/items -> 502
+2026-10-29T19:44:21Z GET /api/items -> 502
+2026-10-29T19:44:23Z GET /api/items -> 502
+2026-10-29T19:44:25Z GET /api/items -> 502
+2026-10-29T19:44:27Z GET /api/items -> 502
+2026-10-29T19:44:29Z GET /api/items -> 502
+2026-10-29T19:44:31Z GET /api/items -> 502
+2026-10-29T19:44:33Z GET /api/items -> 502
+2026-10-29T19:44:35Z GET /api/items -> 502
+prematurely closed lines in the last 30 s: 15
+verify exit code: 1

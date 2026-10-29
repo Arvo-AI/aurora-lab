@@ -1,0 +1,487 @@
+Name:             api-f64486c4c-bxkvg
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 12:02:30 -0400
+Labels:           app=api
+                  pod-template-hash=f64486c4c
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.49
+IPs:
+  IP:           10.244.1.49
+Controlled By:  ReplicaSet/api-f64486c4c
+Containers:
+  api:
+    Container ID:  containerd://ac6cbcece740e96dcf415bbe5ae73cf85d70a2838e89d3536bd70877333ec056
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:5789aa194f757888f41fa3d48e14b6feaa1b57c0af0b56fcb1372d6474d3bff0
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Command:
+      python
+      -u
+      /code/api.py
+    State:          Running
+      Started:      Thu, 29 Oct 2026 12:02:31 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:      50m
+      memory:   32Mi
+    Liveness:   http-get http://:8080/healthz delay=15s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:8080/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:
+      REDIS_HOST:  redis
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-cz65c (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-cz65c:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  59s   default-scheduler  Successfully assigned shop/api-f64486c4c-bxkvg to room-worker
+  Normal  Pulled     58s   kubelet            spec.containers{api}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal  Created    58s   kubelet            spec.containers{api}: Container created
+  Normal  Started    58s   kubelet            spec.containers{api}: Container started
+
+
+Name:             api-f64486c4c-msmhc
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 12:02:30 -0400
+Labels:           app=api
+                  pod-template-hash=f64486c4c
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.47
+IPs:
+  IP:           10.244.1.47
+Controlled By:  ReplicaSet/api-f64486c4c
+Containers:
+  api:
+    Container ID:  containerd://6f060ace84f36fbaba31aaa3c49076b26ac239a196b4455155dcd27708f40854
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:5789aa194f757888f41fa3d48e14b6feaa1b57c0af0b56fcb1372d6474d3bff0
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Command:
+      python
+      -u
+      /code/api.py
+    State:          Running
+      Started:      Thu, 29 Oct 2026 12:02:31 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:      50m
+      memory:   32Mi
+    Liveness:   http-get http://:8080/healthz delay=15s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:8080/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:
+      REDIS_HOST:  redis
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9v64j (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-9v64j:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  59s                default-scheduler  Successfully assigned shop/api-f64486c4c-msmhc to room-worker
+  Normal   Pulled     58s                kubelet            spec.containers{api}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    58s                kubelet            spec.containers{api}: Container created
+  Normal   Started    58s                kubelet            spec.containers{api}: Container started
+  Warning  Unhealthy  58s (x2 over 58s)  kubelet            spec.containers{api}: Readiness probe failed: Get "http://10.244.1.47:8080/healthz": dial tcp 10.244.1.47:8080: connect: connection refused
+
+
+Name:             frontend-76d98597b9-7npkk
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 12:02:30 -0400
+Labels:           app=frontend
+                  pod-template-hash=76d98597b9
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.51
+IPs:
+  IP:           10.244.1.51
+Controlled By:  ReplicaSet/frontend-76d98597b9
+Containers:
+  nginx:
+    Container ID:   containerd://feee11310ab8ef049f6f20cfdfdf218d15d38016f976b28e4585939bee06c954
+    Image:          nginx:1.27-alpine
+    Image ID:       docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Thu, 29 Oct 2026 12:02:38 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-66vfx (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  conf:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      frontend-nginx
+    Optional:  false
+  kube-api-access-66vfx:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age   From               Message
+  ----     ------     ----  ----               -------
+  Normal   Scheduled  59s   default-scheduler  Successfully assigned shop/frontend-76d98597b9-7npkk to room-worker
+  Normal   Pulling    58s   kubelet            spec.containers{nginx}: Pulling image "nginx:1.27-alpine"
+  Normal   Pulled     51s   kubelet            spec.containers{nginx}: Successfully pulled image "nginx:1.27-alpine" in 546ms (6.546s including waiting). Image size: 21832241 bytes.
+  Normal   Created    51s   kubelet            spec.containers{nginx}: Container created
+  Normal   Started    51s   kubelet            spec.containers{nginx}: Container started
+  Warning  Unhealthy  51s   kubelet            spec.containers{nginx}: Readiness probe failed: Get "http://10.244.1.51:80/healthz": dial tcp 10.244.1.51:80: connect: connection refused
+
+
+Name:             frontend-76d98597b9-c78c2
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 12:02:30 -0400
+Labels:           app=frontend
+                  pod-template-hash=76d98597b9
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.48
+IPs:
+  IP:           10.244.1.48
+Controlled By:  ReplicaSet/frontend-76d98597b9
+Containers:
+  nginx:
+    Container ID:   containerd://882ffac36b71893b7863d1b4065353bb26b140dcdac68f7cd5c7d17daeeb5f4f
+    Image:          nginx:1.27-alpine
+    Image ID:       docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Thu, 29 Oct 2026 12:02:37 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9fnf8 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  conf:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      frontend-nginx
+    Optional:  false
+  kube-api-access-9fnf8:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  59s   default-scheduler  Successfully assigned shop/frontend-76d98597b9-c78c2 to room-worker
+  Normal  Pulling    58s   kubelet            spec.containers{nginx}: Pulling image "nginx:1.27-alpine"
+  Normal  Pulled     52s   kubelet            spec.containers{nginx}: Successfully pulled image "nginx:1.27-alpine" in 3.165s (6.028s including waiting). Image size: 21832241 bytes.
+  Normal  Created    52s   kubelet            spec.containers{nginx}: Container created
+  Normal  Started    52s   kubelet            spec.containers{nginx}: Container started
+
+
+Name:             loadgen-7c6676864-kbrqg
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 12:02:30 -0400
+Labels:           app=loadgen
+                  pod-template-hash=7c6676864
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.52
+IPs:
+  IP:           10.244.1.52
+Controlled By:  ReplicaSet/loadgen-7c6676864
+Containers:
+  loadgen:
+    Container ID:  containerd://1617d176eb88ab023787fd6e2a4c463982b574fd0d483c59b85d96ca2db7cfea
+    Image:         busybox:1.37
+    Image ID:      docker.io/library/busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      while true; do
+        code=$(wget -q -S -O /dev/null -T 3 http://frontend/api/items 2>&1 | awk '/^  HTTP\//{print $2}' | tail -1)
+        echo "$(date -u +%FT%TZ) GET /api/items -> ${code:-timeout}"
+        sleep 2
+      done
+      
+    State:          Running
+      Started:      Thu, 29 Oct 2026 12:02:31 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  32Mi
+    Requests:
+      cpu:        10m
+      memory:     8Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-4pq9s (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-4pq9s:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  59s   default-scheduler  Successfully assigned shop/loadgen-7c6676864-kbrqg to room-worker
+  Normal  Pulled     58s   kubelet            spec.containers{loadgen}: Container image "busybox:1.37" already present on machine and can be accessed by the pod
+  Normal  Created    58s   kubelet            spec.containers{loadgen}: Container created
+  Normal  Started    58s   kubelet            spec.containers{loadgen}: Container started
+
+
+Name:             redis-59458f55d8-xfg44
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 12:02:30 -0400
+Labels:           app=redis
+                  pod-template-hash=59458f55d8
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.46
+IPs:
+  IP:           10.244.1.46
+Controlled By:  ReplicaSet/redis-59458f55d8
+Containers:
+  redis:
+    Container ID:   containerd://3d2ebe389488b1925511d142dc6c52945002ded3cddbdf2d80a7930b59ed201c
+    Image:          redis:7.4-alpine
+    Image ID:       docker.io/library/redis@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f
+    Port:           6379/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Thu, 29 Oct 2026 12:02:34 -0400
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:        50m
+      memory:     32Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-s2q9c (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-s2q9c:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  59s   default-scheduler  Successfully assigned shop/redis-59458f55d8-xfg44 to room-worker
+  Normal  Pulling    58s   kubelet            spec.containers{redis}: Pulling image "redis:7.4-alpine"
+  Normal  Pulled     55s   kubelet            spec.containers{redis}: Successfully pulled image "redis:7.4-alpine" in 2.876s (2.876s including waiting). Image size: 16773686 bytes.
+  Normal  Created    55s   kubelet            spec.containers{redis}: Container created
+  Normal  Started    55s   kubelet            spec.containers{redis}: Container started
+
+
+Name:             worker-86f68b9bf6-ngcmj
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 12:02:39 -0400
+Labels:           app=worker
+                  pod-template-hash=86f68b9bf6
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.53
+IPs:
+  IP:           10.244.1.53
+Controlled By:  ReplicaSet/worker-86f68b9bf6
+Containers:
+  worker:
+    Container ID:  containerd://11caca58b3fff27985ed46c16d32c6cc529519c6bfeb122b43b8ad0922d4809d
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:5789aa194f757888f41fa3d48e14b6feaa1b57c0af0b56fcb1372d6474d3bff0
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      /code/worker.py
+    State:          Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 12:03:18 -0400
+      Finished:     Thu, 29 Oct 2026 12:03:18 -0400
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 12:02:56 -0400
+      Finished:     Thu, 29 Oct 2026 12:02:56 -0400
+    Ready:          False
+    Restart Count:  3
+    Limits:
+      memory:  192Mi
+    Requests:
+      cpu:     50m
+      memory:  64Mi
+    Environment:
+      BATCH_SIZE:  2500
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-k654h (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-k654h:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  50s                default-scheduler  Successfully assigned shop/worker-86f68b9bf6-ngcmj to room-worker
+  Normal   Pulled     11s (x4 over 50s)  kubelet            spec.containers{worker}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    11s (x4 over 50s)  kubelet            spec.containers{worker}: Container created
+  Normal   Started    11s (x4 over 50s)  kubelet            spec.containers{worker}: Container started
+  Warning  BackOff    10s (x3 over 44s)  kubelet            spec.containers{worker}: Back-off restarting failed container worker in pod worker-86f68b9bf6-ngcmj_shop(ba855ecb-5f2e-4c47-a054-e7cb921f660c)

@@ -1,0 +1,80 @@
+Name:             steady-6756d67fc8-cqgzn
+Namespace:        oom
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 11:53:33 -0400
+Labels:           app=steady
+                  pod-template-hash=6756d67fc8
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.3
+IPs:
+  IP:           10.244.1.3
+Controlled By:  ReplicaSet/steady-6756d67fc8
+Containers:
+  steady:
+    Container ID:  containerd://a835b19bd7ff002790e56abe15757d9b63315d1f6463cc548e29db4c501b6026
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:5789aa194f757888f41fa3d48e14b6feaa1b57c0af0b56fcb1372d6474d3bff0
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      -c
+    Args:
+      import time
+      cache = b"\x01" * (150 << 20)
+      print("cache loaded, 150 MiB", flush=True)
+      while True:
+          time.sleep(60)
+      
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 11:54:15 -0400
+      Finished:     Thu, 29 Oct 2026 11:54:15 -0400
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 11:53:50 -0400
+      Finished:     Thu, 29 Oct 2026 11:53:50 -0400
+    Ready:          False
+    Restart Count:  3
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:        20m
+      memory:     128Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-gskmr (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-gskmr:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              kubernetes.io/hostname=room-worker
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  54s                default-scheduler  Successfully assigned oom/steady-6756d67fc8-cqgzn to room-worker
+  Normal   Pulling    54s                kubelet            spec.containers{steady}: Pulling image "python:3.12-alpine"
+  Normal   Pulled     51s                kubelet            spec.containers{steady}: Successfully pulled image "python:3.12-alpine" in 378ms (2.902s including waiting). Image size: 18544611 bytes.
+  Normal   Created    12s (x4 over 51s)  kubelet            spec.containers{steady}: Container created
+  Normal   Started    12s (x4 over 51s)  kubelet            spec.containers{steady}: Container started
+  Normal   Pulled     12s (x3 over 50s)  kubelet            spec.containers{steady}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Warning  BackOff    10s (x4 over 49s)  kubelet            spec.containers{steady}: Back-off restarting failed container steady in pod steady-6756d67fc8-cqgzn_oom(bc700914-8139-4c52-a1b5-ef76003bc8ce)

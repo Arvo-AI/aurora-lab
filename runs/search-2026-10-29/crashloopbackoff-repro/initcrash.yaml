@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: initcrash, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: initcrash}}
+  template:
+    metadata: {labels: {app: initcrash}}
+    spec:
+      initContainers:
+        - name: migrate
+          image: busybox:1.37
+          command: ["sh", "-c", "echo 'migrate: cannot connect to db'; exit 1"]
+      containers:
+        - name: app
+          image: busybox:1.37
+          command: ["sh", "-c", "sleep 3600"]

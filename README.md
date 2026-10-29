@@ -71,6 +71,11 @@ partial restarts.
 | 17 | [Slow memory leak in worker code, logs clean](scenarios/17-slow-memory-leak/) | KubePodCrashLooping |
 | 18 | [Init container waits for a Service that does not exist](scenarios/18-init-waits-missing-service/) | KubeDeploymentRolloutStuck |
 | 19 | [ConfigMap edited, only one of two frontend pods restarted](scenarios/19-config-drift-partial-restart/) | HighErrorRate |
+| 20 | [api handler closes the connection: nginx 502 while every pod is Ready](scenarios/20-nginx-502-upstream-closed-connection/) | HighErrorRate |
+| 21 | [api waits on a dependency with no timeout: nginx 504](scenarios/21-api-slow-upstream-timeout/) | HighErrorRate |
+
+Scenarios 20 and 21 were added on 2026-10-29 and are not part of the graded runs
+or the benchmark yet; no investigator has been run on them.
 
 Each scenario folder has `scenario.yaml` (alert, change, root cause, what a
 correct answer must identify, acceptable fixes, known wrong answers),

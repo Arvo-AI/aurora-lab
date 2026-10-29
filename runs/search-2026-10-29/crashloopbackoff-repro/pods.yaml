@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: crash
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: exit1, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: exit1}}
+  template:
+    metadata: {labels: {app: exit1}}
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.37
+          command: ["sh", "-c", "echo starting; echo 'fatal: config file /etc/app/app.yaml not found' >&2; exit 1"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: exit127, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: exit127}}
+  template:
+    metadata: {labels: {app: exit127}}
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.37
+          command: ["sh", "-c", "exec start-server --port 8080"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: nobinary, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: nobinary}}
+  template:
+    metadata: {labels: {app: nobinary}}
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.37
+          command: ["/app/server"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: exit0, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: exit0}}
+  template:
+    metadata: {labels: {app: exit0}}
+    spec:
+      containers:
+        - name: app
+          image: busybox:1.37
+          command: ["sh", "-c", "echo migration done; exit 0"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: oom, namespace: crash}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: oom}}
+  template:
+    metadata: {labels: {app: oom}}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "-c", "print('loading cache', flush=True); b=[bytearray(1024*1024) for _ in range(400)]"]
+          resources:
+            limits: {memory: 64Mi}

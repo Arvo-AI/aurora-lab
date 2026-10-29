@@ -1,0 +1,10 @@
+# containerd PullImage start times for pod pulltest/repo-missing (image docker.io/rpullnoorg7f3k/app:1.0) on rpull-worker2, captured 2026-10-29T16:11:47Z
+$ docker exec rpull-worker2 journalctl -u containerd --no-pager | grep 'level=info msg="PullImage \"docker.io/rpullnoorg'
+Oct 29 15:53:57 rpull-worker2 containerd[125]: time="2026-10-29T15:53:57.976756125Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""
+Oct 29 15:54:13 rpull-worker2 containerd[125]: time="2026-10-29T15:54:13.708189961Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""
+Oct 29 15:54:38 rpull-worker2 containerd[1879]: time="2026-10-29T15:54:38.710616625Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""
+Oct 29 15:55:28 rpull-worker2 containerd[1879]: time="2026-10-29T15:55:28.707613129Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""
+Oct 29 15:57:01 rpull-worker2 containerd[1879]: time="2026-10-29T15:57:01.706726541Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""
+Oct 29 15:59:43 rpull-worker2 containerd[1879]: time="2026-10-29T15:59:43.149747926Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""
+Oct 29 16:04:50 rpull-worker2 containerd[1879]: time="2026-10-29T16:04:50.715459520Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""
+Oct 29 16:10:01 rpull-worker2 containerd[1879]: time="2026-10-29T16:10:01.706656638Z" level=info msg="PullImage \"docker.io/rpullnoorg7f3k/app:1.0\""

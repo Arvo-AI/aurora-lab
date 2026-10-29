@@ -1,0 +1,18 @@
+# what happens when the readiness probe hits the slow path: a copy of the broken api whose readinessProbe GETs /items, 2026-10-29T16:12:43Z
+$ cat /tmp/r504/probe-demo.yaml | grep -A3 readinessProbe
+          readinessProbe:
+            httpGet: {path: /items, port: 8080}
+            periodSeconds: 5
+          volumeMounts: [{name: code, mountPath: /code}]
+
+$ kubectl apply -f /tmp/r504/probe-demo.yaml
+deployment.apps/api-deepcheck created
+
+$ kubectl -n shop get pods -l app=api-deepcheck
+NAME                             READY   STATUS    RESTARTS   AGE
+api-deepcheck-5959bf4dd6-9kmpf   0/1     Running   0          40s
+
+$ kubectl -n shop get events --field-selector involvedObject.kind=Pod --sort-by=.lastTimestamp | grep api-deepcheck | grep -i probe | tail -3
+39s         Warning   Unhealthy   pod/api-deepcheck-5959bf4dd6-9kmpf   Readiness probe failed: Get "http://10.244.1.22:8080/items": dial tcp 10.244.1.22:8080: connect: connection refused
+3s          Warning   Unhealthy   pod/api-deepcheck-5959bf4dd6-9kmpf   Readiness probe failed: Get "http://10.244.1.22:8080/items": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+

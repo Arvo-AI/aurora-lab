@@ -1,0 +1,141 @@
+### 2026-10-29T16:11:55Z
+$ k -n pulltest get pods -o wide
+NAME                      READY   STATUS                  RESTARTS   AGE   IP            NODE            NOMINATED NODE   READINESS GATES
+arch-index                0/1     ImagePullBackOff        0          13m   10.244.3.15   rpull-worker2   <none>           <none>
+arch-single               1/1     Running                 0          13m   10.244.3.16   rpull-worker2   <none>           <none>
+bad-host                  0/1     ImagePullBackOff        0          17m   10.244.3.7    rpull-worker2   <none>           <none>
+init-bad-tag              0/1     Init:ImagePullBackOff   0          17m   10.244.3.9    rpull-worker2   <none>           <none>
+invalid-name              0/1     InvalidImageName        0          17m   10.244.3.10   rpull-worker2   <none>           <none>
+never-pull                0/1     ErrImageNeverPull       0          17m   10.244.3.8    rpull-worker2   <none>           <none>
+present                   1/1     Running                 0          12m   10.244.3.17   rpull-worker2   <none>           <none>
+private-cached-nosecret   0/1     ImagePullBackOff        0          11m   10.244.3.18   rpull-worker2   <none>           <none>
+private-nosecret          0/1     ImagePullBackOff        0          13m   10.244.3.11   rpull-worker2   <none>           <none>
+private-ok                1/1     Running                 0          13m   10.244.3.14   rpull-worker2   <none>           <none>
+private-otherns           0/1     ImagePullBackOff        0          13m   10.244.3.13   rpull-worker2   <none>           <none>
+private-wrongpass         0/1     ImagePullBackOff        0          13m   10.244.3.12   rpull-worker2   <none>           <none>
+repo-missing              0/1     ImagePullBackOff        0          17m   10.244.3.5    rpull-worker2   <none>           <none>
+
+### 2026-10-29T16:11:55Z
+$ k -n pulltest describe pod repo-missing
+Name:             repo-missing
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:53:57 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.3.5
+IPs:
+  IP:  10.244.3.5
+Containers:
+  app:
+    Container ID:  
+    Image:         docker.io/rpullnoorg7f3k/app:1.0
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-m2chl (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-m2chl:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason   Age                   From     Message
+  ----     ------   ----                  ----     -------
+  Normal   Pulling  14m (x5 over 17m)     kubelet  spec.containers{app}: Pulling image "docker.io/rpullnoorg7f3k/app:1.0"
+  Warning  Failed   14m (x5 over 17m)     kubelet  spec.containers{app}: Failed to pull image "docker.io/rpullnoorg7f3k/app:1.0": failed to pull and unpack image "docker.io/rpullnoorg7f3k/app:1.0": failed to resolve reference "docker.io/rpullnoorg7f3k/app:1.0": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
+  Warning  Failed   14m (x5 over 17m)     kubelet  spec.containers{app}: Error: ErrImagePull
+  Normal   BackOff  2m49s (x65 over 17m)  kubelet  spec.containers{app}: Back-off pulling image "docker.io/rpullnoorg7f3k/app:1.0"
+  Warning  Failed   2m49s (x65 over 17m)  kubelet  spec.containers{app}: Error: ImagePullBackOff
+
+### 2026-10-29T16:11:55Z
+$ k -n pulltest get events --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON                            OBJECT                        MESSAGE
+17m         Warning   Failed                            pod/private-http              Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": failed to do request: Head "https://rpull-registry:5000/v2/private/busybox/manifests/1.37": http: server gave HTTP response to HTTPS client
+15m         Warning   Failed                            pod/invalid-name              Error: InvalidImageName
+15m         Warning   Failed                            pod/never-pull                Error: ErrImageNeverPull
+15m         Warning   Failed                            pod/private-http              Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+15m         Normal    Pulling                           pod/private-http              Pulling image "rpull-registry:5000/private/busybox:1.37"
+15m         Warning   Failed                            pod/private-http              Error: ErrImagePull
+15m         Normal    Pulling                           pod/init-bad-tag              Pulling image "busybox:1.37-typo"
+15m         Warning   Failed                            pod/init-bad-tag              Error: ErrImagePull
+15m         Warning   Failed                            pod/init-bad-tag              Failed to pull image "busybox:1.37-typo": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/busybox:1.37-typo": failed to resolve reference "docker.io/library/busybox:1.37-typo": docker.io/library/busybox:1.37-typo: not found
+14m         Normal    Pulling                           pod/repo-missing              Pulling image "docker.io/rpullnoorg7f3k/app:1.0"
+14m         Warning   Failed                            pod/repo-missing              Error: ErrImagePull
+14m         Warning   Failed                            pod/repo-missing              Failed to pull image "docker.io/rpullnoorg7f3k/app:1.0": failed to pull and unpack image "docker.io/rpullnoorg7f3k/app:1.0": failed to resolve reference "docker.io/rpullnoorg7f3k/app:1.0": pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
+14m         Warning   Failed                            pod/bad-host                  Error: ErrImagePull
+14m         Warning   Failed                            pod/bad-host                  Failed to pull image "registry.rpull-nonexistent.example/app:1.0": failed to pull and unpack image "registry.rpull-nonexistent.example/app:1.0": failed to resolve reference "registry.rpull-nonexistent.example/app:1.0": failed to do request: Head "https://registry.rpull-nonexistent.example/v2/app/manifests/1.0": dial tcp: lookup registry.rpull-nonexistent.example on 0.250.250.254:53: no such host
+14m         Normal    Pulling                           pod/bad-host                  Pulling image "registry.rpull-nonexistent.example/app:1.0"
+14m         Normal    BackOff                           pod/private-http              Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+14m         Warning   Failed                            pod/private-http              Error: ImagePullBackOff
+13m         Normal    Started                           pod/private-ok                Container started
+13m         Normal    Pulling                           pod/private-ok                Pulling image "rpull-registry:5000/private/busybox:1.37"
+13m         Normal    Created                           pod/private-ok                Container created
+13m         Normal    Pulled                            pod/private-ok                Successfully pulled image "rpull-registry:5000/private/busybox:1.37" in 106ms (211ms including waiting). Image size: 1901860 bytes.
+13m         Normal    Pulling                           pod/arch-single               Pulling image "rpull-registry:5000/private/busybox-amd64only:1.37"
+13m         Normal    Pulled                            pod/arch-single               Successfully pulled image "rpull-registry:5000/private/busybox-amd64only:1.37" in 123ms (303ms including waiting). Image size: 2212583 bytes.
+13m         Normal    Created                           pod/arch-single               Container created
+13m         Normal    Started                           pod/arch-single               Container started
+12m         Normal    Started                           pod/present                   Container started
+12m         Normal    Created                           pod/present                   Container created
+12m         Normal    Pulled                            pod/present                   Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+10m         Normal    Pulling                           pod/private-nosecret          Pulling image "rpull-registry:5000/private/busybox:1.37"
+10m         Warning   Failed                            pod/private-nosecret          Error: ErrImagePull
+10m         Warning   Failed                            pod/private-nosecret          Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+10m         Warning   FailedToRetrieveImagePullSecret   pod/private-otherns           Unable to retrieve some image pull secrets (othercred); attempting to pull the image may not succeed.
+10m         Warning   Failed                            pod/private-otherns           Error: ErrImagePull
+10m         Warning   Failed                            pod/private-otherns           Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+10m         Normal    Pulling                           pod/private-otherns           Pulling image "rpull-registry:5000/private/busybox:1.37"
+10m         Warning   Failed                            pod/private-wrongpass         Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": unexpected status from HEAD request to http://rpull-registry:5000/v2/private/busybox/manifests/1.37: 401 Unauthorized
+10m         Normal    Pulling                           pod/private-wrongpass         Pulling image "rpull-registry:5000/private/busybox:1.37"
+10m         Normal    Pulling                           pod/arch-index                Pulling image "rpull-registry:5000/private/busybox-amd64index:1.37"
+10m         Warning   Failed                            pod/arch-index                Failed to pull image "rpull-registry:5000/private/busybox-amd64index:1.37": rpc error: code = NotFound desc = failed to pull and unpack image "rpull-registry:5000/private/busybox-amd64index:1.37": no match for platform in manifest: not found
+10m         Warning   Failed                            pod/private-wrongpass         Error: ErrImagePull
+10m         Warning   Failed                            pod/arch-index                Error: ErrImagePull
+9m3s        Warning   Failed                            pod/private-cached-nosecret   Error: ErrImagePull
+9m3s        Warning   Failed                            pod/private-cached-nosecret   Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+9m3s        Normal    Pulling                           pod/private-cached-nosecret   Pulling image "rpull-registry:5000/private/busybox:1.37"
+3m34s       Warning   Failed                            pod/arch-index                Error: ImagePullBackOff
+3m34s       Normal    BackOff                           pod/arch-index                Back-off pulling image "rpull-registry:5000/private/busybox-amd64index:1.37"
+3m33s       Warning   Failed                            pod/private-nosecret          Error: ImagePullBackOff
+3m33s       Normal    BackOff                           pod/private-nosecret          Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+3m31s       Warning   Failed                            pod/private-wrongpass         Error: ImagePullBackOff
+3m31s       Normal    BackOff                           pod/private-wrongpass         Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+3m30s       Warning   Failed                            pod/private-otherns           Error: ImagePullBackOff
+3m30s       Normal    BackOff                           pod/private-otherns           Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+2m56s       Warning   InspectFailed                     pod/invalid-name              Failed to apply default image tag "Nginx:1.27-alpine": couldn't parse image name "Nginx:1.27-alpine": invalid reference format: repository name (library/Nginx) must be lowercase
+2m54s       Warning   Failed                            pod/init-bad-tag              Error: ImagePullBackOff
+2m54s       Normal    BackOff                           pod/init-bad-tag              Back-off pulling image "busybox:1.37-typo"
+2m53s       Normal    BackOff                           pod/bad-host                  Back-off pulling image "registry.rpull-nonexistent.example/app:1.0"
+2m53s       Warning   Failed                            pod/bad-host                  Error: ImagePullBackOff
+2m53s       Warning   ErrImageNeverPull                 pod/never-pull                Container image "busybox:1.36.1" is not present with pull policy of Never
+2m49s       Normal    BackOff                           pod/repo-missing              Back-off pulling image "docker.io/rpullnoorg7f3k/app:1.0"
+2m49s       Warning   Failed                            pod/repo-missing              Error: ImagePullBackOff
+96s         Warning   Failed                            pod/private-cached-nosecret   Error: ImagePullBackOff
+96s         Normal    BackOff                           pod/private-cached-nosecret   Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+

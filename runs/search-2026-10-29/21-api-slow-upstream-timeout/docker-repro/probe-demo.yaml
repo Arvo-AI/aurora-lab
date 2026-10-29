@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deepcheck
+  namespace: shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: api-deepcheck}
+  template:
+    metadata:
+      labels: {app: api-deepcheck}
+    spec:
+      containers:
+        - name: api
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/api.py"]
+          env:
+            - {name: REDIS_HOST, value: redis}
+          readinessProbe:
+            httpGet: {path: /items, port: 8080}
+            periodSeconds: 5
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: api-code}

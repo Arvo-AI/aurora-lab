@@ -1,0 +1,80 @@
+Name:             spiky-7cb5877b97-s6bjg
+Namespace:        oom
+Priority:         0
+Service Account:  default
+Node:             room-worker/192.168.148.21
+Start Time:       Thu, 29 Oct 2026 11:53:33 -0400
+Labels:           app=spiky
+                  pod-template-hash=7cb5877b97
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.2
+IPs:
+  IP:           10.244.1.2
+Controlled By:  ReplicaSet/spiky-7cb5877b97
+Containers:
+  spiky:
+    Container ID:  containerd://0b9243d200dc9ce0bf51628318abb394b2859cfb002a9554b86cee095137b576
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:5789aa194f757888f41fa3d48e14b6feaa1b57c0af0b56fcb1372d6474d3bff0
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      -c
+    Args:
+      import time
+      print("worker up", flush=True)
+      n = 0
+      while True:
+          time.sleep(40)
+          n += 1
+          print(f"report {n}: building 200 MiB buffer", flush=True)
+          buf = b"\x01" * (200 << 20)
+          del buf
+      
+    State:          Running
+      Started:      Thu, 29 Oct 2026 11:54:19 -0400
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 29 Oct 2026 11:53:36 -0400
+      Finished:     Thu, 29 Oct 2026 11:54:16 -0400
+    Ready:          True
+    Restart Count:  1
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:        20m
+      memory:     64Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-g5djt (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-g5djt:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              kubernetes.io/hostname=room-worker
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age               From               Message
+  ----    ------     ----              ----               -------
+  Normal  Scheduled  54s               default-scheduler  Successfully assigned oom/spiky-7cb5877b97-s6bjg to room-worker
+  Normal  Pulling    54s               kubelet            spec.containers{spiky}: Pulling image "python:3.12-alpine"
+  Normal  Pulled     51s               kubelet            spec.containers{spiky}: Successfully pulled image "python:3.12-alpine" in 2.536s (2.536s including waiting). Image size: 18544611 bytes.
+  Normal  Created    9s (x2 over 51s)  kubelet            spec.containers{spiky}: Container created
+  Normal  Pulled     9s                kubelet            spec.containers{spiky}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal  Started    8s (x2 over 51s)  kubelet            spec.containers{spiky}: Container started

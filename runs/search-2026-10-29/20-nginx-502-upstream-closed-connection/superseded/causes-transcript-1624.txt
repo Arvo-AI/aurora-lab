@@ -1,0 +1,87 @@
+# Restored from the console output of causes/run.sh (run started 2026-10-29T16:24:21Z).
+# The file itself was overwritten by a later run at 16:29Z that stalled when
+# Docker stopped responding (kept as causes-transcript-1629-docker-hung.txt).
+# Config of this run: causes.yaml with an http-level `resolver` line, which is
+# why /noresolver/ returned 200 here; see causes-transcript-1556.txt for that case.
+# 2026-10-29T16:24:21Z context kind-r502
+nginx version: nginx/1.27.5
+### GET /ok/ -> 200
+
+### GET /noep/ -> 502
+2026/10/29 16:24:22 [error] 25#25: *4 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /noep/ HTTP/1.1", upstream: "http://10.96.192.166:8080/", host: "localhost"
+
+### GET /nolistener/ -> 502
+2026/10/29 16:24:23 [error] 27#27: *6 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /nolistener/ HTTP/1.1", upstream: "http://10.96.80.33:8090/", host: "localhost"
+
+### GET /unexposed/ -> 504
+2026/10/29 16:24:26 [error] 30#30: *8 upstream timed out (110: Operation timed out) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /unexposed/ HTTP/1.1", upstream: "http://10.96.80.33:9999/", host: "localhost"
+
+### GET /fenced/ -> 504
+2026/10/29 16:24:29 [error] 32#32: *10 upstream timed out (110: Operation timed out) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /fenced/ HTTP/1.1", upstream: "http://10.96.165.54:8085/", host: "localhost"
+
+### GET /pair/ -> 502
+2026/10/29 16:24:31 [error] 28#28: *12 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.192.166:8080/", host: "localhost"
+2026/10/29 16:24:31 [warn] 28#28: *12 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.192.166:8080/", host: "localhost"
+2026/10/29 16:24:31 [error] 28#28: *12 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.67.203:8080/", host: "localhost"
+2026/10/29 16:24:31 [warn] 28#28: *12 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.67.203:8080/", host: "localhost"
+
+### GET /pair/ -> 502
+2026/10/29 16:24:32 [error] 29#29: *15 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.192.166:8080/", host: "localhost"
+2026/10/29 16:24:32 [warn] 29#29: *15 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.192.166:8080/", host: "localhost"
+2026/10/29 16:24:32 [error] 29#29: *15 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.67.203:8080/", host: "localhost"
+2026/10/29 16:24:32 [warn] 29#29: *15 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /pair/ HTTP/1.1", upstream: "http://10.96.67.203:8080/", host: "localhost"
+
+### GET /close/ -> 502
+2026/10/29 16:24:33 [error] 33#33: *18 upstream prematurely closed connection while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /close/ HTTP/1.1", upstream: "http://10.96.80.33:8081/", host: "localhost"
+
+### GET /reset/ -> 502
+2026/10/29 16:24:34 [error] 31#31: *20 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /reset/ HTTP/1.1", upstream: "http://10.96.80.33:8082/", host: "localhost"
+
+### GET /bighdr/ -> 502
+2026/10/29 16:24:35 [error] 34#34: *22 upstream sent too big header while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /bighdr/ HTTP/1.1", upstream: "http://10.96.80.33:8083/", host: "localhost"
+
+### GET /plain-to-tls/ -> 502
+2026/10/29 16:24:36 [error] 26#26: *24 recv() failed (104: Connection reset by peer) while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /plain-to-tls/ HTTP/1.1", upstream: "http://10.96.80.33:8084/", host: "localhost"
+
+### GET /tls-to-plain/ -> 502
+2026/10/29 16:24:37 [crit] 26#26: *26 SSL_do_handshake() failed (SSL: error:0A0000C6:SSL routines::packet length too long error:0A000139:SSL routines::record layer failure) while SSL handshaking to upstream, client: 127.0.0.1, server: , request: "GET /tls-to-plain/ HTTP/1.1", upstream: "https://10.96.140.48:8080/", host: "localhost"
+
+### GET /slow/ -> 504
+2026/10/29 16:24:40 [error] 26#26: *28 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /slow/ HTTP/1.1", upstream: "http://10.96.80.33:8086/", host: "localhost"
+
+### GET /redis/ -> 502
+2026/10/29 16:24:41 [error] 26#26: *30 upstream prematurely closed connection while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /redis/ HTTP/1.1", upstream: "http://10.96.212.96:6379/", host: "localhost"
+
+### GET /noresolver/ -> 200
+
+### GET /shortname/ -> 502
+2026/10/29 16:24:44 [error] 26#26: *35 dynonly could not be resolved (3: Host not found), client: 127.0.0.1, server: , request: "GET /shortname/ HTTP/1.1", host: "localhost"
+
+### GET /fqdn/ -> 200
+
+### GET /typo/ -> 502
+2026/10/29 16:24:46 [error] 26#26: *40 bakend.r502x.svc.cluster.local could not be resolved (3: Host not found), client: 127.0.0.1, server: , request: "GET /typo/ HTTP/1.1", host: "localhost"
+
+### GET /headless/ -> 200
+
+### GET /headless-resolve/ -> 200
+
+### stale headless IPs: restart backend pods, nginx keeps the IPs it resolved at start
+10.244.1.50 10.244.2.45
+10.244.2.46 10.244.1.53
+### GET /headless/ -> 504
+2026/10/29 16:25:40 [warn] 26#26: *46 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.2.45:8085/", host: "localhost"
+2026/10/29 16:25:40 [error] 26#26: *46 upstream timed out (110: Operation timed out) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.2.45:8085/", host: "localhost"
+2026/10/29 16:25:42 [warn] 26#26: *46 upstream server temporarily disabled while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.1.50:8085/", host: "localhost"
+2026/10/29 16:25:42 [error] 26#26: *46 upstream timed out (110: Operation timed out) while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://10.244.1.50:8085/", host: "localhost"
+
+### GET /headless/ -> 502
+2026/10/29 16:25:43 [error] 26#26: *49 no live upstreams while connecting to upstream, client: 127.0.0.1, server: , request: "GET /headless/ HTTP/1.1", upstream: "http://headless/", host: "localhost"
+
+### GET /headless-resolve/ -> 200
+
+### startup check with an upstream name that does not resolve
+2026/10/29 16:25:45 [emerg] 179#179: host not found in upstream "noep-typo:8080" in /tmp/bad.conf:2
+nginx: [emerg] host not found in upstream "noep-typo:8080" in /tmp/bad.conf:2
+nginx: configuration file /tmp/nginx.conf test failed
+command terminated with exit code 1

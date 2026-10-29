@@ -1,0 +1,37 @@
+NAMESPACE   LAST SEEN   TYPE      REASON                      OBJECT                    MESSAGE
+default     8m46s       Normal    Starting                    node/room-worker          
+default     8m49s       Normal    Starting                    node/room-control-plane   
+default     8m46s       Normal    Starting                    node/room-worker2         
+default     9m18s       Normal    NodeHasNoDiskPressure       node/room-control-plane   Node room-control-plane status is now: NodeHasNoDiskPressure
+default     9m18s       Normal    NodeHasSufficientPID        node/room-control-plane   Node room-control-plane status is now: NodeHasSufficientPID
+default     9m18s       Normal    NodeAllocatableEnforced     node/room-control-plane   Updated Node Allocatable limit across pods
+default     9m18s       Normal    NodeHasSufficientMemory     node/room-control-plane   Node room-control-plane status is now: NodeHasSufficientMemory
+default     9m6s        Normal    Starting                    node/room-control-plane   Starting kubelet.
+default     9m6s        Normal    NodeAllocatableEnforced     node/room-control-plane   Updated Node Allocatable limit across pods
+default     9m6s        Normal    NodeHasSufficientMemory     node/room-control-plane   Node room-control-plane status is now: NodeHasSufficientMemory
+default     9m6s        Normal    NodeHasNoDiskPressure       node/room-control-plane   Node room-control-plane status is now: NodeHasNoDiskPressure
+default     9m6s        Normal    NodeHasSufficientPID        node/room-control-plane   Node room-control-plane status is now: NodeHasSufficientPID
+default     9m          Normal    RegisteredNode              node/room-control-plane   Node room-control-plane event: Registered Node room-control-plane in Controller
+default     8m57s       Normal    NodeHasSufficientMemory     node/room-worker          Node room-worker status is now: NodeHasSufficientMemory
+default     8m57s       Normal    NodeHasNoDiskPressure       node/room-worker          Node room-worker status is now: NodeHasNoDiskPressure
+default     8m57s       Normal    NodeHasSufficientPID        node/room-worker          Node room-worker status is now: NodeHasSufficientPID
+default     8m57s       Normal    NodeAllocatableEnforced     node/room-worker          Updated Node Allocatable limit across pods
+default     8m57s       Normal    NodeAllocatableEnforced     node/room-worker2         Updated Node Allocatable limit across pods
+default     8m56s       Normal    NodeHasNoDiskPressure       node/room-worker2         Node room-worker2 status is now: NodeHasNoDiskPressure
+default     8m56s       Normal    NodeHasSufficientMemory     node/room-worker2         Node room-worker2 status is now: NodeHasSufficientMemory
+default     8m56s       Normal    NodeHasSufficientPID        node/room-worker2         Node room-worker2 status is now: NodeHasSufficientPID
+default     8m54s       Normal    RegisteredNode              node/room-worker          Node room-worker event: Registered Node room-worker in Controller
+default     8m54s       Normal    RegisteredNode              node/room-worker2         Node room-worker2 event: Registered Node room-worker2 in Controller
+default     8m39s       Normal    NodeReady                   node/room-control-plane   Node room-control-plane status is now: NodeReady
+default     8m36s       Normal    NodeReady                   node/room-worker          Node room-worker status is now: NodeReady
+default     8m36s       Normal    NodeReady                   node/room-worker2         Node room-worker2 status is now: NodeReady
+default     7m41s       Normal    Starting                    node/room-worker2         Starting kubelet.
+default     7m41s       Normal    NodeAllocatableEnforced     node/room-worker2         Updated Node Allocatable limit across pods
+default     7m41s       Normal    NodeHasSufficientMemory     node/room-worker2         Node room-worker2 status is now: NodeHasSufficientMemory
+default     7m41s       Normal    NodeHasNoDiskPressure       node/room-worker2         Node room-worker2 status is now: NodeHasNoDiskPressure
+default     7m41s       Normal    NodeHasSufficientPID        node/room-worker2         Node room-worker2 status is now: NodeHasSufficientPID
+default     5m4s        Normal    RegisteredNode              node/room-worker          Node room-worker event: Registered Node room-worker in Controller
+default     5m4s        Normal    RegisteredNode              node/room-control-plane   Node room-control-plane event: Registered Node room-control-plane in Controller
+default     5m4s        Normal    RegisteredNode              node/room-worker2         Node room-worker2 event: Registered Node room-worker2 in Controller
+default     11s         Warning   EvictionThresholdMet        node/room-worker2         Attempting to reclaim memory
+default     4s          Normal    NodeHasInsufficientMemory   node/room-worker2         Node room-worker2 status is now: NodeHasInsufficientMemory

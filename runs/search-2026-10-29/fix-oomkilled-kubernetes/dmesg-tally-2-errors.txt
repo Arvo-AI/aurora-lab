@@ -1,0 +1,6 @@
+21db651f9d429302de5e9db33c693ed4a92a86652ee4bbcfd61af2c34e22c789: 1
+[  941.001500] Memory cgroup out of memory: Killed process 119261 (python) total-vm:164832kB, anon-rss:130832kB, file-rss:1272kB, shmem-rss:0kB, UID:0 pgtables:312kB oom_score_adj:994
+b3956fec9c84315c1a4d271d4473d660d8da0d70ff57ce40ec773b101cf0095c: 0
+[  941.855031] Tasks in /scon/container/01GQQVF6C60000000000DOCKER.g7gopo/child/docker/902502708eff3e3770181f7c44f9c3964e6939bac16d09d7cd703b1f9ce8c6c5/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod3ce4c49b_3857_42bc_a391_6d60bb817f29.slice/cri-containerd-b3956fec9c84315c1a4d271d4473d660d8da0d70ff57ce40ec773b101cf0095c.scope are going to be killed due to memory.oom.group set
+[  941.855109] Memory cgroup out of memory: Killed process 119833 (python) total-vm:164832kB, anon-rss:131072kB, file-rss:1820kB, shmem-rss:0kB, UID:0 pgtables:312kB oom_score_adj:994
+[  941.874935] Memory cgroup out of memory: Killed process 119870 (python) total-vm:164832kB, anon-rss:131072kB, file-rss:24kB, shmem-rss:0kB, UID:0 pgtables:312kB oom_score_adj:994

@@ -1,0 +1,4 @@
++(eval):1> k -n oom logs spiky-7cb5877b97-s6bjg
++k:0> kubectl --context kind-room -n oom logs spiky-7cb5877b97-s6bjg
+worker up
+report 1: building 200 MiB buffer

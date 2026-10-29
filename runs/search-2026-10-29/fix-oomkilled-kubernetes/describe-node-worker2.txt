@@ -1,0 +1,74 @@
+Name:               room-worker2
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=arm64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=arm64
+                    kubernetes.io/hostname=room-worker2
+                    kubernetes.io/os=linux
+Annotations:        node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Thu, 29 Oct 2026 11:48:55 -0400
+Taints:             node.kubernetes.io/memory-pressure:NoSchedule
+Unschedulable:      false
+Lease:
+  HolderIdentity:  room-worker2
+  AcquireTime:     <unset>
+  RenewTime:       Thu, 29 Oct 2026 11:57:49 -0400
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                         Message
+  ----             ------  -----------------                 ------------------                ------                         -------
+  MemoryPressure   True    Thu, 29 Oct 2026 11:57:48 -0400   Thu, 29 Oct 2026 11:57:48 -0400   KubeletHasInsufficientMemory   kubelet has insufficient memory available
+  DiskPressure     False   Thu, 29 Oct 2026 11:57:48 -0400   Thu, 29 Oct 2026 11:48:55 -0400   KubeletHasNoDiskPressure       kubelet has no disk pressure
+  PIDPressure      False   Thu, 29 Oct 2026 11:57:48 -0400   Thu, 29 Oct 2026 11:48:55 -0400   KubeletHasSufficientPID        kubelet has sufficient PID available
+  Ready            True    Thu, 29 Oct 2026 11:57:48 -0400   Thu, 29 Oct 2026 11:49:16 -0400   KubeletReady                   kubelet is posting ready status
+Addresses:
+  InternalIP:  192.168.148.20
+  Hostname:    room-worker2
+Capacity:
+  cpu:                10
+  ephemeral-storage:  81289703424
+  memory:             20502540Ki
+  pods:               110
+Allocatable:
+  cpu:                10
+  ephemeral-storage:  81289703424
+  memory:             944140Ki
+  pods:               110
+System Info:
+  Machine ID:                 ee58641520e1453aa0862cf4880e5f8e
+  System UUID:                ee58641520e1453aa0862cf4880e5f8e
+  Boot ID:                    28cd0153-5b16-4985-a049-ee333eb66060
+  Kernel Version:             7.0.11-orbstack-00354-gde2ab3f9e944
+  OS Image:                   Debian GNU/Linux 13 (trixie)
+  Operating System:           linux
+  Architecture:               arm64
+  Container Runtime Version:  containerd://2.3.4
+  Kubelet Version:            v1.37.0
+  Kube-Proxy Version:         
+PodCIDR:                      10.244.2.0/24
+PodCIDRs:                     10.244.2.0/24
+ProviderID:                   kind://docker/room/room-worker2
+Non-terminated Pods:          (4 in total)
+  Namespace                   Name                                 CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                 ------------  ----------  ---------------  -------------  ---
+  kube-system                 kindnet-92qr6                        100m (1%)     0 (0%)      50Mi (5%)        0 (0%)         8m57s
+  kube-system                 kube-proxy-rm6g6                     0 (0%)        0 (0%)      0 (0%)           0 (0%)         8m57s
+  kube-system                 metrics-server-84c99cb944-ctw6h      100m (1%)     0 (0%)      200Mi (21%)      0 (0%)         8m37s
+  oom                         steady-guaranteed-7678dcb46-bffqq    20m (0%)      20m (0%)    64Mi (6%)        64Mi (6%)      58s
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests     Limits
+  --------           --------     ------
+  cpu                220m (2%)    20m (0%)
+  memory             314Mi (34%)  64Mi (6%)
+  ephemeral-storage  0 (0%)       0 (0%)
+Events:
+  Type    Reason                     Age    From             Message
+  ----    ------                     ----   ----             -------
+  Normal  RegisteredNode             8m54s  node-controller  Node room-worker2 event: Registered Node room-worker2 in Controller
+  Normal  NodeReady                  8m36s  kubelet          Node room-worker2 status is now: NodeReady
+  Normal  NodeHasSufficientMemory    7m41s  kubelet          Node room-worker2 status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure      7m41s  kubelet          Node room-worker2 status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID       7m41s  kubelet          Node room-worker2 status is now: NodeHasSufficientPID
+  Normal  RegisteredNode             5m4s   node-controller  Node room-worker2 event: Registered Node room-worker2 in Controller
+  Normal  NodeHasInsufficientMemory  4s     kubelet          Node room-worker2 status is now: NodeHasInsufficientMemory

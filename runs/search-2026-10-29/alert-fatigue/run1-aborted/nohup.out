@@ -1,0 +1,7 @@
+2026-10-29T15:54:51Z phase baseline start
+2026-10-29T16:15:03Z phase baseline end
+2026-10-29T16:15:03Z phase 01-worker-oom break start
+2026-10-29T16:16:42Z phase 01-worker-oom broken
+2026-10-29T16:42:10Z phase 01-worker-oom end
+2026-10-29T16:42:10Z phase 02-sidecar-oom break start
+2026-10-29T16:42:21Z phase 02-sidecar-oom BREAK FAILED

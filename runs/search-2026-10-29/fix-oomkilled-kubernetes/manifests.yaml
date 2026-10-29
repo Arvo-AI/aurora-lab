@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: oom
+---
+# Case A: limit too low for steady usage. Holds 150 MiB, limit 128Mi.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: steady, namespace: oom}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: steady}}
+  template:
+    metadata: {labels: {app: steady}}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: room-worker}
+      containers:
+      - name: steady
+        image: python:3.12-alpine
+        command: ["python", "-u", "-c"]
+        args:
+        - |
+          import time
+          cache = b"\x01" * (150 << 20)
+          print("cache loaded, 150 MiB", flush=True)
+          while True:
+              time.sleep(60)
+        resources:
+          requests: {memory: 128Mi, cpu: 20m}
+          limits: {memory: 128Mi}
+---
+# Case B: a spike. Baseline is small; every 40 s a report builds 200 MiB. Limit 128Mi.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: spiky, namespace: oom}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: spiky}}
+  template:
+    metadata: {labels: {app: spiky}}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: room-worker}
+      containers:
+      - name: spiky
+        image: python:3.12-alpine
+        command: ["python", "-u", "-c"]
+        args:
+        - |
+          import time
+          print("worker up", flush=True)
+          n = 0
+          while True:
+              time.sleep(40)
+              n += 1
+              print(f"report {n}: building 200 MiB buffer", flush=True)
+              buf = b"\x01" * (200 << 20)
+              del buf
+        resources:
+          requests: {memory: 64Mi, cpu: 20m}
+          limits: {memory: 128Mi}
+---
+# Case C: exit 137 that is not OOM. Liveness probe fails, app ignores SIGTERM,
+# kubelet sends SIGKILL after terminationGracePeriodSeconds.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: stubborn, namespace: oom}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: stubborn}}
+  template:
+    metadata: {labels: {app: stubborn}}
+    spec:
+      nodeSelector: {kubernetes.io/hostname: room-worker}
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: stubborn
+        image: busybox:1.37
+        command: ["sh", "-c"]
+        args:
+        - |
+          trap 'echo "got SIGTERM, ignoring it"' TERM
+          echo "started"
+          while true; do sleep 1; done
+        livenessProbe:
+          exec: {command: ["cat", "/tmp/healthy"]}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 2
+        resources:
+          requests: {memory: 16Mi, cpu: 10m}
+          limits: {memory: 64Mi}

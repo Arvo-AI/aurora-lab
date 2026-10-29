@@ -1,0 +1,9 @@
++(eval):1> k get pod spiky-7cb5877b97-s6bjg -n oom -o 'jsonpath={range .status.containerStatuses[*]}{.name}{"\t"}{.lastState.terminated.reason}{"\t"}{.lastState.terminated.exitCode}{"\n"}{end}'
++k:0> kubectl --context kind-room get pod spiky-7cb5877b97-s6bjg -n oom -o 'jsonpath={range .status.containerStatuses[*]}{.name}{"\t"}{.lastState.terminated.reason}{"\t"}{.lastState.terminated.exitCode}{"\n"}{end}'
+spiky	OOMKilled	137
++(eval):1> k get events -n oom --field-selector 'involvedObject.name=spiky-7cb5877b97-s6bjg' '--sort-by=.lastTimestamp'
++k:0> kubectl --context kind-room get events -n oom --field-selector 'involvedObject.name=spiky-7cb5877b97-s6bjg' '--sort-by=.lastTimestamp'
++(eval):1> tail -3
+3m33s       Normal    Started     pod/spiky-7cb5877b97-s6bjg   Container started
+3m33s       Normal    Pulled      pod/spiky-7cb5877b97-s6bjg   Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+18s         Warning   BackOff     pod/spiky-7cb5877b97-s6bjg   Back-off restarting failed container spiky in pod spiky-7cb5877b97-s6bjg_oom(5988670c-edef-488e-8c75-895c17c1f12e)

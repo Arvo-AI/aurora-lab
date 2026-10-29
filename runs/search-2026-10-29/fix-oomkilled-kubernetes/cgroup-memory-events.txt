@@ -1,0 +1,17 @@
+== steady restarts=0 pod cgroup memory.events:
+oom 0
+oom_kill 0
+oom_group_kill 0
+== spiky restarts=6 pod cgroup memory.events:
+oom 7
+oom_kill 14
+oom_group_kill 7
+== stubborn restarts=8 pod cgroup memory.events:
+oom 0
+oom_kill 0
+oom_group_kill 0
+== inside spiky container:
+error: unable to upgrade connection: container not found ("spiky")
+== inside steady container (limit 192Mi after fix):
+memory.max=201326592 memory.swap.max=0
+(earlier, 2026-10-29T15:56Z, inside spiky with 128Mi limit: memory.max 134217728, memory.swap.max 0; printed to terminal, not saved at the time)

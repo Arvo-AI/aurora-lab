@@ -1,0 +1,32 @@
+sample_utc	restartCount	state	startedAt(current or last)	finishedAt(last)
+15:53:00	0	{"waiting":{"reason":"ContainerCreating"}}		
+15:53:02	0	{"running":{"startedAt":"2026-10-29T15:53:02Z"}}		
+15:53:03	1	{"running":{"startedAt":"2026-10-29T15:53:02Z"}}	2026-10-29T15:53:02Z	2026-10-29T15:53:02Z
+15:53:04	1	{"waiting":{"message":"back-off 10s restarting failed container=app pod=exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)","reason":"CrashLoopBackOff"}}	2026-10-29T15:53:02Z	2026-10-29T15:53:02Z
+15:53:17	2	{"terminated":{"containerID":"containerd://099f8792f1e9912fb36e5bbac899d69fefb5e3b5be6ecf4f5debceb548ca572f","exitCode":1,"finishedAt":"2026-10-29T15:53:17Z","reason":"Error","startedAt":"2026-10-29T15:53:17Z"}}	2026-10-29T15:53:02Z	2026-10-29T15:53:02Z
+15:53:43	3	{"running":{"startedAt":"2026-10-29T15:53:43Z"}}	2026-10-29T15:53:17Z	2026-10-29T15:53:17Z
+15:53:44	3	{"terminated":{"containerID":"containerd://df363158ea4bde919326abed935effb380afa7cab32fdcf72603f67b485961b7","exitCode":1,"finishedAt":"2026-10-29T15:53:43Z","reason":"Error","startedAt":"2026-10-29T15:53:43Z"}}	2026-10-29T15:53:17Z	2026-10-29T15:53:17Z
+15:54:37	4	{"running":{"startedAt":"2026-10-29T15:54:37Z"}}	2026-10-29T15:53:43Z	2026-10-29T15:53:43Z
+15:54:38	4	{"terminated":{"containerID":"containerd://332630e0fc83938ac492360ccbfc81dfb1426ef256dc4e1a5765f4b285ef7006","exitCode":1,"finishedAt":"2026-10-29T15:54:37Z","reason":"Error","startedAt":"2026-10-29T15:54:37Z"}}	2026-10-29T15:53:43Z	2026-10-29T15:53:43Z
+15:55:51	4	{"waiting":{"message":"back-off 1m20s restarting failed container=app pod=exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)","reason":"CrashLoopBackOff"}}	2026-10-29T15:54:37Z	2026-10-29T15:54:37Z
+15:56:00	5	{"running":{"startedAt":"2026-10-29T15:56:00Z"}}	2026-10-29T15:54:37Z	2026-10-29T15:54:37Z
+15:56:01	5	{"terminated":{"containerID":"containerd://ab42ed1ee94919d34f0db08392abf4e0d17580fcaf4b29f9f90947962f37aab5","exitCode":1,"finishedAt":"2026-10-29T15:56:00Z","reason":"Error","startedAt":"2026-10-29T15:56:00Z"}}	2026-10-29T15:54:37Z	2026-10-29T15:54:37Z
+15:57:26	5	{"waiting":{"message":"back-off 2m40s restarting failed container=app pod=exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)","reason":"CrashLoopBackOff"}}	2026-10-29T15:56:00Z	2026-10-29T15:56:00Z
+15:58:42	6	{"terminated":{"containerID":"containerd://eabd881e106eda661ee213bced363414f1905afb0d6dbfc2f4f87871c10548f4","exitCode":1,"finishedAt":"2026-10-29T15:58:41Z","reason":"Error","startedAt":"2026-10-29T15:58:41Z"}}	2026-10-29T15:56:00Z	2026-10-29T15:56:00Z
+16:00:07	6	{"waiting":{"message":"back-off 5m0s restarting failed container=app pod=exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)","reason":"CrashLoopBackOff"}}	2026-10-29T15:58:41Z	2026-10-29T15:58:41Z
+16:03:42	7	{"running":{"startedAt":"2026-10-29T16:03:42Z"}}	2026-10-29T15:58:41Z	2026-10-29T15:58:41Z
+16:03:43	7	{"terminated":{"containerID":"containerd://24ff5d53b3db2a9b295d419120a0106032920c61ca4df50f41fe52f6ab3a6fa7","exitCode":1,"finishedAt":"2026-10-29T16:03:42Z","reason":"Error","startedAt":"2026-10-29T16:03:42Z"}}	2026-10-29T15:58:41Z	2026-10-29T15:58:41Z
+16:05:09	7	{"waiting":{"message":"back-off 5m0s restarting failed container=app pod=exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)","reason":"CrashLoopBackOff"}}	2026-10-29T16:03:42Z	2026-10-29T16:03:42Z
+16:09:05	8	{"running":{"startedAt":"2026-10-29T16:09:05Z"}}	2026-10-29T16:03:42Z	2026-10-29T16:03:42Z
+16:09:06	8	{"terminated":{"containerID":"containerd://abe7829969df3674947d5b39399af5a7aceb498c6029ece02ee06aa119ff5b0a","exitCode":1,"finishedAt":"2026-10-29T16:09:05Z","reason":"Error","startedAt":"2026-10-29T16:09:05Z"}}	2026-10-29T16:03:42Z	2026-10-29T16:03:42Z
+16:10:11	8	{"waiting":{"message":"back-off 5m0s restarting failed container=app pod=exit1-7cd4f4c959-4j5lg_crash(49038db1-a56f-4a90-bca4-add834f142d0)","reason":"CrashLoopBackOff"}}	2026-10-29T16:09:05Z	2026-10-29T16:09:05Z
+16:11:51	8	{"terminated":{"containerID":"containerd://abe7829969df3674947d5b39399af5a7aceb498c6029ece02ee06aa119ff5b0a","exitCode":1,"finishedAt":"2026-10-29T16:09:05Z","reason":"Error","startedAt":"2026-10-29T16:09:05Z"}}	2026-10-29T16:09:05Z	2026-10-29T16:09:05Z
+16:11:52	1	{"running":{"startedAt":"2026-10-29T16:11:52Z"}}	2026-10-29T16:11:52Z	2026-10-29T16:11:52Z
+16:11:53	1	{"terminated":{"containerID":"containerd://946606efa626f1391536c0bf51d4486c4dbe893338ab7df03098b8e5570dedd5","exitCode":1,"finishedAt":"2026-10-29T16:11:52Z","reason":"Error","startedAt":"2026-10-29T16:11:52Z"}}	2026-10-29T16:11:52Z	2026-10-29T16:11:52Z
+16:12:07	2	{"running":{"startedAt":"2026-10-29T16:12:07Z"}}	2026-10-29T16:11:52Z	2026-10-29T16:11:52Z
+16:12:08	2	{"terminated":{"containerID":"containerd://af97029fed4904f3339d0ea810f6397f3d7efaa73efc8ea798e800c7ccb8fa9c","exitCode":1,"finishedAt":"2026-10-29T16:12:07Z","reason":"Error","startedAt":"2026-10-29T16:12:07Z"}}	2026-10-29T16:11:52Z	2026-10-29T16:11:52Z
+16:12:36	3	{"running":{"startedAt":"2026-10-29T16:12:36Z"}}	2026-10-29T16:12:07Z	2026-10-29T16:12:07Z
+16:12:37	3	{"terminated":{"containerID":"containerd://1ac3e2ea7e3a44c91f3166a565574181f51a2307e131765b4ea5da83af3a0b51","exitCode":1,"finishedAt":"2026-10-29T16:12:36Z","reason":"Error","startedAt":"2026-10-29T16:12:36Z"}}	2026-10-29T16:12:07Z	2026-10-29T16:12:07Z
+16:13:20	4	{"running":{"startedAt":"2026-10-29T16:13:20Z"}}	2026-10-29T16:12:36Z	2026-10-29T16:12:36Z
+16:13:21	4	{"terminated":{"containerID":"containerd://6a5d89abf8fc2edf0f0b37cf15e6f5f7c5f6e05bad4178500496877e2d5baf23","exitCode":1,"finishedAt":"2026-10-29T16:13:20Z","reason":"Error","startedAt":"2026-10-29T16:13:20Z"}}	2026-10-29T16:12:36Z	2026-10-29T16:12:36Z
+16:14:44	5	{"terminated":{"containerID":"containerd://5489cb7b6fec8b918ad3a8919055cfb3ce956f0390a8ce263d320dbd19b1d89b","exitCode":1,"finishedAt":"2026-10-29T16:14:43Z","reason":"Error","startedAt":"2026-10-29T16:14:43Z"}}	2026-10-29T16:13:20Z	2026-10-29T16:13:20Z

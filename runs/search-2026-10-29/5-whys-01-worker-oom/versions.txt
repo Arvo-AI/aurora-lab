@@ -1,0 +1,6 @@
+captured 2026-10-29T15:50:52Z
+Client Version: v1.35.3
+Kustomize Version: v5.7.1
+Server Version: v1.37.0
+Warning: version difference between client (1.35) and server (1.37) exceeds the supported minor version skew of +/-1
+kind v0.33.0 go1.27.1 darwin/arm64

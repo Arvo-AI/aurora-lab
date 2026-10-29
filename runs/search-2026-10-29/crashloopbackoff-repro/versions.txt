@@ -1,0 +1,11 @@
+Thu 29 Oct 2026 15:53:09 UTC
+Client Version: v1.35.3
+Kustomize Version: v5.7.1
+Server Version: v1.37.0
+kind v0.33.0 go1.27.1 darwin/arm64
+NAME                   STATUS   ROLES           AGE     VERSION   INTERNAL-IP      EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION                                CONTAINER-RUNTIME
+rcrash-control-plane   Ready    control-plane   4m2s    v1.37.0   192.168.148.24   <none>        Debian GNU/Linux 13 (trixie)   7.0.11-orbstack-00354-gde2ab3f9e944 (arm64)   containerd://2.3.4
+rcrash-worker          Ready    <none>          3m46s   v1.37.0   192.168.148.25   <none>        Debian GNU/Linux 13 (trixie)   7.0.11-orbstack-00354-gde2ab3f9e944 (arm64)   containerd://2.3.4
+rcrash-worker2         Ready    <none>          3m46s   v1.37.0   192.168.148.23   <none>        Debian GNU/Linux 13 (trixie)   7.0.11-orbstack-00354-gde2ab3f9e944 (arm64)   containerd://2.3.4
+[127.0.0.1:5055/private/busybox-amd64only:1.37 busybox:1.37] [127.0.0.1:5055/private/busybox-amd64only@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec busybox@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec]
+[python:3.12-alpine] [python@sha256:4c47124a8391cb7a9f571164147d154777cf012a4ece5f86097130d7a4478111]

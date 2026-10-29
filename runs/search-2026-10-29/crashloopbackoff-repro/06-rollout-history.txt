@@ -1,0 +1,16 @@
+Thu 29 Oct 2026 16:11:46 UTC
+$ kubectl -n shop get rs -l app=api
+NAME            DESIRED   CURRENT   READY   AGE
+api-c7b987b4d   2         2         1       17m
+api-f64486c4c   0         0         0       17m
+$ kubectl -n shop rollout history deploy/api
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+
+$ kubectl -n shop rollout history deploy/api --revision=2
+    Liveness:	http-get http://:8081/healthz delay=15s timeout=1s period=10s #success=1 #failure=3
+    Readiness:	http-get http://:8080/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:
+      REDIS_HOST:	redis

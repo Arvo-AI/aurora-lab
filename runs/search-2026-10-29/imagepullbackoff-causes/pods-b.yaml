@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: private-nosecret, namespace: pulltest}
+spec:
+  nodeName: rpull-worker2
+  containers: [{name: app, image: "rpull-registry:5000/private/busybox:1.37", command: ["sleep","3600"]}]
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: private-wrongpass, namespace: pulltest}
+spec:
+  nodeName: rpull-worker2
+  imagePullSecrets: [{name: regcred-wrong}]
+  containers: [{name: app, image: "rpull-registry:5000/private/busybox:1.37", command: ["sleep","3600"]}]
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: private-otherns, namespace: pulltest}
+spec:
+  nodeName: rpull-worker2
+  imagePullSecrets: [{name: othercred}]
+  containers: [{name: app, image: "rpull-registry:5000/private/busybox:1.37", command: ["sleep","3600"]}]
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: private-ok, namespace: pulltest}
+spec:
+  nodeName: rpull-worker2
+  imagePullSecrets: [{name: regcred}]
+  containers: [{name: app, image: "rpull-registry:5000/private/busybox:1.37", command: ["sleep","3600"]}]
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: arch-index, namespace: pulltest}
+spec:
+  nodeName: rpull-worker2
+  imagePullSecrets: [{name: regcred}]
+  containers: [{name: app, image: "rpull-registry:5000/private/busybox-amd64index:1.37", command: ["sleep","3600"]}]
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: arch-single, namespace: pulltest}
+spec:
+  nodeName: rpull-worker2
+  imagePullSecrets: [{name: regcred}]
+  containers: [{name: app, image: "rpull-registry:5000/private/busybox-amd64only:1.37", command: ["sleep","3600"]}]

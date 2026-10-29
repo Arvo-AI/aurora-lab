@@ -1,0 +1,148 @@
+### 2026-10-29T15:59:54Z
+$ k -n pulltest get pod present -o jsonpath={.spec.containers[0].imagePullPolicy}
+IfNotPresent
+### 2026-10-29T15:59:54Z
+$ k -n pulltest describe pod present
+Name:             present
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 11:59:54 -0400
+Labels:           run=present
+Annotations:      <none>
+Status:           Running
+IP:               10.244.3.17
+IPs:
+  IP:  10.244.3.17
+Containers:
+  present:
+    Container ID:   containerd://d362207b4e9530c58fc7ee69f7ec52ea8d4d13ce303f5bbfe22743bcb45058de
+    Image:          nginx:1.27-alpine
+    Image ID:       docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Thu, 29 Oct 2026 11:59:54 -0400
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-v4rz4 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-v4rz4:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason   Age   From     Message
+  ----    ------   ----  ----     -------
+  Normal  Pulled   0s    kubelet  spec.containers{present}: Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+  Normal  Created  0s    kubelet  spec.containers{present}: Container created
+  Normal  Started  0s    kubelet  spec.containers{present}: Container started
+
+### 2026-10-29T16:00:09Z
+$ docker exec rpull-worker2 crictl images rpull-registry:5000/private/busybox
+IMAGE                                           TAG                  IMAGE ID            SIZE
+docker.io/kindest/kindnetd                      v20260820-69b56db7   8e13ccc0aaa68       35.7MB
+docker.io/kindest/local-path-helper             v20260131-7181c60a   8f375e9f93513       2.74MB
+docker.io/kindest/local-path-provisioner        v20260820-69b56db7   0771a8a05619f       14.2MB
+docker.io/library/nginx                         1.27-alpine          96868d9fa38f4       21.8MB
+docker.io/library/python                        3.12-alpine          d2924abe50637       18.5MB
+registry.k8s.io/coredns/coredns                 v1.14.6              fbccbf70a429f       21.2MB
+registry.k8s.io/etcd                            3.7.0-0              c2e426bbd1cd6       20.5MB
+registry.k8s.io/kube-apiserver-arm64            v1.37.0              6003d52023b9d       97.1MB
+registry.k8s.io/kube-apiserver                  v1.37.0              6003d52023b9d       97.1MB
+registry.k8s.io/kube-controller-manager-arm64   v1.37.0              b1ad0e33c9012       85.1MB
+registry.k8s.io/kube-controller-manager         v1.37.0              b1ad0e33c9012       85.1MB
+registry.k8s.io/kube-proxy-arm64                v1.37.0              550b682d81d41       84.5MB
+registry.k8s.io/kube-proxy                      v1.37.0              550b682d81d41       84.5MB
+registry.k8s.io/kube-scheduler-arm64            v1.37.0              384eabc4fe526       59.1MB
+registry.k8s.io/kube-scheduler                  v1.37.0              384eabc4fe526       59.1MB
+registry.k8s.io/metrics-server/metrics-server   v0.9.0               37ceda8805d2e       20.9MB
+registry.k8s.io/pause                           3.10                 afb61768ce381       268kB
+rpull-registry:5000/private/busybox-amd64only   1.37                 30ecbe1509090       2.21MB
+rpull-registry:5000/private/busybox             1.37                 ad4f11f7c85f8       1.9MB
+
+### 2026-10-29T16:00:32Z
+$ k -n pulltest get pod private-cached-nosecret
+NAME                      READY   STATUS             RESTARTS   AGE
+private-cached-nosecret   0/1     ImagePullBackOff   0          23s
+
+### 2026-10-29T16:00:32Z
+$ k -n pulltest describe pod private-cached-nosecret
+Name:             private-cached-nosecret
+Namespace:        pulltest
+Priority:         0
+Service Account:  default
+Node:             rpull-worker2/192.168.148.9
+Start Time:       Thu, 29 Oct 2026 12:00:09 -0400
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.3.18
+IPs:
+  IP:  10.244.3.18
+Containers:
+  app:
+    Container ID:  
+    Image:         rpull-registry:5000/private/busybox:1.37
+    Image ID:      
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sleep
+      3600
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-dwjp6 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-dwjp6:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason   Age                From     Message
+  ----     ------   ----               ----     -------
+  Normal   BackOff  22s                kubelet  spec.containers{app}: Back-off pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed   22s                kubelet  spec.containers{app}: Error: ImagePullBackOff
+  Normal   Pulling  10s (x2 over 23s)  kubelet  spec.containers{app}: Pulling image "rpull-registry:5000/private/busybox:1.37"
+  Warning  Failed   10s (x2 over 23s)  kubelet  spec.containers{app}: Failed to pull image "rpull-registry:5000/private/busybox:1.37": failed to pull and unpack image "rpull-registry:5000/private/busybox:1.37": failed to resolve reference "rpull-registry:5000/private/busybox:1.37": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+  Warning  Failed   10s (x2 over 23s)  kubelet  spec.containers{app}: Error: ErrImagePull
+
+### 2026-10-29T16:00:39Z
+$ docker exec rpull-worker2 sh -c crictl images | grep -E "IMAGE|rpull-registry"
+IMAGE                                           TAG                  IMAGE ID            SIZE
+rpull-registry:5000/private/busybox-amd64only   1.37                 30ecbe1509090       2.21MB
+rpull-registry:5000/private/busybox             1.37                 ad4f11f7c85f8       1.9MB
+

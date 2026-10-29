@@ -1,0 +1,119 @@
+### 2026-10-29T15:59:40Z
+$ k -n shop set image deploy/frontend nginx=nginx:1.27-alpine
+deployment.apps/frontend image updated
+
+### 2026-10-29T15:59:40Z
+$ k -n shop rollout status deploy/frontend --timeout=120s
+Waiting for deployment spec update to be observed...
+Waiting for deployment spec update to be observed...
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+deployment "frontend" successfully rolled out
+
+### 2026-10-29T15:59:41Z
+$ k -n shop get deploy frontend
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+frontend   2/2     2            2           10m
+
+### 2026-10-29T15:59:41Z
+$ k -n shop get rs -l app=frontend
+NAME                  DESIRED   CURRENT   READY   AGE
+frontend-76d98597b9   2         2         2       10m
+frontend-7b6c998456   0         0         0       10m
+
+### 2026-10-29T15:59:41Z
+$ k -n shop describe pod/frontend-7b6c998456-mc594
+Name:                      frontend-7b6c998456-mc594
+Namespace:                 shop
+Priority:                  0
+Service Account:           default
+Node:                      rpull-worker/192.168.148.8
+Start Time:                Thu, 29 Oct 2026 11:49:41 -0400
+Labels:                    app=frontend
+                           pod-template-hash=7b6c998456
+Annotations:               <none>
+Status:                    Terminating (lasts <invalid>)
+Termination Grace Period:  30s
+IP:                        10.244.1.7
+IPs:
+  IP:           10.244.1.7
+Controlled By:  ReplicaSet/frontend-7b6c998456
+Containers:
+  nginx:
+    Container ID:   
+    Image:          nginx:1.27-alpne
+    Image ID:       
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ContainerCreating
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        50m
+      memory:     16Mi
+    Readiness:    http-get http://:80/healthz delay=0s timeout=1s period=5s #success=1 #failure=3
+    Environment:  <none>
+    Mounts:
+      /etc/nginx/conf.d from conf (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rhrkq (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  conf:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      frontend-nginx
+    Optional:  false
+  kube-api-access-rhrkq:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                     From               Message
+  ----     ------     ----                    ----               -------
+  Normal   Scheduled  10m                     default-scheduler  Successfully assigned shop/frontend-7b6c998456-mc594 to rpull-worker
+  Warning  Failed     7m32s (x10 over 9m22s)  kubelet            spec.containers{nginx}: Error: failed to record image pull intent: failed to create temporary file "/var/lib/kubelet/image_manager/pulling/sha256-75357163e8e36fbb5af87c3934a9a17da12dc25ecdcdc418f914f78cd23e0986.tmp": open /var/lib/kubelet/image_manager/pulling/sha256-75357163e8e36fbb5af87c3934a9a17da12dc25ecdcdc418f914f78cd23e0986.tmp: no space left on device
+  Warning  Failed     6m32s (x4 over 9m59s)   kubelet            spec.containers{nginx}: Error: ErrImagePull
+  Warning  Failed     5m52s (x7 over 9m59s)   kubelet            spec.containers{nginx}: Error: ImagePullBackOff
+  Normal   Pulling    5m (x5 over 10m)        kubelet            spec.containers{nginx}: Pulling image "nginx:1.27-alpne"
+  Warning  Failed     4m58s (x5 over 9m59s)   kubelet            spec.containers{nginx}: Failed to pull image "nginx:1.27-alpne": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/library/nginx:1.27-alpne": failed to resolve reference "docker.io/library/nginx:1.27-alpne": docker.io/library/nginx:1.27-alpne: not found
+  Normal   BackOff    2m36s (x21 over 9m59s)  kubelet            spec.containers{nginx}: Back-off pulling image "nginx:1.27-alpne"
+
+### 2026-10-29T15:59:48Z
+$ k -n shop rollout history deploy/frontend
+deployment.apps/frontend 
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+
+
+### 2026-10-29T15:59:48Z
+$ k -n shop get rs -l app=frontend -o jsonpath={range .items[*]}{.metadata.name}{" rev="}{.metadata.annotations.deployment\.kubernetes\.io/revision}{" "}{.spec.template.spec.containers[0].image}{" replicas="}{.spec.replicas}{"
+"}{end}
+frontend-76d98597b9 rev=3 nginx:1.27-alpine replicas=2
+frontend-7b6c998456 rev=2 nginx:1.27-alpne replicas=0
+
+### 2026-10-29T15:59:48Z
+$ k -n shop get pods -l app=frontend
+NAME                        READY   STATUS    RESTARTS   AGE
+frontend-76d98597b9-fzgzx   1/1     Running   0          10m
+frontend-76d98597b9-vvb9h   1/1     Running   0          10m
+
+### 2026-10-29T16:17:09Z (run on the Mac, docker CLI)
+$ docker manifest inspect nginx:1.27-alpine > /dev/null && echo exists
+exists
+$ docker manifest inspect nginx:1.27-alpne > /dev/null; echo "exit=$?"
+no such manifest: docker.io/library/nginx:1.27-alpne
+exit=1

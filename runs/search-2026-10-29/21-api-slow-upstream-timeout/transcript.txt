@@ -1,0 +1,205 @@
+# diagnose run, 2026-10-29T16:05:42Z, cluster kind-r504 (kubectl context omitted below)
+$ kubectl -n shop logs deploy/loadgen --tail=6
+2026-10-29T16:05:12Z GET /api/items -> timeout
+2026-10-29T16:05:17Z GET /api/items -> timeout
+2026-10-29T16:05:22Z GET /api/items -> timeout
+2026-10-29T16:05:27Z GET /api/items -> timeout
+2026-10-29T16:05:32Z GET /api/items -> timeout
+2026-10-29T16:05:37Z GET /api/items -> timeout
+
+$ kubectl -n shop get pods -o wide
+NAME                        READY   STATUS    RESTARTS   AGE     IP            NODE           NOMINATED NODE   READINESS GATES
+api-78449dbcf8-6r4qj        1/1     Running   0          2m18s   10.244.2.10   r504-worker2   <none>           <none>
+api-78449dbcf8-nj9kr        1/1     Running   0          2m19s   10.244.1.16   r504-worker    <none>           <none>
+frontend-76d98597b9-fxhdj   1/1     Running   0          2m26s   10.244.2.9    r504-worker2   <none>           <none>
+frontend-76d98597b9-q6rx2   1/1     Running   0          2m26s   10.244.1.14   r504-worker    <none>           <none>
+loadgen-7c6676864-bd64s     1/1     Running   0          2m26s   10.244.1.15   r504-worker    <none>           <none>
+redis-59458f55d8-r7x6w      1/1     Running   0          2m26s   10.244.1.11   r504-worker    <none>           <none>
+worker-6cf88d4b58-8bjvm     1/1     Running   0          2m26s   10.244.1.13   r504-worker    <none>           <none>
+
+$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=api
+NAME        ADDRESSTYPE   PORTS   ENDPOINTS                 AGE
+api-jpfcs   IPv4          8080    10.244.1.16,10.244.2.10   2m26s
+
+$ kubectl -n shop logs -l app=frontend --tail=200 --prefix | grep -v healthz | tail -12
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:04:27 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 2026/10/29 16:04:28 [error] 28#28: *5 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 10.244.1.15, server: , request: "GET /api/items HTTP/1.1", upstream: "http://10.96.165.139:8080/items", host: "frontend"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:04:28 +0000] "GET /api/items HTTP/1.1" 504 167 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:04:37 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:04:47 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:04:57 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:05:02 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:05:07 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:05:17 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:05:22 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:05:27 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+[pod/frontend-76d98597b9-fxhdj/nginx] 10.244.1.15 - - [29/Oct/2026:16:05:32 +0000] "GET /api/items HTTP/1.1" 499 0 "-" "Wget" "-"
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -S -O /dev/null -T 90 http://frontend/api/items"
+  HTTP/1.1 504 Gateway Time-out
+wget: server returned error: HTTP/1.1 504 Gateway Time-out
+Command exited with non-zero status 1
+real	1m 0.02s
+user	0m 0.00s
+sys	0m 0.00s
+command terminated with exit code 1
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -O - -T 5 http://api:8080/healthz"
+{"status": "ok"}real	0m 0.00s
+user	0m 0.00s
+sys	0m 0.00s
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -O - -T 5 http://api:8080/items"
+wget: download timed out
+Command exited with non-zero status 1
+real	0m 5.00s
+user	0m 0.00s
+sys	0m 0.00s
+command terminated with exit code 1
+
+$ kubectl -n shop logs api-78449dbcf8-6r4qj --tail=40
+Traceback (most recent call last):
+stock lookup failed: <urlopen error [Errno 110] Operation timed out>
+10.244.1.14 "GET /items HTTP/1.0" 200 -
+request failed: redis error: [Errno 32] Broken pipe
+10.244.1.14 "GET /items HTTP/1.0" 503 -
+  File "/code/api.py", line 36, in do_GET
+    self._send(200, {"items": ["kettle", "mug", "teapot"], "stock": stock})
+  File "/code/api.py", line 47, in _send
+    self.wfile.write(data)
+  File "/usr/local/lib/python3.12/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
+    self.handle()
+  File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
+    self.handle_one_request()
+  File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
+    method()
+  File "/code/api.py", line 39, in do_GET
+    self._send(503, {"error": "backend unavailable"})
+  File "/code/api.py", line 46, in _send
+    self.end_headers()
+  File "/usr/local/lib/python3.12/http/server.py", line 542, in end_headers
+    self.flush_headers()
+  File "/usr/local/lib/python3.12/http/server.py", line 546, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "/usr/local/lib/python3.12/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+
+$ kubectl -n shop exec api-78449dbcf8-6r4qj -- netstat -tn | head -20
+Active Internet connections (w/o servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       
+tcp        0      1 10.244.2.10:34132       192.0.2.10:8080         SYN_SENT    
+tcp        0      1 10.244.2.10:37736       192.0.2.10:8080         SYN_SENT    
+tcp        0      1 10.244.2.10:37742       192.0.2.10:8080         SYN_SENT    
+tcp        0      1 10.244.2.10:37746       192.0.2.10:8080         SYN_SENT    
+tcp        0      0 10.244.2.10:43970       10.96.245.99:6379       TIME_WAIT   
+tcp        0      0 10.244.2.10:43984       10.96.245.99:6379       TIME_WAIT   
+tcp        0      1 10.244.2.10:41304       192.0.2.10:8080         SYN_SENT    
+tcp        0      0 10.244.2.10:45416       10.96.245.99:6379       TIME_WAIT   
+tcp        0      0 10.244.2.10:8080        10.244.2.1:50196        TIME_WAIT   
+tcp        0      0 10.244.2.10:54854       10.96.245.99:6379       TIME_WAIT   
+tcp        0      0 10.244.2.10:54928       10.96.245.99:6379       TIME_WAIT   
+tcp        0      0 10.244.2.10:54930       10.96.245.99:6379       TIME_WAIT   
+tcp        0      1 10.244.2.10:53392       192.0.2.10:8080         SYN_SENT    
+tcp        0      1 10.244.2.10:53394       192.0.2.10:8080         SYN_SENT    
+tcp        0      0 10.244.2.10:59810       10.96.245.99:6379       TIME_WAIT   
+tcp        0      0 10.244.2.10:59826       10.96.245.99:6379       TIME_WAIT   
+tcp        0      1 10.244.2.10:56368       192.0.2.10:8080         SYN_SENT    
+tcp        0      1 10.244.2.10:56558       192.0.2.10:8080         SYN_SENT    
+
+$ kubectl -n shop exec api-78449dbcf8-6r4qj -- sh -c "netstat -tn | awk 'NR>2{print \$6, \$5}' | sed -E 's/:[0-9]+\$//' | sort | uniq -c"
+      8 CLOSE_WAIT 10.244.1.14
+      1 CLOSE_WAIT 10.244.1.15
+      5 CLOSE_WAIT 10.244.2.9
+     14 SYN_SENT 192.0.2.10
+     16 TIME_WAIT 10.244.2.1
+      8 TIME_WAIT 10.96.245.99
+
+# mitigation that hides the problem: raise proxy_read_timeout to 150s, 2026-10-29T16:07:09Z
+$ kubectl -n shop get cm frontend-nginx -o jsonpath="{.data.default\.conf}" | sed "s/proxy_connect_timeout 2s;/proxy_connect_timeout 2s;
+            proxy_read_timeout 150s;/" > /tmp/r504/frontend-150.conf; grep -n timeout /tmp/r504/frontend-150.conf
+9:        proxy_connect_timeout 2s;
+10:            proxy_read_timeout 150s;
+
+$ kubectl -n shop create cm frontend-nginx --from-file=default.conf=/tmp/r504/frontend-150.conf --dry-run=client -o yaml | kubectl apply -f - && kubectl -n shop rollout restart deploy/frontend && kubectl -n shop rollout status deploy/frontend --timeout=120s
+configmap/frontend-nginx configured
+deployment.apps/frontend restarted
+Waiting for deployment "frontend" rollout to finish: 0 out of 2 new replicas have been updated...
+Waiting for deployment "frontend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "frontend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "frontend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "frontend" rollout to finish: 1 old replicas are pending termination...
+deployment "frontend" successfully rolled out
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -O - -T 200 http://frontend/api/items"
+real	2m 13.35s
+user	0m 0.00s
+sys	0m 0.00s
+{"items": ["kettle", "mug", "teapot"], "stock": {}}
+# fix: restore frontend config, give the stock call a 1s timeout, 2026-10-29T16:09:38Z
+$ kubectl -n shop create cm frontend-nginx --from-file=default.conf=/tmp/r504/frontend-base.conf --dry-run=client -o yaml | kubectl apply -f - && kubectl -n shop rollout restart deploy/frontend >/dev/null
+configmap/frontend-nginx configured
+
+$ diff /tmp/r504/api-broken.py /tmp/r504/api-fixed.py
+31c31
+<                 with urllib.request.urlopen("http://192.0.2.10:8080/stock") as r:
+---
+>                 with urllib.request.urlopen("http://192.0.2.10:8080/stock", timeout=1) as r:
+
+$ kubectl -n shop create cm api-code --from-file=api.py=/tmp/r504/api-fixed.py --from-file=worker.py=/tmp/r504/worker.py --dry-run=client -o yaml | kubectl apply -f - && kubectl -n shop rollout restart deploy/api && kubectl -n shop rollout status deploy/api --timeout=180s && kubectl -n shop rollout status deploy/frontend --timeout=180s
+configmap/api-code configured
+deployment.apps/api restarted
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+deployment "frontend" successfully rolled out
+
+$ kubectl -n shop logs deploy/loadgen --tail=5
+2026-10-29T16:09:48Z GET /api/items -> 200
+2026-10-29T16:09:51Z GET /api/items -> 200
+2026-10-29T16:09:54Z GET /api/items -> 200
+2026-10-29T16:09:57Z GET /api/items -> 200
+2026-10-29T16:10:00Z GET /api/items -> 200
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -O - -T 90 http://frontend/api/items"
+{"items": ["kettle", "mug", "teapot"], "stock": {}}real	0m 1.00s
+user	0m 0.00s
+sys	0m 0.00s
+
+$ kubectl -n shop logs -l app=api --tail=4 --prefix
+[pod/api-78449dbcf8-6r4qj/api] 10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-78449dbcf8-6r4qj/api] 10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-78449dbcf8-6r4qj/api] stock lookup failed: <urlopen error [Errno 110] Operation timed out>
+[pod/api-78449dbcf8-6r4qj/api] 10.244.1.17 "GET /items HTTP/1.0" 200 -
+[pod/api-78449dbcf8-nj9kr/api] stock lookup failed: <urlopen error [Errno 110] Operation timed out>
+[pod/api-78449dbcf8-nj9kr/api] 10.244.2.11 "GET /items HTTP/1.0" 200 -
+[pod/api-78449dbcf8-nj9kr/api] 10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-78449dbcf8-nj9kr/api] 10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-7c4d9b5d65-jn9qf/api] 10.244.1.18 "GET /items HTTP/1.0" 200 -
+[pod/api-7c4d9b5d65-jn9qf/api] 10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-7c4d9b5d65-jn9qf/api] 10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-7c4d9b5d65-jn9qf/api] 10.244.2.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-7c4d9b5d65-rcqd5/api] 10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-7c4d9b5d65-rcqd5/api] 10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+[pod/api-7c4d9b5d65-rcqd5/api] stock lookup failed: <urlopen error timed out>
+[pod/api-7c4d9b5d65-rcqd5/api] 10.244.2.13 "GET /items HTTP/1.0" 200 -
+

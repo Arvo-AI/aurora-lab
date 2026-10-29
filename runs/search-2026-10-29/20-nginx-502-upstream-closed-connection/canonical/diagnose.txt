@@ -1,0 +1,143 @@
+# 2026-10-29T19:43:42Z context kind-r502b
+$ kubectl -n shop logs deploy/loadgen --tail=5
+2026-10-29T19:43:33Z GET /api/items -> 502
+2026-10-29T19:43:35Z GET /api/items -> 502
+2026-10-29T19:43:37Z GET /api/items -> 502
+2026-10-29T19:43:39Z GET /api/items -> 502
+2026-10-29T19:43:41Z GET /api/items -> 502
+
+$ kubectl -n shop logs pod/frontend-76d98597b9-g8l4n --tail=6
+10.244.1.1 - - [29/Oct/2026:19:43:27 +0000] "GET /healthz HTTP/1.1" 200 3 "-" "kube-probe/1.37" "-"
+10.244.1.1 - - [29/Oct/2026:19:43:32 +0000] "GET /healthz HTTP/1.1" 200 3 "-" "kube-probe/1.37" "-"
+10.244.1.1 - - [29/Oct/2026:19:43:37 +0000] "GET /healthz HTTP/1.1" 200 3 "-" "kube-probe/1.37" "-"
+10.244.1.13 - - [29/Oct/2026:19:43:39 +0000] "GET /api/items HTTP/1.1" 502 157 "-" "Wget" "-"
+2026/10/29 19:43:39 [error] 26#26: *26 upstream prematurely closed connection while reading response header from upstream, client: 10.244.1.13, server: , request: "GET /api/items HTTP/1.1", upstream: "http://10.96.124.237:8080/items", host: "frontend"
+10.244.1.1 - - [29/Oct/2026:19:43:42 +0000] "GET /healthz HTTP/1.1" 200 3 "-" "kube-probe/1.37" "-"
+
+$ kubectl -n shop logs -l app=frontend --tail=500 | grep -oE '\[(error|crit|warn)\] .*while [a-z ]+ upstream' | sed -E 's/[0-9]+#[0-9]+: \*[0-9]+ //' | sort | uniq -c
+   2 [error] connect() failed (111: Connection refused) while connecting to upstream
+  23 [error] upstream prematurely closed connection while reading response header from upstream
+
+$ kubectl -n shop get pods -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE            NOMINATED NODE   READINESS GATES
+api-7bb7ff87d4-pmkz5        1/1     Running   0          48s   10.244.2.21   r502b-worker2   <none>           <none>
+api-7bb7ff87d4-tdnkm        1/1     Running   0          46s   10.244.1.14   r502b-worker    <none>           <none>
+frontend-76d98597b9-g8l4n   1/1     Running   0          56s   10.244.1.12   r502b-worker    <none>           <none>
+frontend-76d98597b9-qjvfm   1/1     Running   0          56s   10.244.2.20   r502b-worker2   <none>           <none>
+loadgen-7c6676864-n2zfb     1/1     Running   0          56s   10.244.1.13   r502b-worker    <none>           <none>
+redis-59458f55d8-jkblq      1/1     Running   0          56s   10.244.2.17   r502b-worker2   <none>           <none>
+worker-6cf88d4b58-xm9j4     1/1     Running   0          56s   10.244.2.19   r502b-worker2   <none>           <none>
+
+$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=api
+NAME        ADDRESSTYPE   PORTS   ENDPOINTS                 AGE
+api-9kqb6   IPv4          8080    10.244.2.21,10.244.1.14   56s
+
+$ kubectl -n shop get svc api -o wide
+NAME   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+api    ClusterIP   10.96.124.237   <none>        8080/TCP   56s   app=api
+
+$ kubectl -n shop exec pod/frontend-76d98597b9-g8l4n -c nginx -- curl -sS -o /dev/null -w %{http_code}\n --max-time 3 http://api:8080/healthz
+200
+
+$ kubectl -n shop exec pod/frontend-76d98597b9-g8l4n -c nginx -- curl -sS -v --max-time 3 http://api:8080/items
+* Host api:8080 was resolved.
+* IPv6: (none)
+* IPv4: 10.96.124.237
+*   Trying 10.96.124.237:8080...
+* Connected to api (10.96.124.237) port 8080
+* using HTTP/1.x
+> GET /items HTTP/1.1
+> Host: api:8080
+> User-Agent: curl/8.12.1
+> Accept: */*
+> 
+* Request completely sent off
+* Empty reply from server
+* shutting down connection #0
+curl: (52) Empty reply from server
+command terminated with exit code 52
+
+$ kubectl -n shop exec pod/frontend-76d98597b9-g8l4n -c nginx -- curl -sS -v --max-time 3 http://10.244.2.21:8080/items
+*   Trying 10.244.2.21:8080...
+* Connected to 10.244.2.21 (10.244.2.21) port 8080
+* using HTTP/1.x
+> GET /items HTTP/1.1
+> Host: 10.244.2.21:8080
+> User-Agent: curl/8.12.1
+> Accept: */*
+> 
+* Request completely sent off
+* Empty reply from server
+* shutting down connection #0
+curl: (52) Empty reply from server
+command terminated with exit code 52
+
+$ kubectl -n shop logs -l app=api --tail=16
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
+    self.handle()
+  File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
+    self.handle_one_request()
+  File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
+    method()
+  File "/code/api.py", line 29, in do_GET
+    limit = int(os.environ.get("ITEM_LIMIT"))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+----------------------------------------
+    self.finish_request(request, client_address)
+  File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
+    self.handle()
+  File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
+    self.handle_one_request()
+  File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
+    method()
+  File "/code/api.py", line 29, in do_GET
+    limit = int(os.environ.get("ITEM_LIMIT"))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+----------------------------------------
+10.244.1.1 "GET /healthz HTTP/1.1" 200 -
+10.244.1.12 "GET /healthz HTTP/1.1" 200 -
+
+$ kubectl -n shop get rs -l app=api -o wide
+NAME             DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES               SELECTOR
+api-7bb7ff87d4   2         2         2       48s   api          python:3.12-alpine   app=api,pod-template-hash=7bb7ff87d4
+api-f64486c4c    0         0         0       56s   api          python:3.12-alpine   app=api,pod-template-hash=f64486c4c
+
+$ kubectl -n shop rollout history deploy/api
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+
+
+$ kubectl -n shop get cm api-code -o jsonpath='{range .metadata.managedFields[*]}{.manager} {.operation} {.time}{"\n"}{end}'
+kubectl-client-side-apply Update 2026-10-29T19:42:54Z
+
+$ kubectl -n shop get deploy api -o jsonpath={.spec.template.spec.containers[0].env}
+[{"name":"REDIS_HOST","value":"redis"}]
+
+$ kubectl diff -f ~/aurora-lab/app/shop.yaml
+diff -u -N $TMPDIR/LIVE-2396752679/v1.ConfigMap.shop.api-code $TMPDIR/MERGED-3480395201/v1.ConfigMap.shop.api-code
+--- $TMPDIR/LIVE-2396752679/v1.ConfigMap.shop.api-code	2026-10-29 15:43:43
++++ $TMPDIR/MERGED-3480395201/v1.ConfigMap.shop.api-code	2026-10-29 15:43:43
+@@ -29,9 +29,8 @@
+             if self.path == "/healthz":
+                 return self._send(200, {"status": "ok"})
+             try:
+-                limit = int(os.environ.get("ITEM_LIMIT"))
+                 redis_ping()
+-                self._send(200, {"items": ["kettle", "mug", "teapot"][:limit]})
++                self._send(200, {"items": ["kettle", "mug", "teapot"]})
+             except OSError as e:
+                 print(f"request failed: redis error: {e}", flush=True)
+                 self._send(503, {"error": "backend unavailable"})
+
+

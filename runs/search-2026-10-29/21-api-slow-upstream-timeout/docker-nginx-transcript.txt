@@ -1,0 +1,164 @@
+Thu 29 Oct 2026 15:56:49 UTC
+curl 8.7.1 (x86_64-apple-darwin26.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.69.0
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18504/app/sleep/1
+200 total=1.041961s
+
+$ curl -s -w "%{http_code} total=%{time_total}s
+" http://localhost:18504/app/sleep/5
+<html>
+<head><title>504 Gateway Time-out</title></head>
+<body>
+<center><h1>504 Gateway Time-out</h1></center>
+<hr><center>nginx/1.27.5</center>
+</body>
+</html>
+504 total=3.023055s
+
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18504/dead/
+504 total=2.004762s
+
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18504/closed/
+502 total=0.001482s
+
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18504/app/close
+502 total=0.002281s
+
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18504/app/drip/5/2
+200 total=10.008565s
+
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" -m 1 http://localhost:18504/app/sleep/5
+000 total=1.006051s
+
+$ docker logs r504-nginx 2>&1 | grep -v -e notice -e "docker-entrypoint" -e "^/docker" 
+10-listen-on-ipv6-by-default.sh: info: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+192.168.156.1 [29/Oct/2026:15:56:50 +0000] "GET /app/sleep/1 HTTP/1.1" 200 rt=1.016 urt=1.017 uct=0.001 uht=1.017 us=200 ua=192.168.156.2:8080
+2026/10/29 15:56:53 [error] 23#23: *3 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /app/sleep/5 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/5", host: "localhost:18504"
+192.168.156.1 [29/Oct/2026:15:56:53 +0000] "GET /app/sleep/5 HTTP/1.1" 504 rt=3.004 urt=3.004 uct=0.001 uht=- us=504 ua=192.168.156.2:8080
+2026/10/29 15:56:55 [error] 24#24: *5 upstream timed out (110: Operation timed out) while connecting to upstream, client: 192.168.156.1, server: , request: "GET /dead/ HTTP/1.1", upstream: "http://192.0.2.10:8080/", host: "localhost:18504"
+192.168.156.1 [29/Oct/2026:15:56:55 +0000] "GET /dead/ HTTP/1.1" 504 rt=2.002 urt=2.003 uct=- uht=- us=504 ua=192.0.2.10:8080
+2026/10/29 15:56:55 [error] 21#21: *7 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.156.1, server: , request: "GET /closed/ HTTP/1.1", upstream: "http://192.168.156.2:9999/", host: "localhost:18504"
+192.168.156.1 [29/Oct/2026:15:56:55 +0000] "GET /closed/ HTTP/1.1" 502 rt=0.000 urt=0.000 uct=- uht=- us=502 ua=192.168.156.2:9999
+192.168.156.1 [29/Oct/2026:15:56:55 +0000] "GET /app/close HTTP/1.1" 502 rt=0.000 urt=0.001 uct=0.000 uht=- us=502 ua=192.168.156.2:8080
+2026/10/29 15:56:55 [error] 25#25: *9 upstream prematurely closed connection while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /app/close HTTP/1.1", upstream: "http://192.168.156.2:8080/close", host: "localhost:18504"
+192.168.156.1 [29/Oct/2026:15:57:05 +0000] "GET /app/drip/5/2 HTTP/1.1" 200 rt=10.005 urt=10.004 uct=0.000 uht=0.001 us=200 ua=192.168.156.2:8080
+192.168.156.1 [29/Oct/2026:15:57:06 +0000] "GET /app/sleep/5 HTTP/1.1" 499 rt=1.006 urt=1.006 uct=0.001 uht=- us=- ua=192.168.156.2:8080
+
+$ docker logs r504-up
+upstream /sleep/1 handled in 1.008s
+----------------------------------------
+Exception occurred during processing of request from ('192.168.156.3', 37990)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
+    self.handle()
+  File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
+    self.handle_one_request()
+  File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
+    method()
+  File "/up.py", line 12, in do_GET
+    self.send_response(200); self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+upstream /close handled in 0.000s
+upstream /drip/5/2 handled in 10.003s
+----------------------------------------
+Exception occurred during processing of request from ('192.168.156.3', 60086)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
+    self.handle()
+  File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
+    self.handle_one_request()
+  File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
+    method()
+  File "/up.py", line 12, in do_GET
+    self.send_response(200); self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/socketserver.py", line 845, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+
+=== nginx:1.27 (Debian/glibc) on :18505
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18505/app/sleep/5
+504 total=3.005816s
+
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18505/dead/
+504 total=2.004522s
+
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18505/pair/sleep/5
+504 total=6.011416s
+
+$ docker logs r504-nginx-deb 2>&1 | grep -v -e notice -e "docker-entrypoint" -e "^/docker" -e "10-listen"
+192.168.156.1 [29/Oct/2026:15:57:37 +0000] "GET /app/sleep/5 HTTP/1.1" 504 rt=3.004 urt=3.003 uct=0.000 uht=- us=504 ua=192.168.156.2:8080
+2026/10/29 15:57:37 [error] 22#22: *1 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /app/sleep/5 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/5", host: "localhost:18505"
+192.168.156.1 [29/Oct/2026:15:57:39 +0000] "GET /dead/ HTTP/1.1" 504 rt=2.003 urt=2.003 uct=- uht=- us=504 ua=192.0.2.10:8080
+2026/10/29 15:57:39 [error] 20#20: *3 upstream timed out (110: Connection timed out) while connecting to upstream, client: 192.168.156.1, server: , request: "GET /dead/ HTTP/1.1", upstream: "http://192.0.2.10:8080/", host: "localhost:18505"
+2026/10/29 15:57:42 [warn] 25#25: *5 upstream server temporarily disabled while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/5", host: "localhost:18505"
+2026/10/29 15:57:42 [error] 25#25: *5 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/5", host: "localhost:18505"
+192.168.156.1 [29/Oct/2026:15:57:45 +0000] "GET /pair/sleep/5 HTTP/1.1" 504 rt=6.007 urt=3.004, 3.004 uct=0.000, 0.001 uht=-, - us=504, 504 ua=192.168.156.2:8080, 192.168.156.4:8080
+2026/10/29 15:57:45 [warn] 25#25: *5 upstream server temporarily disabled while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.4:8080/sleep/5", host: "localhost:18505"
+2026/10/29 15:57:45 [error] 25#25: *5 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.4:8080/sleep/5", host: "localhost:18505"
+
+=== pair: timeout on both peers, then a fast request within fail_timeout (10s)
+$ curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18505/pair/sleep/5; curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18505/pair/sleep/0; sleep 11; curl -s -o /dev/null -w "%{http_code} total=%{time_total}s
+" http://localhost:18505/pair/sleep/0
+504 total=6.013038s
+200 total=0.004128s
+200 total=0.017802s
+
+$ docker logs --since 30s r504-nginx-deb 2>&1
+192.168.156.1 [29/Oct/2026:15:57:45 +0000] "GET /pair/sleep/5 HTTP/1.1" 504 rt=6.007 urt=3.004, 3.004 uct=0.000, 0.001 uht=-, - us=504, 504 ua=192.168.156.2:8080, 192.168.156.4:8080
+2026/10/29 15:57:45 [warn] 25#25: *5 upstream server temporarily disabled while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.4:8080/sleep/5", host: "localhost:18505"
+2026/10/29 15:57:45 [error] 25#25: *5 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.4:8080/sleep/5", host: "localhost:18505"
+2026/10/29 15:58:01 [warn] 23#23: *8 upstream server temporarily disabled while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/5", host: "localhost:18505"
+2026/10/29 15:58:01 [error] 23#23: *8 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/5", host: "localhost:18505"
+192.168.156.1 [29/Oct/2026:15:58:04 +0000] "GET /pair/sleep/5 HTTP/1.1" 504 rt=6.007 urt=3.004, 3.004 uct=0.001, 0.001 uht=-, - us=504, 504 ua=192.168.156.2:8080, 192.168.156.4:8080
+2026/10/29 15:58:04 [warn] 23#23: *8 upstream server temporarily disabled while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.4:8080/sleep/5", host: "localhost:18505"
+2026/10/29 15:58:04 [error] 23#23: *8 upstream timed out (110: Connection timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /pair/sleep/5 HTTP/1.1", upstream: "http://192.168.156.4:8080/sleep/5", host: "localhost:18505"
+192.168.156.1 [29/Oct/2026:15:58:04 +0000] "GET /pair/sleep/0 HTTP/1.1" 200 rt=0.002 urt=0.003 uct=0.000 uht=0.003 us=200 ua=192.168.156.2:8080
+192.168.156.1 [29/Oct/2026:15:58:15 +0000] "GET /pair/sleep/0 HTTP/1.1" 200 rt=0.005 urt=0.004 uct=0.001 uht=0.004 us=200 ua=192.168.156.2:8080
+
+=== timeout set just under normal latency: proxy_read_timeout 3s, upstream takes 2.0 to 3.5s (nginx:1.27-alpine :18504) 2026-10-29T16:10:17Z
+$ for s in 2.0 2.5 2.9 3.1 3.5; do curl -s -o /dev/null -w "sleep=$s %{http_code} total=%{time_total}s
+" http://localhost:18504/app/sleep/$s; done
+sleep=2.0 200 total=2.033675s
+sleep=2.5 200 total=2.502421s
+sleep=2.9 200 total=2.902179s
+sleep=3.1 504 total=3.008553s
+sleep=3.5 504 total=3.003707s
+
+$ docker logs --since 25s r504-nginx 2>&1 | grep "GET /app/sleep"
+192.168.156.1 [29/Oct/2026:16:10:19 +0000] "GET /app/sleep/2.0 HTTP/1.1" 200 rt=2.016 urt=2.015 uct=0.000 uht=2.015 us=200 ua=192.168.156.2:8080
+192.168.156.1 [29/Oct/2026:16:10:21 +0000] "GET /app/sleep/2.5 HTTP/1.1" 200 rt=2.501 urt=2.501 uct=0.000 uht=2.501 us=200 ua=192.168.156.2:8080
+192.168.156.1 [29/Oct/2026:16:10:24 +0000] "GET /app/sleep/2.9 HTTP/1.1" 200 rt=2.900 urt=2.901 uct=0.001 uht=2.901 us=200 ua=192.168.156.2:8080
+2026/10/29 16:10:27 [error] 22#22: *21 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /app/sleep/3.1 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/3.1", host: "localhost:18504"
+192.168.156.1 [29/Oct/2026:16:10:27 +0000] "GET /app/sleep/3.1 HTTP/1.1" 504 rt=3.005 urt=3.006 uct=0.000 uht=- us=504 ua=192.168.156.2:8080
+2026/10/29 16:10:30 [error] 22#22: *23 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 192.168.156.1, server: , request: "GET /app/sleep/3.5 HTTP/1.1", upstream: "http://192.168.156.2:8080/sleep/3.5", host: "localhost:18504"
+192.168.156.1 [29/Oct/2026:16:10:30 +0000] "GET /app/sleep/3.5 HTTP/1.1" 504 rt=3.002 urt=3.003 uct=0.000 uht=- us=504 ua=192.168.156.2:8080
+
+$ docker logs --since 25s r504-up 2>&1 | grep handled
+upstream /sleep/2.0 handled in 2.002s
+upstream /sleep/2.5 handled in 2.501s
+upstream /sleep/2.9 handled in 2.900s
+

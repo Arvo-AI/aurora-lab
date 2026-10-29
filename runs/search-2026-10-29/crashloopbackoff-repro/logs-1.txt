@@ -1,0 +1,31 @@
+Thu 29 Oct 2026 15:53:33 UTC
+$ kubectl -n crash get pod/exit1-7cd4f4c959-4j5lg -o jsonpath='{.status.containerStatuses[0].state}'
+{"terminated":{"containerID":"containerd://099f8792f1e9912fb36e5bbac899d69fefb5e3b5be6ecf4f5debceb548ca572f","exitCode":1,"finishedAt":"2026-10-29T15:53:17Z","reason":"Error","startedAt":"2026-10-29T15:53:17Z"}}
+$ kubectl -n crash logs pod/exit1-7cd4f4c959-4j5lg
+starting
+fatal: config file /etc/app/app.yaml not found
+$ kubectl -n crash logs pod/exit1-7cd4f4c959-4j5lg --previous
+unable to retrieve container logs for containerd://b2f40f8bf8ac02c756ac2369ce88ca892f7d42daebdff3341aa8b226c7af9b90
+$ kubectl -n crash get pod/exit127-787659dffb-4n9cj -o jsonpath='{.status.containerStatuses[0].state}'
+{"terminated":{"containerID":"containerd://f844f7f934da2dd81c129e58087f514b6cfd7196933519826325465372da086f","exitCode":127,"finishedAt":"2026-10-29T15:53:18Z","reason":"Error","startedAt":"2026-10-29T15:53:18Z"}}
+$ kubectl -n crash logs pod/exit127-787659dffb-4n9cj
+sh: exec: line 0: start-server: not found
+$ kubectl -n crash logs pod/exit127-787659dffb-4n9cj --previous
+unable to retrieve container logs for containerd://46c70cc779d45b91569c7e75645eaa6bfcb6a84ec797228b232172ceb753dffd
+$ kubectl -n crash get pod/exit0-65f8b9dbd-8wdbf -o jsonpath='{.status.containerStatuses[0].state}'
+{"terminated":{"containerID":"containerd://3cb34eea1a40ecef7dff12f426d2e8f07349f4e91ee72599f48f976883d44cc0","exitCode":0,"finishedAt":"2026-10-29T15:53:16Z","reason":"Completed","startedAt":"2026-10-29T15:53:16Z"}}
+$ kubectl -n crash logs pod/exit0-65f8b9dbd-8wdbf
+migration done
+$ kubectl -n crash logs pod/exit0-65f8b9dbd-8wdbf --previous
+unable to retrieve container logs for containerd://2d1bba693bf1a4295070a7d2fbcb96cd36413f9d0b5e71d43017e24db61c8369
+$ kubectl -n crash get pod/oom-f47d67486-vcc8v -o jsonpath='{.status.containerStatuses[0].state}'
+{"terminated":{"containerID":"containerd://a78460230ff0eaed6835c1e761f41f45e0b250334cc247f649af1069e48a7e9f","exitCode":137,"finishedAt":"2026-10-29T15:53:26Z","reason":"OOMKilled","startedAt":"2026-10-29T15:53:26Z"}}
+$ kubectl -n crash logs pod/oom-f47d67486-vcc8v
+loading cache
+$ kubectl -n crash logs pod/oom-f47d67486-vcc8v --previous
+unable to retrieve container logs for containerd://46b1ed7c966d4da2e9b49be2f6bc500bbe4b00af1c727ac1a6576ab713a749e2
+$ kubectl -n crash get pod/nobinary-699784c959-rvxvc -o jsonpath='{.status.containerStatuses[0].state}'
+{"waiting":{"message":"failed to create containerd task: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: exec: \"/app/server\": stat /app/server: no such file or directory","reason":"RunContainerError"}}
+$ kubectl -n crash logs pod/nobinary-699784c959-rvxvc
+$ kubectl -n crash logs pod/nobinary-699784c959-rvxvc --previous
+

@@ -1,0 +1,14 @@
+# 2026-10-29T19:52:32Z docker run nginx:1.27-alpine, --add-host backend:127.0.0.1 --add-host other:127.0.0.1, no resolver directive
+server { listen 8085; location / { return 200 "ok\n"; } }
+server {
+    listen 80;
+    location /static/   { proxy_pass http://backend:8085/; }
+    location /shadowed/ { set $u http://backend:8085; proxy_pass $u; }
+    location /unknown/  { set $u http://other:8085; proxy_pass $u; }
+}
+nginx version: nginx/1.27.5
+### GET /static/ -> 200
+### GET /shadowed/ -> 200
+### GET /unknown/ -> 502
+### error log
+2026/10/29 19:52:32 [error] 23#23: *7 no resolver defined to resolve other, client: 127.0.0.1, server: , request: "GET /unknown/ HTTP/1.1", host: "localhost"

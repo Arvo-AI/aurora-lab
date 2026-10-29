@@ -1,0 +1,65 @@
+LAST SEEN   TYPE      REASON              OBJECT                           MESSAGE
+60s         Normal    Created             pod/loadgen-7c6676864-gzftn      Container created
+60s         Normal    Created             pod/frontend-76d98597b9-9spqk    Container created
+60s         Normal    ScalingReplicaSet   deployment/worker                Scaled up replica set worker-6cf88d4b58 from 0 to 1
+60s         Normal    SuccessfulCreate    replicaset/worker-6cf88d4b58     Created pod: worker-6cf88d4b58-b4d98
+60s         Normal    Started             pod/worker-6cf88d4b58-b4d98      Container started
+60s         Normal    Created             pod/worker-6cf88d4b58-b4d98      Container created
+60s         Normal    Pulled              pod/worker-6cf88d4b58-b4d98      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+60s         Normal    Scheduled           pod/worker-6cf88d4b58-b4d98      Successfully assigned shop/worker-6cf88d4b58-b4d98 to r502-worker2
+60s         Normal    ScalingReplicaSet   deployment/redis                 Scaled up replica set redis-59458f55d8 from 0 to 1
+60s         Normal    SuccessfulCreate    replicaset/redis-59458f55d8      Created pod: redis-59458f55d8-rzrql
+60s         Normal    Started             pod/redis-59458f55d8-rzrql       Container started
+60s         Normal    Created             pod/redis-59458f55d8-rzrql       Container created
+60s         Normal    Scheduled           pod/api-f64486c4c-sbhmn          Successfully assigned shop/api-f64486c4c-sbhmn to r502-worker
+60s         Normal    Pulled              pod/api-f64486c4c-sbhmn          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+60s         Normal    Created             pod/api-f64486c4c-sbhmn          Container created
+60s         Normal    Started             pod/api-f64486c4c-sbhmn          Container started
+60s         Warning   Unhealthy           pod/api-f64486c4c-sbhmn          Readiness probe failed: Get "http://10.244.2.33:8080/healthz": dial tcp 10.244.2.33:8080: connect: connection refused
+60s         Normal    Pulled              pod/redis-59458f55d8-rzrql       Container image "redis:7.4-alpine" already present on machine and can be accessed by the pod
+60s         Normal    Scheduled           pod/api-f64486c4c-t9bmf          Successfully assigned shop/api-f64486c4c-t9bmf to r502-worker2
+60s         Normal    Pulled              pod/api-f64486c4c-t9bmf          Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+60s         Normal    Created             pod/api-f64486c4c-t9bmf          Container created
+60s         Normal    Started             pod/api-f64486c4c-t9bmf          Container started
+60s         Warning   Unhealthy           pod/api-f64486c4c-t9bmf          Readiness probe failed: Get "http://10.244.1.38:8080/healthz": dial tcp 10.244.1.38:8080: connect: connection refused
+60s         Normal    Scheduled           pod/redis-59458f55d8-rzrql       Successfully assigned shop/redis-59458f55d8-rzrql to r502-worker2
+60s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-t9bmf
+60s         Normal    SuccessfulCreate    replicaset/api-f64486c4c         Created pod: api-f64486c4c-sbhmn
+60s         Normal    ScalingReplicaSet   deployment/loadgen               Scaled up replica set loadgen-7c6676864 from 0 to 1
+60s         Normal    SuccessfulCreate    replicaset/loadgen-7c6676864     Created pod: loadgen-7c6676864-gzftn
+60s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-f64486c4c from 0 to 2
+60s         Normal    Started             pod/loadgen-7c6676864-gzftn      Container started
+60s         Normal    Pulled              pod/loadgen-7c6676864-gzftn      Container image "busybox:1.37" already present on machine and can be accessed by the pod
+60s         Normal    Scheduled           pod/frontend-76d98597b9-8wv2r    Successfully assigned shop/frontend-76d98597b9-8wv2r to r502-worker
+60s         Normal    Scheduled           pod/loadgen-7c6676864-gzftn      Successfully assigned shop/loadgen-7c6676864-gzftn to r502-worker
+60s         Normal    ScalingReplicaSet   deployment/frontend              Scaled up replica set frontend-76d98597b9 from 0 to 2
+60s         Normal    Pulled              pod/frontend-76d98597b9-8wv2r    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+60s         Normal    Created             pod/frontend-76d98597b9-8wv2r    Container created
+60s         Normal    Started             pod/frontend-76d98597b9-8wv2r    Container started
+60s         Warning   Unhealthy           pod/frontend-76d98597b9-8wv2r    Readiness probe failed: Get "http://10.244.2.34:80/healthz": dial tcp 10.244.2.34:80: connect: connection refused
+60s         Normal    Scheduled           pod/frontend-76d98597b9-9spqk    Successfully assigned shop/frontend-76d98597b9-9spqk to r502-worker2
+60s         Normal    Pulled              pod/frontend-76d98597b9-9spqk    Container image "nginx:1.27-alpine" already present on machine and can be accessed by the pod
+60s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-8wv2r
+60s         Normal    Started             pod/frontend-76d98597b9-9spqk    Container started
+60s         Warning   Unhealthy           pod/frontend-76d98597b9-9spqk    Readiness probe failed: Get "http://10.244.1.40:80/healthz": dial tcp 10.244.1.40:80: connect: connection refused
+60s         Normal    SuccessfulCreate    replicaset/frontend-76d98597b9   Created pod: frontend-76d98597b9-9spqk
+54s         Normal    SuccessfulCreate    replicaset/api-57c59b694b        Created pod: api-57c59b694b-h7x2b
+54s         Normal    Created             pod/api-57c59b694b-h7x2b         Container created
+54s         Normal    Started             pod/api-57c59b694b-h7x2b         Container started
+54s         Normal    Pulled              pod/api-57c59b694b-h7x2b         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+54s         Normal    Scheduled           pod/api-57c59b694b-h7x2b         Successfully assigned shop/api-57c59b694b-h7x2b to r502-worker
+54s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-57c59b694b from 0 to 1
+54s         Warning   Unhealthy           pod/api-57c59b694b-h7x2b         Readiness probe failed: Get "http://10.244.2.36:8080/healthz": dial tcp 10.244.2.36:8080: connect: connection refused
+53s         Normal    SuccessfulCreate    replicaset/api-57c59b694b        Created pod: api-57c59b694b-wq2m4
+53s         Normal    SuccessfulDelete    replicaset/api-f64486c4c         Deleted pod: api-f64486c4c-sbhmn
+53s         Normal    Killing             pod/api-f64486c4c-sbhmn          Stopping container api
+53s         Normal    Scheduled           pod/api-57c59b694b-wq2m4         Successfully assigned shop/api-57c59b694b-wq2m4 to r502-worker2
+53s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-f64486c4c from 2 to 1
+53s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-57c59b694b from 1 to 2
+52s         Warning   Unhealthy           pod/api-57c59b694b-wq2m4         Readiness probe failed: Get "http://10.244.1.41:8080/healthz": dial tcp 10.244.1.41:8080: connect: connection refused
+52s         Normal    Started             pod/api-57c59b694b-wq2m4         Container started
+52s         Normal    Created             pod/api-57c59b694b-wq2m4         Container created
+52s         Normal    Pulled              pod/api-57c59b694b-wq2m4         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+51s         Normal    Killing             pod/api-f64486c4c-t9bmf          Stopping container api
+51s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-f64486c4c from 1 to 0
+51s         Normal    SuccessfulDelete    replicaset/api-f64486c4c         Deleted pod: api-f64486c4c-t9bmf

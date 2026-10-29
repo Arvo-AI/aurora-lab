@@ -1,0 +1,24 @@
+Thu 29 Oct 2026 15:55:47 UTC
+$ kubectl -n crash get pod/exit1-fallback-58fc76cdbf-f8dh4 -o jsonpath='{.status.containerStatuses[0].lastState.terminated}'
+{"containerID":"containerd://9173ef60643217c709e3fe67658a32ba5f9940095db3c5261957321b13aedf3e","exitCode":1,"finishedAt":"2026-10-29T15:54:30Z","message":"starting\nfatal: config file /etc/app/app.yaml not found\n","reason":"Error","startedAt":"2026-10-29T15:54:30Z"}
+$ kubectl -n crash get pod/exit1-fallback-58fc76cdbf-f8dh4 -o jsonpath='{.status.containerStatuses[0].state}'
+{"terminated":{"containerID":"containerd://c7623fd64b674b11daa83cb34f1a4c120c55899f473cc2cb6d87bcb90bcc1b91","exitCode":1,"finishedAt":"2026-10-29T15:55:12Z","message":"starting\nfatal: config file /etc/app/app.yaml not found\n","reason":"Error","startedAt":"2026-10-29T15:55:12Z"}}
+$ kubectl -n crash describe pod/exit1-fallback-58fc76cdbf-f8dh4 | sed -n '/State:/,/Restart Count/p'
+    State:      Terminated
+      Reason:   Error
+      Message:  starting
+fatal: config file /etc/app/app.yaml not found
+
+      Exit Code:  1
+      Started:    Thu, 29 Oct 2026 11:55:12 -0400
+      Finished:   Thu, 29 Oct 2026 11:55:12 -0400
+    Last State:   Terminated
+      Reason:     Error
+      Message:    starting
+fatal: config file /etc/app/app.yaml not found
+
+      Exit Code:    1
+      Started:      Thu, 29 Oct 2026 11:54:30 -0400
+      Finished:     Thu, 29 Oct 2026 11:54:30 -0400
+    Ready:          False
+    Restart Count:  4

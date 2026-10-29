@@ -1,0 +1,52 @@
+Name:                     api
+Namespace:                shop
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=api
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.96.58.189
+IPs:                      10.96.58.189
+Port:                     <unset>  8080/TCP
+TargetPort:               8080/TCP
+Endpoints:                10.244.1.47:8080,10.244.1.49:8080
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+
+
+Name:                     frontend
+Namespace:                shop
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=frontend
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.96.43.163
+IPs:                      10.96.43.163
+Port:                     <unset>  80/TCP
+TargetPort:               80/TCP
+Endpoints:                10.244.1.48:80,10.244.1.51:80
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+
+
+Name:                     redis
+Namespace:                shop
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=redis
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.96.213.40
+IPs:                      10.96.213.40
+Port:                     <unset>  6379/TCP
+TargetPort:               6379/TCP
+Endpoints:                10.244.1.46:6379
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>
