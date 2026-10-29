@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-21",
+ "generated": "2026-10-29",
  "cluster": "kind v0.33.0, Kubernetes v1.37.0, 3 nodes",
  "judge": "us.anthropic.claude-opus-5-5",
  "tools": {
