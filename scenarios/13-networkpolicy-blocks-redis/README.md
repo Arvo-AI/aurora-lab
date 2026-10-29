@@ -203,7 +203,7 @@ sum(rate(nginx_ingress_controller_requests{status=~"5.."}[5m])) / sum(rate(nginx
 - **Reading "Running" as "reachable".** Pod status says the container is up. It says nothing about who is allowed to talk to it.
 - **Restarting the client.** A new pod gets the same labels, so the policy drops it the same way.
 - **Blaming the dependency.** redis was healthy on every check: logs, state, endpoints, 3m CPU and 4Mi memory (run r1, step 12). The failure lives in the policy between them.
-- **Treating refused and timed out as the same error.** Refused points at the listener or the endpoints; timed out points at the path.
+- **Treating refused and timed out as the same error.** Refused points at the listener or the endpoints; timed out points at the path. Behind nginx, a timed-out connection shows up as a [504 while connecting to upstream](https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes).
 - **Looking only at the client's namespace.** The policy lives on the dependency's pods. If the dependency is in another namespace, check there too.
 
 ## What we saw in the lab

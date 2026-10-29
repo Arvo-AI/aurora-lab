@@ -2,7 +2,7 @@
 
 *504 Gateway Timeout means nginx gave up waiting on the upstream. Tell a slow upstream, an unreachable one and a too-low timeout apart, with real logs.*
 
-Runbook for lab scenario `21-api-slow-upstream-timeout`. Canonical version, with its byline, kept current: https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes. Written from the reproductions in `runs/search-2026-10-29/21-api-slow-upstream-timeout`; updated 2026-10-29.
+Runbook for lab scenario `21-api-slow-upstream-timeout`. Canonical version, with its byline, kept current: https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes. Written from the lab runs in this repository; updated 2026-10-29.
 
 ## Reproduce it
 
@@ -10,7 +10,7 @@ Runbook for lab scenario `21-api-slow-upstream-timeout`. Canonical version, with
 ./lab.sh up
 ./lab.sh break 21-api-slow-upstream-timeout
 ```
-Then investigate with any tool you like; `scenario.yaml` holds the ground truth and the grading criteria. The fault uses no change to `app/shop.yaml`: `break.sh` ships a new `api.py` in the `api-code` ConfigMap (as scenarios 17 and 20 do) that calls `http://192.0.2.10:8080/stock` with no timeout on every `/items` request. 192.0.2.10 is TEST-NET-1 (RFC 5737) and is expected to drop packets; if your network answers it (a reject instead of a drop), `check.sh` will not see a 504 and the scenario does not reproduce. The baseline loadgen waits only 3 s, so `check.sh` sends its own request with a 90 s client timeout.
+Then investigate with any tool you like; `scenario.yaml` holds the ground truth and the grading criteria.
 
 | Applies to | nginx (open source, stock and Kubernetes ingress-nginx) returning 504 Gateway Timeout in front of an HTTP upstream; shown on a frontend nginx proxying to a Python api through a ClusterIP Service, plus plain Docker reproductions |
 |---|---|
@@ -28,7 +28,7 @@ Then investigate with any tool you like; `scenario.yaml` holds the ground truth 
 | `while connecting to upstream`, request time equals `proxy_connect_timeout`, `$upstream_connect_time` is `-` | The upstream address drops packets: dead node, firewall, wrong IP, or a ClusterIP port the Service does not publish | Connect from the proxy's pod or host to the upstream address | Fix the routing or the address |
 | 504 after two or three times the timeout, several addresses in `$upstream_addr` | nginx retried the timeout on other upstream servers (`proxy_next_upstream`) | The comma-separated upstream fields in the access log | Stop retrying timeouts, or cap the total with `proxy_next_upstream_timeout` |
 | Client reports a timeout, nginx logs `499`, no 504 anywhere | The client gave up before nginx did | The client's timeout against `proxy_read_timeout` | Same as row 1: the upstream is slow |
-| 502, not 504: `Connection refused` or `upstream prematurely closed connection` | The upstream answered with an error or nothing at all | The nginx error log | See [502 Bad Gateway in nginx and Kubernetes](/runbooks/fix-502-bad-gateway-nginx-kubernetes) |
+| 502, not 504: `Connection refused` or `upstream prematurely closed connection` | The upstream answered with an error or nothing at all | The nginx error log | See [502 Bad Gateway in nginx and Kubernetes](https://www.aurorasre.ai/runbooks/fix-502-bad-gateway-nginx-kubernetes) |
 
 ## What does 504 Gateway Timeout mean?
 
@@ -127,7 +127,7 @@ kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -S -O /dev/null -T 90
 ```
 
 ```
-  HTTP/1.1 504 Gateway Time-out
+HTTP/1.1 504 Gateway Time-out
 wget: server returned error: HTTP/1.1 504 Gateway Time-out
 Command exited with non-zero status 1
 real	1m 0.02s
@@ -135,7 +135,7 @@ real	1m 0.02s
 
 One minute is nginx's default `proxy_read_timeout`; the frontend config sets only `proxy_connect_timeout 2s`. If you count only 504s you undercount this incident badly: the 499s are the same failure seen by impatient clients.
 
-Look-alikes: a 504 whose body footer is not nginx came from a hop in front of it (check that hop's timeout and logs). A 502 with `Connection refused` is a Service with no endpoints or a wrong port ([Service has no endpoints](/runbooks/fix-service-no-endpoints-kubernetes), [targetPort mismatch](/runbooks/fix-service-targetport-mismatch-kubernetes)). A 503 from the api itself (`backend unavailable` in the lab app) is the application answering, quickly, with an error.
+Look-alikes: a 504 whose body footer is not nginx came from a hop in front of it (check that hop's timeout and logs). A 502 with `Connection refused` is a Service with no endpoints or a wrong port ([Service has no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [targetPort mismatch](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes)). A 503 from the api itself (`backend unavailable` in the lab app) is the application answering, quickly, with an error.
 
 ## How much is affected, and since when?
 
@@ -166,7 +166,7 @@ Both api pods are Ready, the Service has both endpoints, nothing restarted. The 
 
 Cheapest check first. Stop at the step that answers it.
 
-**1. Read the `while ...` clause.** `while reading response header from upstream` means connected and waiting (go to step 2). `while connecting to upstream` means the upstream address is not answering at TCP level: from the proxy's pod, connect to the address in the `upstream:` field; a NetworkPolicy, a dead node or a wrong IP drops the SYN (see [NetworkPolicy blocking traffic](/runbooks/fix-networkpolicy-blocking-traffic-kubernetes)). Through a ClusterIP there are two common versions. A port the Service does not publish times out rather than being refused: in our [ConfigMap drift scenario](/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) one frontend pod proxied to `api:8000`, logged `upstream timed out (110: Operation timed out) while connecting to upstream` after its 2 second `proxy_connect_timeout`, and returned 504. Otherwise a pod endpoint is not answering at TCP level. A Service with no endpoints at all refuses instead, which is a fast 502.
+**1. Read the `while ...` clause.** `while reading response header from upstream` means connected and waiting (go to step 2). `while connecting to upstream` means the upstream address is not answering at TCP level: from the proxy's pod, connect to the address in the `upstream:` field; a NetworkPolicy, a dead node or a wrong IP drops the SYN (see [NetworkPolicy blocking traffic](https://www.aurorasre.ai/runbooks/fix-networkpolicy-blocking-traffic-kubernetes)). Through a ClusterIP there are two common versions. A port the Service does not publish times out rather than being refused: in our [ConfigMap drift scenario](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) one frontend pod proxied to `api:8000`, logged `upstream timed out (110: Operation timed out) while connecting to upstream` after its 2 second `proxy_connect_timeout`, and returned 504. Otherwise a pod endpoint is not answering at TCP level. A Service with no endpoints at all refuses instead, which is a fast 502.
 
 **2. Time the upstream directly, bypassing nginx.** From any pod, call the Service or pod on its own port, once on the health path and once on the failing path:
 
@@ -192,12 +192,12 @@ kubectl -n shop exec api-78449dbcf8-6r4qj -- sh -c "netstat -tn | awk 'NR>2{prin
 ```
 
 ```
-      8 CLOSE_WAIT 10.244.1.14
-      1 CLOSE_WAIT 10.244.1.15
-      5 CLOSE_WAIT 10.244.2.9
-     14 SYN_SENT 192.0.2.10
-     16 TIME_WAIT 10.244.2.1
-      8 TIME_WAIT 10.96.245.99
+    8 CLOSE_WAIT 10.244.1.14
+    1 CLOSE_WAIT 10.244.1.15
+    5 CLOSE_WAIT 10.244.2.9
+   14 SYN_SENT 192.0.2.10
+   16 TIME_WAIT 10.244.2.1
+    8 TIME_WAIT 10.96.245.99
 ```
 
 Fourteen connections stuck in `SYN_SENT` to one address: the api is trying to reach 192.0.2.10 and getting nothing back. The `CLOSE_WAIT` rows from 10.244.1.14 and 10.244.2.9 are the two frontend pods: nginx already gave up and closed its side, and the api has not noticed. `SYN_SENT` means an unreachable dependency; many `ESTABLISHED` connections to a database with no `SYN_SENT` means a slow one. Either way, the next place to look is the code that makes that call (here, the new `urlopen` line in the api-code ConfigMap).
@@ -238,7 +238,7 @@ followed by a `BrokenPipeError` traceback. Three things in four lines are mislea
 We installed ingress-nginx controller v1.15.1 in the same cluster (the project's kind manifest), put the broken api back after the fix above (that step is not in the transcript; the two api pods behind the Ingress, 10.244.1.21 and 10.244.2.16, are new ones), and pointed an Ingress at it, with `nginx.ingress.kubernetes.io/proxy-read-timeout: "10"` (the annotation takes plain seconds, [annotations docs](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#custom-timeouts)). One request:
 
 ```
-  HTTP/1.1 504 Gateway Time-out
+HTTP/1.1 504 Gateway Time-out
 wget: server returned error: HTTP/1.1 504 Gateway Time-out
 Command exited with non-zero status 1
 real	0m 30.00s
@@ -342,9 +342,9 @@ Then confirm there is nothing left hanging inside the upstream: `netstat -tn` in
 
 ```
 sum by (namespace, ingress) (rate(nginx_ingress_controller_requests{status=~"504|499"}[5m]))
-  /
+/
 sum by (namespace, ingress) (rate(nginx_ingress_controller_requests[5m]))
-  > 0.01
+> 0.01
 ```
 
 We did not run this query against a live Prometheus in the lab; it is built from the metric and label names in the controller source. If the controller runs with `--report-status-classes`, the label holds `4xx` and `5xx` instead of codes and this regex matches nothing. For latency, the histograms (`nginx_ingress_controller_header_duration_seconds` and the others) use Prometheus' default buckets, whose largest finite bucket is 10 seconds, so a "p99 near the 60 second timeout" alert cannot be computed until you add buckets with the controller's `--time-buckets` flag. On plain nginx, add `$request_time`, `$upstream_connect_time` and `$upstream_header_time` to the log format, as in our table; without them you cannot tell the three causes apart after the fact.
@@ -378,13 +378,13 @@ The Aurora investigation for this scenario has not been run yet. When it is, the
 
 ## How Aurora handles this
 
-Aurora receives the alert and investigates with read-only kubectl under its default `observability_only` command policy, choosing the commands itself. For a 504 it would need the same evidence as this page: the proxy's error and access logs, pod and endpoint state, the rollout history and the code or config change, and what the upstream is waiting on. One limit we already know: that policy denies the whole `rollout` verb, read-only subcommands included, so on the [ConfigMap drift scenario](/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) both of its runs got a tool error on `rollout` and compared the live pod template with a running pod of the old revision instead. It records every tool call and its output, cites them in the report, and lists suggested fixes separately; mutating commands are blocked by default, so it proposes the change rather than applying it. Its results on the other lab scenarios are on the [benchmark](/benchmark).
+Aurora receives the alert and investigates with read-only kubectl under its default `observability_only` command policy, choosing the commands itself. For a 504 it would need the same evidence as this page: the proxy's error and access logs, pod and endpoint state, the rollout history and the code or config change, and what the upstream is waiting on. One limit we already know: that policy denies the whole `rollout` verb, read-only subcommands included, so on the [ConfigMap drift scenario](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) both of its runs got a tool error on `rollout` and compared the live pod template with a running pod of the old revision instead. It records every tool call and its output, cites them in the report, and lists suggested fixes separately; mutating commands are blocked by default, so it proposes the change rather than applying it. Its results on the other lab scenarios are on the [benchmark](https://www.aurorasre.ai/benchmark).
 
 - **Start free:** [aurora-ai.net](https://aurora-ai.net/) (hosted, no infrastructure to run)
 - **GitHub:** [github.com/Arvo-AI/aurora](https://github.com/Arvo-AI/aurora)
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 
-Related: [502 Bad Gateway in nginx and Kubernetes](/runbooks/fix-502-bad-gateway-nginx-kubernetes), [Service has no endpoints](/runbooks/fix-service-no-endpoints-kubernetes), [Service targetPort mismatch](/runbooks/fix-service-targetport-mismatch-kubernetes), [ConfigMap change applied to only some pods](/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [NetworkPolicy blocking traffic](/runbooks/fix-networkpolicy-blocking-traffic-kubernetes), [liveness probe failed](/runbooks/fix-liveness-probe-failed-kubernetes), [paste your kubectl output into the diagnoser](/diagnose), and the [root cause analysis guide for SREs](/blog/root-cause-analysis-complete-guide-sres).
+Related: [502 Bad Gateway in nginx and Kubernetes](https://www.aurorasre.ai/runbooks/fix-502-bad-gateway-nginx-kubernetes), [Service has no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [Service targetPort mismatch](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [ConfigMap change applied to only some pods](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [NetworkPolicy blocking traffic](https://www.aurorasre.ai/runbooks/fix-networkpolicy-blocking-traffic-kubernetes), [liveness probe failed](https://www.aurorasre.ai/runbooks/fix-liveness-probe-failed-kubernetes), [paste your kubectl output into the diagnoser](https://www.aurorasre.ai/diagnose), and the [root cause analysis guide for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres).
 
 ## Sources and verification
 
@@ -395,3 +395,37 @@ Related: [502 Bad Gateway in nginx and Kubernetes](/runbooks/fix-502-bad-gateway
 - nginx: [ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) (`proxy_read_timeout`, `proxy_connect_timeout`, `proxy_next_upstream`), [ngx_http_upstream_module](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#max_fails) (`max_fails`, `fail_timeout`), and `NGX_HTTP_CLIENT_CLOSED_REQUEST 499` in [ngx_http_request.h](https://github.com/nginx/nginx/blob/master/src/http/ngx_http_request.h).
 - ingress-nginx: [annotations](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#custom-timeouts), [ConfigMap defaults](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/), [metrics source at v1.15.1](https://github.com/kubernetes/ingress-nginx/blob/controller-v1.15.1/internal/ingress/metric/collectors/socket.go), [retirement announcement](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/).
 - Linux `tcp_syn_retries`: [ip-sysctl documentation](https://www.kernel.org/doc/Documentation/networking/ip-sysctl.rst). Python `urlopen` timeout: [urllib.request](https://docs.python.org/3/library/urllib.request.html#urllib.request.urlopen). Probe `timeoutSeconds`: [Kubernetes probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes). All read 2026-10-29.
+
+## Questions people ask
+
+**What does 504 Gateway Timeout mean?**
+
+A proxy or gateway, such as nginx, an ingress controller or a load balancer, waited for the server behind it and gave up before a response arrived, so it answered the client with 504 itself. The application did not send the 504; in nginx the error log line upstream timed out ... while reading response header from upstream or while connecting to upstream says which wait ran out.
+
+**What is the difference between 502 and 504 in nginx?**
+
+A 502 means the upstream answered badly or not at all: connect() failed (111: Connection refused) or upstream prematurely closed connection. A 504 means nginx timed out waiting, so it arrives at proxy_read_timeout or proxy_connect_timeout. In our tests every 502 took one or two milliseconds and every 504 took the configured timeout plus a few milliseconds.
+
+**How do I fix 504 Gateway Timeout in nginx?**
+
+Find what the upstream is waiting on and fix that: time a request to the upstream directly, check its connections (netstat -tn in the pod) and recent changes. In our lab the cause was a new dependency call with no timeout; giving it a 1 second timeout and a fallback turned a 60 second 504 into a 1 second 200. Raise proxy_read_timeout only for an endpoint that is legitimately slow, in that location only.
+
+**Should I just increase proxy_read_timeout?**
+
+Usually not. When we raised it from 60 to 150 seconds the 504 disappeared and users waited 2 minutes 13 seconds for a response with missing data, while every waiting request held an nginx connection and an upstream thread. Raise it only when you have measured that the endpoint's normal latency is above the current value.
+
+**Why does nginx say Operation timed out instead of Connection timed out?**
+
+The text in brackets is the C library's message for errno 110. nginx built against glibc (the Debian nginx image) prints (110: Connection timed out); nginx built against musl (the Alpine image) prints (110: Operation timed out). Both come from the same nginx/1.27.5 and mean the same timeout.
+
+**Why is my 504 taking longer than proxy_read_timeout on ingress-nginx?**
+
+ingress-nginx retries timeouts on other pods by default (proxy-next-upstream error timeout, proxy-next-upstream-tries 3). With a 10 second read timeout our request took 30 seconds and hit one pod twice. The annotation nginx.ingress.kubernetes.io/proxy-next-upstream: "error" brought it back to one 10 second try.
+
+**What does context deadline exceeded mean in a readiness probe?**
+
+The kubelet's HTTP probe timed out waiting for the response headers; timeoutSeconds defaults to 1. If the probe calls a slow path, the pod goes NotReady and leaves the Service's endpoints, which turns 504s into 502s. Keep readiness probes on a path that does not call slow dependencies.
+
+
+---
+This file mirrors https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes; edits land there first. Benchmark of three agents on this and 18 other faults: https://www.aurorasre.ai/benchmark

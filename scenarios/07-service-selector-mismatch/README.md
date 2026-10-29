@@ -17,7 +17,7 @@ Then investigate with any tool you like; `scenario.yaml` holds the ground truth 
 | Verified on | Kubernetes server v1.37.0, kind v0.33.0, nginx 1.27-alpine, 2026-10-02 |
 | Lab folder | [scenarios/07-service-selector-mismatch](https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/07-service-selector-mismatch), runs in [runs/v0-run2/07-service-selector-mismatch](https://github.com/Arvo-AI/aurora-lab/tree/main/runs/v0-run2/07-service-selector-mismatch) |
 
-**A Service with no endpoints means its selector matches none of the pods, so every connection to its ClusterIP is refused and whatever proxies to it answers 502.** The pods behind it are usually healthy, which is why restarts change nothing. Confirm with `kubectl get endpoints <service> -n <namespace>`: an `ENDPOINTS` column reading `<none>` is the whole diagnosis. The fix is to make the selector match the pod labels again, nothing else.
+**A Service with no endpoints means its selector matches none of the pods, so every connection to its ClusterIP is refused and whatever proxies to it answers 502.** The pods behind it are usually healthy, which is why restarts change nothing. Confirm with `kubectl get endpoints <service> -n <namespace>`: an `ENDPOINTS` column reading `<none>` is the whole diagnosis. The fix is to make the selector match the pod labels again, nothing else. Other nginx 502 reasons, and which error.log line means which, are in [502 Bad Gateway in nginx](https://www.aurorasre.ai/runbooks/fix-502-bad-gateway-nginx-kubernetes).
 
 ## At a glance
 
@@ -37,7 +37,7 @@ Start from the error the client sees, then read the endpoints. In the lab the fr
 10.244.1.14 - - [02/Oct/2026:16:35:46 +0000] "GET /api/items HTTP/1.1" 502 157 "-" "Wget" "-"
 ```
 
-`Connection refused` against a ClusterIP, with no SYN timing out, points at the Service layer rather than the network. Read the endpoints next:
+`Connection refused` against a ClusterIP, with no SYN timing out, points at the Service layer rather than the network. A timeout there is a different failure: [504 Gateway Timeout](https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes). Read the endpoints next:
 
 ```shell
 kubectl get endpoints api -n shop

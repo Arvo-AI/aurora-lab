@@ -94,6 +94,8 @@ redis connection failed (attempt 5/5): [Errno 111] Connection refused
 giving up: redis unavailable
 ```
 
+A name that does not resolve gives the same crash loop; the errno on the line above `giving up` tells them apart ([CrashLoopBackOff by exit code](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes)).
+
 The two old api pods stay `Running` and `Ready`, because their health check does not touch redis, and fail every real request (r1, step 10, `kubectl logs api-f64486c4c-67cfn -n shop --tail=50`, trimmed):
 
 ```

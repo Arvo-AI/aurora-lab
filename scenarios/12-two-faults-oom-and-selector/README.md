@@ -203,7 +203,7 @@ Every line should end `-> 200` (the lab's reset uses the same command with `--ta
 
 ## How do you prevent it?
 
-**Alert on the user path.** The client logged the outage from 20:23:35Z and nothing alerted on it. A synthetic request through the Service, such as a blackbox probe of `http://frontend.shop.svc/api/items`, catches what pod-level rules cannot. (Suggested; not part of the lab.)
+**Alert on the user path.** The client logged the outage from 20:23:35Z and nothing alerted on it. A synthetic request through the Service, such as a blackbox probe of `http://frontend.shop.svc/api/items`, catches what pod-level rules cannot. (Suggested; not part of the lab.) `KubePodCrashLooping` itself only sees the waiting state; see [how often a crash-looping pod actually shows CrashLoopBackOff](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes).
 
 **Alert on Services with no ready endpoints.** The query below is explained in the [Service with no endpoints runbook](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), section "How do you prevent it?":
 
@@ -215,7 +215,7 @@ The metric reads the v1 Endpoints API, which the API server flagged to K8sGPT du
 
 **Guardrail.** Change Services only through their pipeline, and in CI compare the SELECTOR column of `kubectl get svc -o wide` with the manifests, since a re-apply will not remove a stray key.
 
-**Triage rule.** No component goes into an incident report as "unaffected" without one request-path check: its Service's endpoints and its client's log.
+**Triage rule.** No component goes into an incident report as "unaffected" without one request-path check: its Service's endpoints and its client's log. Write the Impact field of the RCA from the user path too; see the [RCA template](https://www.aurorasre.ai/blog/root-cause-analysis-template).
 
 ## Common mistakes
 
@@ -243,7 +243,7 @@ On time: r1's first tool call came 5 s after the incident was created, r2's 7 mi
 
 We ran the same scenario through two other tools ([r1](https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r1/12-two-faults-oom-and-selector) 2026-10-15, [r2](https://github.com/Arvo-AI/aurora-lab/tree/main/runs/h2h-v1/r2/12-two-faults-oom-and-selector) 2026-10-16; judge and two AI reviewers, no person yet). HolmesGPT 0.43.0, on the same model as Aurora, also missed the Service in both runs (26 s and 34 s); r1: "Root cause confirmed: shop/worker is being OOMKilled." It made no claim about the frontend either way. K8sGPT 0.4.40 (on claude-sonnet-4-5) flagged it in both runs, "Service has no endpoints, expected label tier=web". It is never given the alert: `k8sgpt analyze --explain --namespace shop` checks every object in the namespace. It never explained the OOM, r1: "Container ran out of memory (OOM - Out Of Memory) and was killed by Kubernetes.", no `BATCH_SIZE`, and suggested a limit of `"2Gi"` in r1 and `"512Mi"` in r2, plus `kubectl label pods <pod-name> app=frontend tier=web`. All four were graded partial.
 
-The two LLM investigators reasoned from the alert and stayed on it; K8sGPT's analyzers had no alert to follow and swept everything. That is the case for making the sweep mechanical: three commands, run before anyone writes "unaffected", whoever or whatever is doing the triage.
+The two LLM investigators reasoned from the alert and stayed on it; K8sGPT's analyzers had no alert to follow and swept everything. A [5 whys](https://www.aurorasre.ai/blog/5-whys-root-cause-analysis) started from the alert ends the same way, at the OOM, and never reaches the Service. That is the case for making the sweep mechanical: three commands, run before anyone writes "unaffected", whoever or whatever is doing the triage.
 
 ## How Aurora handles this
 
@@ -253,7 +253,7 @@ Aurora receives the alert, connects to the cluster read-only through an uploaded
 - **GitHub:** [github.com/Arvo-AI/aurora](https://github.com/Arvo-AI/aurora)
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 
-Related: [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [a Service with no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [a Service whose targetPort does not match the container](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [HolmesGPT vs K8sGPT](https://www.aurorasre.ai/blog/holmesgpt-vs-k8sgpt), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and the [benchmark](https://www.aurorasre.ai/benchmark) with every graded run.
+Related: [how to fix Kubernetes OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes), [a Service with no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [a Service whose targetPort does not match the container](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [HolmesGPT vs K8sGPT](https://www.aurorasre.ai/blog/holmesgpt-vs-k8sgpt), [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres), and the [benchmark](https://www.aurorasre.ai/benchmark) with every graded run, and [alert fatigue](https://www.aurorasre.ai/blog/alert-fatigue): why every user-facing path needs a symptom alert.
 
 ## Sources and verification
 

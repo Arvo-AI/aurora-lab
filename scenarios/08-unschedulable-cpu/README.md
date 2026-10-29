@@ -29,6 +29,8 @@ Then investigate with any tool you like; `scenario.yaml` holds the ground truth 
 | `node(s) didn't match Pod's node affinity/selector` | Node selector or affinity excludes every node | Pod spec `nodeSelector` and `affinity` against node labels | Fix the selector or label a node |
 | `node(s) didn't have free ports for the requested pod ports` | A `hostPort` is already taken on every node | Pod spec `hostPort` against other pods on the nodes | Drop or change the hostPort |
 
+A pod that is scheduled but Waiting with `ImagePullBackOff` is a pull failure, not a scheduling one: see [ImagePullBackOff](https://www.aurorasre.ai/runbooks/fix-imagepullbackoff-kubernetes).
+
 ## How do you confirm the pod is unschedulable because of CPU?
 
 Start with the pod list. A Pending pod with no node and no IP next to a Running pod from the same Deployment is the shape of a stuck rollout (lab run r1, step 4):
@@ -156,7 +158,7 @@ Allocatable:
 
 1. **Request larger than any node.** Allocatable CPU is 10 on every node; the pod wants 64. No amount of freeing capacity helps, and the message lists every schedulable node as `Insufficient cpu`. This is the lab's case.
 2. **Cluster genuinely full.** Allocatable minus Allocated resources is smaller than the request on each node, but the request itself is sane. Here the control plane shows 950m of 10 cores used; the workers are nowhere near full.
-3. **Taint.** If `untolerated taint(s)` were the only reason, every node would carry a taint the pod does not tolerate. In the lab only the control plane is tainted, and `node-role.kubernetes.io/control-plane:NoSchedule` is the default for kind; it is not the cause and both Aurora runs said so.
+3. **Taint.** If `untolerated taint(s)` were the only reason, every node would carry a taint the pod does not tolerate. In the lab only the control plane is tainted, and `node-role.kubernetes.io/control-plane:NoSchedule` is the default for kind; it is not the cause, and r2 said so explicitly.
 4. **Node selector or affinity.** The pod spec above shows `Node-Selectors: <none>`, and the message does not mention affinity.
 5. **hostPort conflict.** `Host Port: <none>` in the pod spec, and the message does not mention ports.
 
@@ -297,7 +299,7 @@ Add a LimitRange with a per-container maximum so an oversized request is rejecte
 
 **Did Aurora find this fault in the lab?**
 
-Yes, in both runs, in 362 and 89 seconds, for $0.35 and $0.21. Both named the 64-core request against 10 allocatable cores per node and ruled out the control-plane taint. Both put the fix in their Suggested Next Steps; r1's report only implied it and r2's did not state one.
+Yes, in both runs, in 362 and 89 seconds, for $0.35 and $0.21. Both named the 64-core request against 10 allocatable cores per node; r2 also ruled out the control-plane taint explicitly. Both put the fix in their Suggested Next Steps; r1's report only implied it and r2's did not state one.
 
 
 ---

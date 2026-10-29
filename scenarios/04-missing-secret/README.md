@@ -23,8 +23,8 @@ Then investigate with any tool you like; `scenario.yaml` holds the ground truth 
 
 | Signal | Likely cause | Confirm with | Fix |
 |---|---|---|---|
-| `CreateContainerConfigError`, event `Error: secret "<name>" not found` | The Secret named in `secretKeyRef` or a `secret` volume does not exist in this namespace | `kubectl get secret <name> -n <namespace>` | Create the Secret with the expected key, or roll back |
-| `CreateContainerConfigError`, event `Error: configmap "<name>" not found` | Same for a ConfigMap (`configMapKeyRef` or a `configMap` volume) | `kubectl get configmap <name> -n <namespace>` | Create the ConfigMap, or roll back |
+| `CreateContainerConfigError`, event `Error: secret "<name>" not found` | The Secret named in `secretKeyRef` or `envFrom` does not exist in this namespace (a missing `secret` volume shows `ContainerCreating` with a `FailedMount` event instead) | `kubectl get secret <name> -n <namespace>` | Create the Secret with the expected key, or roll back |
+| `CreateContainerConfigError`, event `Error: configmap "<name>" not found` | Same for a ConfigMap (`configMapKeyRef` or `envFrom`) | `kubectl get configmap <name> -n <namespace>` | Create the ConfigMap, or roll back |
 | `CreateContainerConfigError`, event `couldn't find key <key> in Secret <ns>/<name>` | The object exists, the key does not | `kubectl get secret <name> -n <namespace> -o jsonpath='{.data}'` | Add the key, or fix the key name in the spec |
 | `ImagePullBackOff` instead | A different failure: the image, not the config | See [ImagePullBackOff](https://www.aurorasre.ai/runbooks/fix-imagepullbackoff-kubernetes) | |
 | `CrashLoopBackOff` instead | The container started and exited | `kubectl logs <pod> --previous` | See [OOMKilled](https://www.aurorasre.ai/runbooks/fix-oomkilled-kubernetes) for one common cause |

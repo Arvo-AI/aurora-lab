@@ -9,18 +9,15 @@ Runbook for lab scenario `20-nginx-502-upstream-closed-connection`. Canonical ve
 ```
 ./lab.sh up
 ./lab.sh break 20-nginx-502-upstream-closed-connection
-bash scenarios/20-nginx-502-upstream-closed-connection/diagnose.sh kind-aurora-lab /tmp/diag   # Confirm, Scope, Isolate
-bash scenarios/20-nginx-502-upstream-closed-connection/fix.sh kind-aurora-lab
-bash scenarios/20-nginx-502-upstream-closed-connection/verify.sh kind-aurora-lab               # exits non-zero while broken
 ```
-The other 502 causes on this page come from `causes/` (`bash causes/run.sh kind-aurora-lab`, needs `./lab.sh reset` first). Investigate with any tool you like; `scenario.yaml` holds the ground truth and the grading criteria.
+Then investigate with any tool you like; `scenario.yaml` holds the ground truth and the grading criteria.
 
 | Applies to | nginx as a reverse proxy (a frontend or sidecar pod) in front of HTTP upstreams; shown on Kubernetes with nginx proxying to a ClusterIP Service. The ingress-nginx controller runs the same nginx core but was not tested here |
 |---|---|
 | Verified on | Kubernetes server v1.37.0, kind v0.33.0, kubectl client v1.35.3, nginx 1.27-alpine (nginx/1.27.5), python:3.12-alpine (Python 3.12.16), redis 7.4.12, 2026-10-29 |
 | Lab folder | [scenarios/20-nginx-502-upstream-closed-connection](https://github.com/Arvo-AI/aurora-lab/tree/main/scenarios/20-nginx-502-upstream-closed-connection), transcripts in [runs/search-2026-10-29/20-nginx-502-upstream-closed-connection/canonical](https://github.com/Arvo-AI/aurora-lab/tree/main/runs/search-2026-10-29/20-nginx-502-upstream-closed-connection/canonical) |
 
-**A 502 Bad Gateway from nginx means nginx tried to pass the request to its upstream (the app or Kubernetes Service it proxies to) and did not get a valid HTTP response back: the connection was refused, closed or reset, or the reply could not be used. nginx writes the reason to its error log in the same second as the 502, so read that line before anything else: in Kubernetes, `kubectl logs <nginx-pod> | grep upstream`. `connect() failed (111: Connection refused)` points at the Service or port (a Service with no ready endpoints, or a `targetPort` with nothing listening), `upstream prematurely closed connection` points at the application itself, and `upstream timed out (110)` comes with a 504, not a 502 ([504 runbook](/runbooks/fix-504-gateway-timeout-nginx-kubernetes)).** We reproduced eight distinct 502 lines on nginx 1.27.5 in a kind cluster; the table below maps each one to its cause and the command that confirms it.
+**A 502 Bad Gateway from nginx means nginx tried to pass the request to its upstream (the app or Kubernetes Service it proxies to) and did not get a valid HTTP response back: the connection was refused, closed or reset, or the reply could not be used. nginx writes the reason to its error log in the same second as the 502, so read that line before anything else: in Kubernetes, `kubectl logs <nginx-pod> | grep upstream`. `connect() failed (111: Connection refused)` points at the Service or port (a Service with no ready endpoints, or a `targetPort` with nothing listening), `upstream prematurely closed connection` points at the application itself, and `upstream timed out (110)` comes with a 504, not a 502 ([504 runbook](https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes)).** We reproduced eight distinct 502 lines on nginx 1.27.5 in a kind cluster; the table below maps each one to its cause and the command that confirms it.
 
 ## At a glance
 
@@ -28,7 +25,7 @@ The first line is the only 502 reason that appeared anywhere in our lab's 38 cap
 
 | error.log line (after the timestamp) | Status | Likely cause | Confirm with | Fix |
 |---|---|---|---|---|
-| `connect() failed (111: Connection refused) while connecting to upstream` | 502 | Service has no ready endpoints, wrong `targetPort`, or the app is not listening yet | `kubectl get endpointslices -l kubernetes.io/service-name=<svc>`, then `targetPort` against the container port | [Service with no endpoints](/runbooks/fix-service-no-endpoints-kubernetes), [targetPort mismatch](/runbooks/fix-service-targetport-mismatch-kubernetes) |
+| `connect() failed (111: Connection refused) while connecting to upstream` | 502 | Service has no ready endpoints, wrong `targetPort`, or the app is not listening yet | `kubectl get endpointslices -l kubernetes.io/service-name=<svc>`, then `targetPort` against the container port | [Service with no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [targetPort mismatch](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes) |
 | `upstream prematurely closed connection while reading response header from upstream` | 502 | The app accepted the connection and closed it without answering: a crash inside the request handler, or a port that does not speak HTTP | `curl -v` to the Service from the nginx pod: `Empty reply from server`; then the app log | Fix the app (this page, scenario 20) or point nginx at the HTTP port |
 | `recv() failed (104: Connection reset by peer) while reading response header from upstream` | 502 | The app reset the connection, or nginx sent plain HTTP to a TLS port | `curl -v` and `curl -vk https://` to the same port | Fix the app, or use `https://` in `proxy_pass` |
 | `upstream sent too big header while reading response header from upstream` | 502 | Response headers (usually `Set-Cookie`) larger than `proxy_buffer_size` | `curl -sv -o /dev/null` to the upstream and measure the headers | Raise `proxy_buffer_size`, or send smaller headers |
@@ -36,8 +33,8 @@ The first line is the only 502 reason that appeared anywhere in our lab's 38 cap
 | `no live upstreams while connecting to upstream` | 502 | Every server in an `upstream` group was marked failed, for example stale pod IPs from a headless Service | Compare the IPs in earlier error lines with the current EndpointSlice | Point at the ClusterIP Service, or add `zone` and `resolve` |
 | `<name> could not be resolved (3: Host not found)` | 502 | `proxy_pass` with a variable and a `resolver`, and a name the resolver cannot answer (a typo, or a short Service name) | `nslookup <name>.<ns>.svc.cluster.local` from the pod | Use the full Service name |
 | `no resolver defined to resolve <name>` | 502 | `proxy_pass` with a variable and no `resolver` directive | Look for `set $...` in front of `proxy_pass` | Add `resolver` with the kube-dns IP, or use a static name |
-| `upstream timed out (110: Operation timed out) while connecting to upstream` | **504** | Packets dropped: a NetworkPolicy, a Service port that is not defined, a pod IP that no longer exists | `kubectl get networkpolicy`, the Service ports | [504 Gateway Timeout](/runbooks/fix-504-gateway-timeout-nginx-kubernetes), [NetworkPolicy blocking traffic](/runbooks/fix-networkpolicy-blocking-traffic-kubernetes) |
-| `[emerg] host not found in upstream "<name>"` | none, nginx does not start | A static upstream name that does not resolve when nginx starts | `kubectl logs --previous` on the crashing pod | Create the Service or fix the name; see [nginx emerg errors](/runbooks/fix-nginx-emerg-unknown-directive-kubernetes) |
+| `upstream timed out (110: Operation timed out) while connecting to upstream` | **504** | Packets dropped: a NetworkPolicy, a Service port that is not defined, a pod IP that no longer exists | `kubectl get networkpolicy`, the Service ports | [504 Gateway Timeout](https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes), [NetworkPolicy blocking traffic](https://www.aurorasre.ai/runbooks/fix-networkpolicy-blocking-traffic-kubernetes) |
+| `[emerg] host not found in upstream "<name>"` | none, nginx does not start | A static upstream name that does not resolve when nginx starts | `kubectl logs --previous` on the crashing pod | Create the Service or fix the name; see [nginx emerg errors](https://www.aurorasre.ai/runbooks/fix-nginx-emerg-unknown-directive-kubernetes) |
 
 ## What does 502 Bad Gateway mean?
 
@@ -49,7 +46,7 @@ When the message reads `502 Bad Gateway` above `nginx` in small text, nginx gene
 |---|---|---|
 | 502 Bad Gateway | nginx: the upstream refused, closed, reset or sent something unusable | One of the eight `[error]` or `[crit]` lines in the table above |
 | 503 Service Unavailable | Usually the upstream itself, passed through by nginx; nginx's own [`limit_req`](https://nginx.org/en/docs/http/ngx_http_limit_req_module.html#limit_req_status) rejections also default to 503 | Nothing in error.log for a passed-through 503; only the access log line |
-| 504 Gateway Timeout | nginx: no answer within `proxy_connect_timeout`, `proxy_send_timeout` or `proxy_read_timeout` | `upstream timed out (110: ...)`; the text in brackets depends on the C library, see the [504 runbook](/runbooks/fix-504-gateway-timeout-nginx-kubernetes) |
+| 504 Gateway Timeout | nginx: no answer within `proxy_connect_timeout`, `proxy_send_timeout` or `proxy_read_timeout` | `upstream timed out (110: ...)`; the text in brackets depends on the C library, see the [504 runbook](https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes) |
 
 The 503 row is from our own lab: in scenarios 09 and 13 the api answered 503 itself when redis was unreachable, and the frontend's access log shows 503s with no error.log line next to them. A 5xx in the access log with no matching error.log line was produced by the upstream, not by nginx.
 
@@ -79,8 +76,8 @@ kubectl -n shop logs -l app=frontend --tail=500 | grep -oE '\[(error|crit|warn)\
 ```
 
 ```
-   2 [error] connect() failed (111: Connection refused) while connecting to upstream
-  23 [error] upstream prematurely closed connection while reading response header from upstream
+ 2 [error] connect() failed (111: Connection refused) while connecting to upstream
+23 [error] upstream prematurely closed connection while reading response header from upstream
 ```
 
 Two reasons, and they are not two problems. The two refusals are at 19:42:48 and 19:42:50, one per nginx pod, before the api pods were Ready; the client's first 200 came at 19:42:52, and every error since the change is `prematurely closed`. That startup pattern is the most common 502 in our lab (see below). Two reasons that both continue to the present usually mean two problems, or a cause that changed over time (a refused connection that becomes a timeout when the pod IP disappears). The resolver errors (`could not be resolved`, `no resolver defined`) do not contain `while ... upstream`; grep for `resolve` if you use variables in `proxy_pass`.
@@ -102,7 +99,7 @@ The first is a Service whose selector matches no pods; the second is a Service w
 kubectl -n <ns> get endpointslices -l kubernetes.io/service-name=<svc>
 ```
 
-`ENDPOINTS <unset>` is the [Service with no endpoints](/runbooks/fix-service-no-endpoints-kubernetes) case (selector or readiness). Pod IPs listed means the port is wrong: see [targetPort mismatch](/runbooks/fix-service-targetport-mismatch-kubernetes), or [a Service selecting the wrong pods](/runbooks/fix-service-selects-wrong-pods-label-overlap-kubernetes) when only some requests fail. A refusal is fast: the request fails in milliseconds, which is how you tell it from the 504 below.
+`ENDPOINTS <unset>` is the [Service with no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes) case (selector or readiness). Pod IPs listed means the port is wrong: see [targetPort mismatch](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), or [a Service selecting the wrong pods](https://www.aurorasre.ai/runbooks/fix-service-selects-wrong-pods-label-overlap-kubernetes) when only some requests fail. A refusal is fast: the request fails in milliseconds, which is how you tell it from the 504 below.
 
 ### upstream prematurely closed connection
 
@@ -158,9 +155,9 @@ Two things we did not expect. First, failure state is per nginx worker unless th
 
 ```
 upstream headless_resolve {
-    zone headless_resolve 64k;
-    resolver 10.96.0.10 valid=10s;
-    server backend-headless.r502x.svc.cluster.local:8085 resolve;
+  zone headless_resolve 64k;
+  resolver 10.96.0.10 valid=10s;
+  server backend-headless.r502x.svc.cluster.local:8085 resolve;
 }
 ```
 
@@ -183,7 +180,7 @@ and, for the location with no `resolver` in scope:
 
 The first line is the Kubernetes trap. `dynonly` is a real Service in the same namespace, and the same name with `.r502x.svc.cluster.local` returned 200. The pod's `/etc/resolv.conf` has `search r502x.svc.cluster.local svc.cluster.local cluster.local`, but in our run nginx's resolver looked up the name exactly as written and did not apply the search domains (the resolver docs do not mention search domains at all). Use the full `<svc>.<ns>.svc.cluster.local` name.
 
-A second trap made the first version of this test wrong: the short name `backend` returned 200, because another `location` had a static `proxy_pass http://backend:8085/`. We reproduced that on its own in plain Docker with no `resolver` at all (`canonical/variable-proxy-pass-shadowing.txt`): `set $u http://backend:8085; proxy_pass $u;` returned 200 next to a static `proxy_pass http://backend:8085/`, and the same location with a name no static `proxy_pass` uses returned 502 with `no resolver defined to resolve other`. nginx checks names against the server groups it already knows before asking the resolver ("the name is searched among the described server groups, and, if not found, is determined using a resolver", [proxy_pass](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass)). A variable `proxy_pass` can work in one config and fail in another for that reason alone. For names that do not resolve at all, see [DNS name not resolving in Kubernetes](/runbooks/fix-dns-name-not-resolving-kubernetes).
+A second trap made the first version of this test wrong: the short name `backend` returned 200, because another `location` had a static `proxy_pass http://backend:8085/`. We reproduced that on its own in plain Docker with no `resolver` at all (`canonical/variable-proxy-pass-shadowing.txt`): `set $u http://backend:8085; proxy_pass $u;` returned 200 next to a static `proxy_pass http://backend:8085/`, and the same location with a name no static `proxy_pass` uses returned 502 with `no resolver defined to resolve other`. nginx checks names against the server groups it already knows before asking the resolver ("the name is searched among the described server groups, and, if not found, is determined using a resolver", [proxy_pass](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass)). A variable `proxy_pass` can work in one config and fail in another for that reason alone. For names that do not resolve at all, see [DNS name not resolving in Kubernetes](https://www.aurorasre.ai/runbooks/fix-dns-name-not-resolving-kubernetes).
 
 ### Not 502: upstream timed out (110), and host not found at startup
 
@@ -193,7 +190,7 @@ A second trap made the first version of this test wrong: the short name `backend
 2026/10/29 19:40:42 [error] 25#25: *28 upstream timed out (110: Operation timed out) while reading response header from upstream, client: 127.0.0.1, server: , request: "GET /slow/ HTTP/1.1", upstream: "http://10.96.141.151:8086/", host: "localhost"
 ```
 
-All three returned 504. `/unexposed/` connects to the Service's ClusterIP on a port the Service does not define: the packets are dropped, not refused, so it is a timeout, which is the same thing our [ConfigMap drift](/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) scenario produced. `/fenced/` is a pod behind a deny-all NetworkPolicy. `/slow/` connected and then waited longer than `proxy_read_timeout`. The phase tells you which: `while connecting to` is the network, `while reading response header from` is a slow app. A wrong `targetPort` refuses (502); a wrong Service `port` times out (504). That asymmetry is worth remembering.
+All three returned 504. `/unexposed/` connects to the Service's ClusterIP on a port the Service does not define: the packets are dropped, not refused, so it is a timeout, which is the same thing our [ConfigMap drift](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) scenario produced. `/fenced/` is a pod behind a deny-all NetworkPolicy. `/slow/` connected and then waited longer than `proxy_read_timeout`. The phase tells you which: `while connecting to` is the network, `while reading response header from` is a slow app. A wrong `targetPort` refuses (502); a wrong Service `port` times out (504). That asymmetry is worth remembering.
 
 A name in a static `upstream` or `proxy_pass` that does not resolve stops nginx from starting at all, so there is no 502, only a crashing pod:
 
@@ -203,7 +200,7 @@ nginx: [emerg] host not found in upstream "noep-typo:8080" in /tmp/bad.conf:2
 nginx: configuration file /tmp/nginx.conf test failed
 ```
 
-That is the [nginx emerg](/runbooks/fix-nginx-emerg-unknown-directive-kubernetes) family: read `kubectl logs --previous`.
+That is the [nginx emerg](https://www.aurorasre.ai/runbooks/fix-nginx-emerg-unknown-directive-kubernetes) family: read `kubectl logs --previous`.
 
 ## How do you confirm an "upstream prematurely closed connection" 502 in Kubernetes?
 
@@ -300,19 +297,19 @@ kubectl -n shop logs -l app=api --tail=16
 
 ```
 Traceback (most recent call last):
-  File "/usr/local/lib/python3.12/socketserver.py", line 697, in process_request_thread
-    self.finish_request(request, client_address)
-  File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
-    self.RequestHandlerClass(request, client_address, self)
-  File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
-    self.handle()
-  File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
-    self.handle_one_request()
-  File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
-    method()
-  File "/code/api.py", line 29, in do_GET
-    limit = int(os.environ.get("ITEM_LIMIT"))
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/usr/local/lib/python3.12/socketserver.py", line 697, in process_request_thread
+  self.finish_request(request, client_address)
+File "/usr/local/lib/python3.12/socketserver.py", line 362, in finish_request
+  self.RequestHandlerClass(request, client_address, self)
+File "/usr/local/lib/python3.12/socketserver.py", line 766, in __init__
+  self.handle()
+File "/usr/local/lib/python3.12/http/server.py", line 440, in handle
+  self.handle_one_request()
+File "/usr/local/lib/python3.12/http/server.py", line 428, in handle_one_request
+  method()
+File "/code/api.py", line 29, in do_GET
+  limit = int(os.environ.get("ITEM_LIMIT"))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
 ----------------------------------------
 ```
@@ -342,16 +339,16 @@ kubectl diff -f app/shop.yaml
 
 ```
 @@ -29,9 +29,8 @@
-             if self.path == "/healthz":
-                 return self._send(200, {"status": "ok"})
-             try:
+           if self.path == "/healthz":
+               return self._send(200, {"status": "ok"})
+           try:
 -                limit = int(os.environ.get("ITEM_LIMIT"))
-                 redis_ping()
+               redis_ping()
 -                self._send(200, {"items": ["kettle", "mug", "teapot"][:limit]})
 +                self._send(200, {"items": ["kettle", "mug", "teapot"]})
-             except OSError as e:
-                 print(f"request failed: redis error: {e}", flush=True)
-                 self._send(503, {"error": "backend unavailable"})
+           except OSError as e:
+               print(f"request failed: redis error: {e}", flush=True)
+               self._send(503, {"error": "backend unavailable"})
 ```
 
 (trimmed: the diff's file header lines). The same image on both ReplicaSets, so the image did not change; the env has no `ITEM_LIMIT`; and `kubectl diff`, a server-side dry run that changes nothing, shows the live ConfigMap differs from the manifest by exactly the new line. `kubectl rollout history deploy/api` only listed revisions 1 and 2 with `CHANGE-CAUSE <none>`, which says a rollout happened and nothing about why.
@@ -426,7 +423,7 @@ Against the broken state the same script printed `prematurely closed lines in th
 sum by (reason) (count_over_time({namespace="shop", container="nginx"} |~ "while (connecting to|reading response header from|SSL handshaking to) upstream" | regexp `\*\d+ (?P<reason>[^,]+?) while` [5m]))
 ```
 
-Alert on any non-zero series. A rising `connect() failed (111` points at Kubernetes objects, a rising `prematurely closed` at the last deploy of the app. For the `111` family, the endpoints alert in the [no endpoints runbook](/runbooks/fix-service-no-endpoints-kubernetes) fires before the first 502.
+Alert on any non-zero series. A rising `connect() failed (111` points at Kubernetes objects, a rising `prematurely closed` at the last deploy of the app. For the `111` family, the endpoints alert in the [no endpoints runbook](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes) fires before the first 502.
 
 **Guardrails.** Keep config and code ConfigMaps in source control and run `kubectl diff` in CI, as above. Point nginx at ClusterIP Services, not headless ones, unless you add `zone` and `resolve`. Use full Service names in any variable `proxy_pass`.
 
@@ -447,9 +444,9 @@ Two observations from those runs belong on this page. Scenario 12's client logge
 
 So in our lab, the startup race is the most common source of a 502 by count, and it is not a fault. Before chasing a 502, check whether it stopped at the first `-> 200`.
 
-Scenario 20 is new in this batch and adds the first cause where Kubernetes reports nothing wrong. `./lab.sh selftest 20-nginx-502-upstream-closed-connection` passed on our cluster (`broken 20-nginx-502-upstream-closed-connection after 0s`, `selftest: 1 passed, 0 failed`), and the fault check requires all three: a 502 at the client, the `prematurely closed` line in nginx, and a non-empty EndpointSlice. The Aurora investigation for this scenario has not been run yet, so there is no Aurora trace or verdict for it on this page. Aurora's results on scenarios 07 and 11, the `111` cases, are on the [benchmark](/benchmark) and in the [no endpoints](/runbooks/fix-service-no-endpoints-kubernetes) and [targetPort](/runbooks/fix-service-targetport-mismatch-kubernetes) runbooks.
+Scenario 20 is new in this batch and adds the first cause where Kubernetes reports nothing wrong. `./lab.sh selftest 20-nginx-502-upstream-closed-connection` passed on our cluster (`broken 20-nginx-502-upstream-closed-connection after 0s`, `selftest: 1 passed, 0 failed`), and the fault check requires all three: a 502 at the client, the `prematurely closed` line in nginx, and a non-empty EndpointSlice. The Aurora investigation for this scenario has not been run yet, so there is no Aurora trace or verdict for it on this page. Aurora's results on scenarios 07 and 11, the `111` cases, are on the [benchmark](https://www.aurorasre.ai/benchmark) and in the [no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes) and [targetPort](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes) runbooks.
 
-The cause experiment also corrected two of our assumptions: a dropped connection (NetworkPolicy, wrong Service port) is a 504, not a 502, and plain HTTP to a TLS port shows up as a reset, not a TLS error. The 504 side, slow upstreams and timeouts, is covered in the [504 Gateway Timeout runbook](/runbooks/fix-504-gateway-timeout-nginx-kubernetes).
+The cause experiment also corrected two of our assumptions: a dropped connection (NetworkPolicy, wrong Service port) is a 504, not a 502, and plain HTTP to a TLS port shows up as a reset, not a TLS error. The 504 side, slow upstreams and timeouts, is covered in the [504 Gateway Timeout runbook](https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes).
 
 ## How Aurora handles this
 
@@ -458,7 +455,7 @@ Aurora receives the alert and investigates with read-only kubectl under its defa
 - **GitHub:** [github.com/Arvo-AI/aurora](https://github.com/Arvo-AI/aurora)
 - **Book a demo:** [cal.com/arvo-ai/demo](https://cal.com/arvo-ai/demo)
 
-Related: [504 Gateway Timeout in nginx](/runbooks/fix-504-gateway-timeout-nginx-kubernetes), [Service has no endpoints](/runbooks/fix-service-no-endpoints-kubernetes), [Service targetPort mismatch](/runbooks/fix-service-targetport-mismatch-kubernetes), [Service selecting the wrong pods](/runbooks/fix-service-selects-wrong-pods-label-overlap-kubernetes), [NetworkPolicy blocking traffic](/runbooks/fix-networkpolicy-blocking-traffic-kubernetes), [nginx emerg unknown directive](/runbooks/fix-nginx-emerg-unknown-directive-kubernetes), [ConfigMap change reached only some pods](/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [DNS name not resolving](/runbooks/fix-dns-name-not-resolving-kubernetes), and [root cause analysis for SREs](/blog/root-cause-analysis-complete-guide-sres).
+Related: [504 Gateway Timeout in nginx](https://www.aurorasre.ai/runbooks/fix-504-gateway-timeout-nginx-kubernetes), [Service has no endpoints](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes), [Service targetPort mismatch](https://www.aurorasre.ai/runbooks/fix-service-targetport-mismatch-kubernetes), [Service selecting the wrong pods](https://www.aurorasre.ai/runbooks/fix-service-selects-wrong-pods-label-overlap-kubernetes), [NetworkPolicy blocking traffic](https://www.aurorasre.ai/runbooks/fix-networkpolicy-blocking-traffic-kubernetes), [nginx emerg unknown directive](https://www.aurorasre.ai/runbooks/fix-nginx-emerg-unknown-directive-kubernetes), [ConfigMap change reached only some pods](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes), [DNS name not resolving](https://www.aurorasre.ai/runbooks/fix-dns-name-not-resolving-kubernetes), and [root cause analysis for SREs](https://www.aurorasre.ai/blog/root-cause-analysis-complete-guide-sres).
 
 ## Sources and verification
 
@@ -468,3 +465,37 @@ Related: [504 Gateway Timeout in nginx](/runbooks/fix-504-gateway-timeout-nginx-
 - Versions: Kubernetes server v1.37.0, kind v0.33.0, kubectl client v1.35.3 (`kubectl version`, `kind version`), nginx/1.27.5 (`nginx -v` in the pod), python:3.12-alpine (Python 3.12.16), redis 7.4.12, curl 8.12.1. The nginx error strings and the status each one returns were checked against the nginx 1.27.5 source (`src/http/ngx_http_upstream.c`, `ngx_http_upstream_round_robin.c`).
 - nginx documentation, read 2026-10-29: [ngx_http_upstream_module](https://nginx.org/en/docs/http/ngx_http_upstream_module.html) (`max_fails`, `fail_timeout`, single-server rule, `zone`, `resolve` and its 1.27.3 note), [ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) (`proxy_buffer_size`, variables in `proxy_pass`), [ngx_http_core_module resolver](https://nginx.org/en/docs/http/ngx_http_core_module.html#resolver). The proxy docs note that `proxy_http_version` defaults to 1.1 from nginx 1.29.7; our 1.27.5 used 1.0, which did not change any line above.
 - [RFC 9110 section 15.6](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.6) for 502, 503 and 504, and the official image's [Dockerfile](https://github.com/nginx/docker-nginx/blob/master/mainline/alpine-slim/Dockerfile) for the log symlinks, read 2026-10-29.
+
+## Questions people ask
+
+**What does 502 Bad Gateway mean?**
+
+A server acting as a gateway or proxy, such as nginx, got an invalid response from the server behind it, or could not get one at all: the connection was refused, closed or reset, or the reply was unusable. RFC 9110 defines it in section 15.6.3. The proxy itself is working; the upstream is the problem.
+
+**How do I fix a 502 Bad Gateway in nginx?**
+
+Read the nginx error log line written in the same second as the 502 (kubectl logs on the nginx pod in Kubernetes). connect() failed (111: Connection refused) means fix the Service or port, upstream prematurely closed connection means fix the application, upstream sent too big header means raise proxy_buffer_size, and the resolver errors mean fix the name in proxy_pass. Restarting nginx fixes none of these.
+
+**What causes upstream prematurely closed connection while reading response header from upstream?**
+
+The upstream accepted the connection and closed it before sending a status line. In our lab that was an uncaught exception in a Python request handler, and separately nginx pointed at a redis port, which does not speak HTTP. Confirm with curl -v to the Service from the nginx pod: Connected, then Empty reply from server.
+
+**Why does nginx return 502 when all my Kubernetes pods are Running and Ready?**
+
+Readiness probes usually hit a health endpoint, not the real route. In our scenario 20 /healthz returned 200 on every pod while every /items request crashed the handler, so the pods stayed Ready, the Service kept its endpoints, and nginx returned 502. Call the real route with curl from the nginx pod to see it.
+
+**Why does a wrong targetPort give a 502 but a wrong Service port a 504?**
+
+In our kind cluster a Service whose targetPort has nothing listening behind it refused the connection at once, so nginx logged connect() failed (111: Connection refused) and returned 502. A request to a port the Service does not define was dropped, not refused, so nginx waited for proxy_connect_timeout, logged upstream timed out (110) while connecting to upstream and returned 504. A NetworkPolicy that blocks the pod behaves the same way: 504. The 504 runbook covers timeouts in depth.
+
+**Why does nginx say no live upstreams?**
+
+Every server in an upstream block with more than one server was marked unavailable after failing, max_fails (1) times within fail_timeout (10 s) by default. In Kubernetes this happens when nginx proxies to a headless Service, resolves the pod IPs once at startup and keeps them after a rollout. Proxy to the ClusterIP Service instead, or add zone and the resolve parameter (open source since nginx 1.27.3).
+
+**Is a 502 Bad Gateway error my fault?**
+
+Not if you are a visitor. A 502 means one server could not get a valid answer from another server behind it, so nothing on your device causes it. Waiting a minute and retrying is all a visitor can do; the site operator has to fix the upstream.
+
+
+---
+This file mirrors https://www.aurorasre.ai/runbooks/fix-502-bad-gateway-nginx-kubernetes; edits land there first. Benchmark of three agents on this and 18 other faults: https://www.aurorasre.ai/benchmark

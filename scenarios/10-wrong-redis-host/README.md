@@ -57,7 +57,7 @@ redis connection failed (attempt 5/5): [Errno -2] Name does not resolve
 giving up: redis unavailable
 ```
 
-`[Errno -2] Name does not resolve` is the resolver saying the name has no record (glibc prints `Name or service not known` for the same condition). `Connection refused` and `Connection timed out` are different failures with different causes: see the table above. The exit is clean, code 1, so this is not an OOM kill or a probe kill (run r1, step 7):
+`[Errno -2] Name does not resolve` is the resolver saying the name has no record (glibc prints `Name or service not known` for the same condition). `Connection refused` and `Connection timed out` are different failures with different causes: see the table above. A redis with no endpoints gives the same crash loop with `[Errno 111] Connection refused` above `giving up` ([CrashLoopBackOff by exit code](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes)). The exit is clean, code 1, so this is not an OOM kill or a probe kill (run r1, step 7):
 
 ```
     State:          Waiting

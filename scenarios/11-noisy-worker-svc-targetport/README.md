@@ -76,7 +76,7 @@ api listening on :8080
 
 `listening on :8080` against `Endpoints: ...:9090` is the confirmation. kube-proxy rewrites each connection to `10.96.190.97:8080` into one to a pod IP on 9090, no process owns 9090, and the pod refuses it; nginx reports the refusal as if the Service had refused.
 
-Look-alikes. A Service with no endpoints produces the identical client line: in [scenario 07](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes) nginx logged the same `connect() failed (111: Connection refused)` against a ClusterIP whose endpoints read `<none>`. The endpoints column, not the error text, separates the two. A client dialling a port the Service does not publish gets a timeout instead: in [scenario 19](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) nginx pointed at `api:8000` on a Service publishing only 8080 and logged `upstream timed out`.
+Look-alikes. A Service with no endpoints produces the identical client line: in [scenario 07](https://www.aurorasre.ai/runbooks/fix-service-no-endpoints-kubernetes) nginx logged the same `connect() failed (111: Connection refused)` against a ClusterIP whose endpoints read `<none>`. The endpoints column, not the error text, separates the two. A client dialling a port the Service does not publish gets a timeout instead: in [scenario 19](https://www.aurorasre.ai/runbooks/fix-configmap-change-not-applied-to-all-pods-kubernetes) nginx pointed at `api:8000` on a Service publishing only 8080 and logged `upstream timed out`. Other nginx 502 causes, and which error.log line means which, are in [502 Bad Gateway in nginx](https://www.aurorasre.ai/runbooks/fix-502-bad-gateway-nginx-kubernetes).
 
 ## How much is affected, and since when?
 

@@ -106,7 +106,7 @@ A native sidecar is an entry in `initContainers`, so its status is under `.statu
 Two traps:
 
 - **The events do not say OOMKilled.** Neither run's event stream contained the word. They say `Back-off restarting failed container log-shipper in pod api-7d4b6f6f7d-5n8h7_shop(...)` (r1, step 7): the container, not the reason.
-- **The sidecar's logs are thin.** r2 asked for the killed container's output with `kubectl logs api-7d4b6f6f7d-d68bn -n shop -c log-shipper --previous` (step 11) and got `unable to retrieve container logs for containerd://78fc1be6...`. The live one, captured before the investigation, had printed only `log-shipper: buffering 40 MB before first flush`. Pass `-c`, and expect `--previous` to fail on a container that lives one second.
+- **The sidecar's logs are thin.** r2 asked for the killed container's output with `kubectl logs api-7d4b6f6f7d-d68bn -n shop -c log-shipper --previous` (step 11) and got `unable to retrieve container logs for containerd://78fc1be6...`. The live one, captured before the investigation, had printed only `log-shipper: buffering 40 MB before first flush`. Pass `-c`, and expect `--previous` to fail on a container that lives one second. Why `--previous` fails there is explained in [CrashLoopBackOff by exit code](https://www.aurorasre.ai/blog/fix-crashloopbackoff-kubernetes).
 
 ## What does a crash-looping sidecar do to the Deployment and the Service?
 
