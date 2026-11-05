@@ -77,6 +77,7 @@ func sweep(args []string) {
 	window := fs.Duration("window", 5*time.Millisecond, "")
 	conns := fs.Int("c", 50, "")
 	rounds := fs.Int("n", 60, "")
+	cidle := fs.Duration("clientidle", 0, "Transport.IdleConnTimeout")
 	fs.Parse(args)
 	url := fs.Arg(0)
 	var mu sync.Mutex
@@ -98,7 +99,7 @@ func sweep(args []string) {
 			defer wg.Done()
 			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 			for r := 0; r < *rounds; r++ {
-				tr := &http.Transport{MaxIdleConnsPerHost: 1}
+				tr := &http.Transport{MaxIdleConnsPerHost: 1, IdleConnTimeout: *cidle}
 				c := &http.Client{Transport: tr, Timeout: 5 * time.Second}
 				var local string
 				var reused bool

@@ -43,7 +43,7 @@ ready() {
 
 cap_on() { sh_c "tcpdump -l -nn -p -i eth0 -tttt -v 'tcp port 8080 or tcp port 8081 or tcp port 2222 or icmp' > /tmp/cap.txt 2>/tmp/cap.err & echo \$! > /tmp/cap.pid; sleep 1"; }
 cap_off() { sleep 1; sh_c 'kill $(cat /tmp/cap.pid); sleep 1; cat /tmp/cap.txt'; }
-srv_cap() { kubectl -n rst logs "$(srvpod)" -c cap --since="${1:-30s}" 2>/dev/null | grep -F -- "$CLIENT_IP" -B1 | grep -v '^--'; }
+srv_cap() { kubectl -n rst logs "$(srvpod)" -c cap --since="${1:-30s}" 2>/dev/null | grep -F -B1 -e "$CLIENT_IP" | grep -v '^--'; }
 say() { echo; echo "\$ $*"; }
 
 # 01 baseline and refused
@@ -134,6 +134,8 @@ sh_c 'cp /tmp/cap.txt /tmp/cap-sweep.txt'
 sh_c 'gzip -c /tmp/cap-sweep.txt' > "$R/06-sweep-capture.txt.gz"
 echo; echo "# Go client, GET (replayable), same timing"
 say rstclient sweep -X GET -idle 2s -window 5ms -c 50 -n 30 http://$SVC:8080/ok; c /app/rstclient sweep -X GET -idle 2s -window 5ms -c 50 -n 30 http://$SVC:8080/ok | grep -v '^FAIL'
+echo; echo "# Go client, POST, client idle timeout 1.5 s, below the server's 2 s"
+say rstclient sweep -X POST -clientidle 1500ms -idle 2s -window 5ms -c 50 -n 30 http://$SVC:8080/ok; c /app/rstclient sweep -X POST -clientidle 1500ms -idle 2s -window 5ms -c 50 -n 30 http://$SVC:8080/ok | grep -v '^FAIL'
 echo; echo "# Python requests.Session, POST, same timing"
 say python3 /app/py_sweep.py http://$SVC:8080/ok 2 0.005 30 40; c python3 /app/py_sweep.py http://$SVC:8080/ok 2 0.005 30 40
 } > "$R/06-keepalive-race.txt" 2>&1
@@ -222,6 +224,12 @@ say ssh -o StrictHostKeyChecking=no -o BatchMode=yes -p 2222 root@$SSHIP true; c
 done
 echo "--- client capture"; cap_off
 kubectl -n rst logs sshbox --tail=10
+echo; echo "# 10b: a rule on the node resets the connection when the client sends its banner"; cap_on
+SNODE=$(kubectl -n rst get pod client -o jsonpath='{.spec.nodeName}')
+docker exec "$SNODE" iptables -I FORWARD -s "$CLIENT_IP" -p tcp --dport 2222 --tcp-flags PSH PSH -j REJECT --reject-with tcp-reset
+say ssh -o StrictHostKeyChecking=no -o BatchMode=yes -p 2222 root@$SSHIP true; c ssh -o StrictHostKeyChecking=no -o BatchMode=yes -o UserKnownHostsFile=/dev/null -p 2222 root@$SSHIP true
+docker exec "$SNODE" iptables -D FORWARD -s "$CLIENT_IP" -p tcp --dport 2222 --tcp-flags PSH PSH -j REJECT --reject-with tcp-reset
+echo "--- client capture"; cap_off
 } > "$R/10-ssh.txt" 2>&1
 kubectl -n rst get pods -o wide > "$R/99-final-pods.txt" 2>&1
 echo repro done
