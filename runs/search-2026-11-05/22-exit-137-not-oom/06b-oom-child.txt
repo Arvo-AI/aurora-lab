@@ -1,0 +1,13 @@
+$ kubectl -n exit137 get pod oom-child -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+oom-child	3	OOMKilled	137	2026-11-05T22:15:12Z	2026-11-05T22:15:15Z
+[exit 0]
+$ kubectl -n exit137 logs oom-child --previous
+unable to retrieve container logs for containerd://80d13a8258f81d944dbb2d39faaee7c4869d239353e1c85a690326ab66e63fd5[exit 0]
+== oom-child pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-podba78125d_d488_4440_a2ae_c1eeaf6f6dff.slice
+low 0
+high 0
+max 121
+oom 4
+oom_kill 12
+oom_group_kill 4
+sock_throttled 0

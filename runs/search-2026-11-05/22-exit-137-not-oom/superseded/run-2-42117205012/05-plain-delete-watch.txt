@@ -1,0 +1,6 @@
+ADDED Running del= {"running":{"startedAt":"2026-11-05T22:04:02Z"}}
+MODIFIED Running del=2026-11-05T22:05:27Z {"running":{"startedAt":"2026-11-05T22:04:02Z"}}
+MODIFIED Running del=2026-11-05T22:05:27Z {"running":{"startedAt":"2026-11-05T22:04:02Z"}}
+MODIFIED Failed del=2026-11-05T22:05:27Z {"terminated":{"containerID":"containerd://c48a49ae0a9670ecc89a5b498dcca101ee6617e4662f4627e73904aad887b861","exitCode":137,"finishedAt":"2026-11-05T22:05:27Z","reason":"Error","startedAt":"2026-11-05T22:04:02Z"}}
+MODIFIED Failed del=2026-11-05T22:05:28Z {"terminated":{"containerID":"containerd://c48a49ae0a9670ecc89a5b498dcca101ee6617e4662f4627e73904aad887b861","exitCode":137,"finishedAt":"2026-11-05T22:05:27Z","reason":"Error","startedAt":"2026-11-05T22:04:02Z"}}
+DELETED Failed del=2026-11-05T22:05:28Z {"terminated":{"containerID":"containerd://c48a49ae0a9670ecc89a5b498dcca101ee6617e4662f4627e73904aad887b861","exitCode":137,"finishedAt":"2026-11-05T22:05:27Z","reason":"Error","startedAt":"2026-11-05T22:04:02Z"}}

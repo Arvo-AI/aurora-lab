@@ -1,0 +1,21 @@
+pod/plain-delete condition met
+$ time kubectl -n exit137 delete pod plain-delete
+pod "plain-delete" deleted from exit137 namespace
+
+real	0m10.340s
+user	0m0.123s
+sys	0m0.024s
+$ kubectl -n exit137 get pod plain-delete
+Error from server (NotFound): pods "plain-delete" not found
+[exit 1]
+$ kubectl -n exit137 get events --field-selector involvedObject.name=plain-delete --sort-by=.lastTimestamp
+LAST SEEN   TYPE     REASON      OBJECT             MESSAGE
+85s         Normal   Scheduled   pod/plain-delete   Successfully assigned exit137/plain-delete to aurora-lab-worker
+84s         Normal   Pulled      pod/plain-delete   Container image "busybox:1.37" already present on machine and can be accessed by the pod
+84s         Normal   Created     pod/plain-delete   Container created
+83s         Normal   Started     pod/plain-delete   Container started
+12s         Normal   Killing     pod/plain-delete   Stopping container app
+[exit 0]
+== kubelet log
+Nov 05 21:52:08 aurora-lab-worker kubelet[244]: I1105 21:52:08.283566     244 reconciler_common.go:251] "operationExecutor.VerifyControllerAttachedVolume started for volume \"kube-api-access-8dbcm\" (UniqueName: \"kubernetes.io/projected/f0dcf290-edce-4e9f-a0a
+Nov 05 21:52:10 aurora-lab-worker kubelet[244]: I1105 21:52:10.219555     244 pod_startup_latency_tracker.go:144] "Observed pod startup duration" pod="exit137/plain-delete" podStartSLOduration=2.219533613 podStartE2EDuration="2.219533613s" totalImagesPullingTi

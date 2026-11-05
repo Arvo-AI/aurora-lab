@@ -1,0 +1,127 @@
+$ docker version --format '{{.Server.Version}}'
+28.0.4
+[exit 0]
+$ stat -fc %T /sys/fs/cgroup
+cgroup2fs
+[exit 0]
+=== a: kernel OOM kill
+$ docker run --name x137-oom --memory 128m --memory-swap 128m python:3.12-alpine python -c 'b = b"\x01" * (200 << 20); print("allocated")'
+Unable to find image 'python:3.12-alpine' locally
+3.12-alpine: Pulling from library/python
+7b229517ed22: Pulling fs layer
+44f1f4ea9467: Pulling fs layer
+c03751883ae5: Pulling fs layer
+8dc6b13ab3d0: Pulling fs layer
+8dc6b13ab3d0: Waiting
+44f1f4ea9467: Verifying Checksum
+44f1f4ea9467: Download complete
+7b229517ed22: Verifying Checksum
+7b229517ed22: Download complete
+c03751883ae5: Verifying Checksum
+c03751883ae5: Download complete
+8dc6b13ab3d0: Verifying Checksum
+8dc6b13ab3d0: Download complete
+7b229517ed22: Pull complete
+44f1f4ea9467: Pull complete
+c03751883ae5: Pull complete
+8dc6b13ab3d0: Pull complete
+Digest: sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+Status: Downloaded newer image for python:3.12-alpine
+[exit 137]
+$ docker inspect x137-oom --format '{{json .State}}'
+{"Status":"exited","Running":false,"Paused":false,"Restarting":false,"OOMKilled":true,"Dead":false,"Pid":0,"ExitCode":137,"Error":"","StartedAt":"2026-11-05T22:17:42.897005963Z","FinishedAt":"2026-11-05T22:17:43.061098118Z"}
+[exit 0]
+create signal= exitCode=
+attach signal= exitCode=
+start signal= exitCode=
+oom signal= exitCode=
+die signal= exitCode=137
+=== b: docker kill
+$ docker kill x137-kill
+x137-kill
+[exit 0]
+$ docker wait x137-kill
+137
+[exit 0]
+$ docker inspect x137-kill --format '{{json .State}}'
+{"Status":"exited","Running":false,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":0,"ExitCode":137,"Error":"","StartedAt":"2026-11-05T22:17:45.230840488Z","FinishedAt":"2026-11-05T22:17:46.338846314Z"}
+[exit 0]
+create signal= exitCode=
+start signal= exitCode=
+kill signal=9 exitCode=
+die signal= exitCode=137
+=== c: docker stop, process with no SIGTERM handler as PID 1
+$ time docker stop x137-stop
+x137-stop
+
+real	0m10.098s
+user	0m0.005s
+sys	0m0.012s
+[exit 0]
+OOMKilled=false ExitCode=137 Status=exited
+create signal= exitCode=
+start signal= exitCode=
+kill signal=15 exitCode=
+kill signal=9 exitCode=
+stop signal= exitCode=
+die signal= exitCode=137
+=== d: same process, docker run --init
+$ time docker stop x137-init
+x137-init
+
+real	0m0.079s
+user	0m0.011s
+sys	0m0.007s
+[exit 0]
+OOMKilled=false ExitCode=143 Status=exited
+create signal= exitCode=
+start signal= exitCode=
+kill signal=15 exitCode=
+stop signal= exitCode=
+die signal= exitCode=143
+=== e: plain exit 137, no signal
+$ docker run --name x137-plain busybox:1.37 sh -c 'exit 137'
+Unable to find image 'busybox:1.37' locally
+1.37: Pulling from library/busybox
+68fe9bff2ad4: Pulling fs layer
+68fe9bff2ad4: Verifying Checksum
+68fe9bff2ad4: Download complete
+68fe9bff2ad4: Pull complete
+Digest: sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+Status: Downloaded newer image for busybox:1.37
+[exit 137]
+OOMKilled=false ExitCode=137 Status=exited
+create signal= exitCode=
+attach signal= exitCode=
+start signal= exitCode=
+die signal= exitCode=137
+=== f: OOM kills a child, the shell (PID 1) survives and exits 0
+$ docker run --name x137-child --memory 128m --memory-swap 128m python:3.12-alpine sh -c 'cat /sys/fs/cgroup/memory.oom.group; python -c "b = b\"\\x01\" * (200 << 20)"; echo child exit $?; exit 0'
+0
+child exit 137
+Killed
+[exit 0]
+OOMKilled=true ExitCode=0 Status=exited
+create signal= exitCode=
+attach signal= exitCode=
+start signal= exitCode=
+oom signal= exitCode=
+die signal= exitCode=0
+=== g: OOM kills a child, the shell passes its status on
+$ docker run --name x137-child2 --memory 128m --memory-swap 128m python:3.12-alpine sh -c 'python -c "b = b\"\\x01\" * (200 << 20)"; exit $?'
+Killed
+[exit 137]
+OOMKilled=true ExitCode=137 Status=exited
+=== h: compose
+$ docker compose -f /tmp/x137c/compose.yaml up --abort-on-container-exit --exit-code-from app
+ Network x137c_default  Creating
+ Network x137c_default  Created
+ Container x137c-app-1  Creating
+ Container x137c-app-1  Created
+Attaching to app-1
+[Kapp-1 exited with code 137
+Aborting on container exit...
+ Container x137c-app-1  Stopping
+ Container x137c-app-1  Stopped
+
+[exit 137]

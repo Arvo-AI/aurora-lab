@@ -1,0 +1,50 @@
+$ kubectl -n exit137 get pod plain-exit -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+plain-exit	3	Error	137	2026-11-05T21:52:36Z	2026-11-05T21:52:41Z
+[exit 0]
+$ kubectl -n exit137 get events --field-selector involvedObject.name=plain-exit --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON      OBJECT           MESSAGE
+86s         Normal    Scheduled   pod/plain-exit   Successfully assigned exit137/plain-exit to aurora-lab-worker
+85s         Normal    Pulling     pod/plain-exit   Pulling image "busybox:1.37"
+84s         Normal    Pulled      pod/plain-exit   Successfully pulled image "busybox:1.37" in 158ms (607ms including waiting). Image size: 2222118 bytes.
+31s         Normal    Created     pod/plain-exit   Container created
+31s         Normal    Started     pod/plain-exit   Container started
+31s         Normal    Pulled      pod/plain-exit   Container image "busybox:1.37" already present on machine and can be accessed by the pod
+25s         Warning   BackOff     pod/plain-exit   Back-off restarting failed container app in pod plain-exit_exit137(2a489cac-f9b8-4161-aa6b-4097e0ab69d7)
+[exit 0]
+== plain-exit pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod2a489cac_f9b8_4161_aa6b_4097e0ab69d7.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+== SIGKILL from inside the pod does nothing to PID 1
+pod/host-kill condition met
+$ kubectl -n exit137 exec host-kill -- python -c 'import os, signal; os.kill(1, signal.SIGKILL); print("sent")'
+sent
+[exit 0]
+$ kubectl -n exit137 get pod host-kill -o jsonpath='{.status.containerStatuses[0].restartCount}{"\n"}'
+0
+[exit 0]
+== SIGKILL from the node
+$ docker exec aurora-lab-worker kill -9 3767
+[exit 0]
+$ kubectl -n exit137 get pod host-kill -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+host-kill	1	Error	137	2026-11-05T21:52:09Z	2026-11-05T21:53:38Z
+[exit 0]
+$ kubectl -n exit137 get events --field-selector involvedObject.name=host-kill --sort-by=.lastTimestamp
+LAST SEEN   TYPE     REASON      OBJECT          MESSAGE
+93s         Normal   Scheduled   pod/host-kill   Successfully assigned exit137/host-kill to aurora-lab-worker
+3s          Normal   Pulled      pod/host-kill   Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+3s          Normal   Created     pod/host-kill   Container created
+3s          Normal   Started     pod/host-kill   Container started
+[exit 0]
+== host-kill pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod4ae95c5f_31ca_4d7d_a9e4_bb2582b57f98.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0

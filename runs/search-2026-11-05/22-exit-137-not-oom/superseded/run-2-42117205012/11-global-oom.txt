@@ -1,0 +1,35 @@
+$ sudo swapoff -a
+[exit 0]
+$ free -m
+               total        used        free      shared  buff/cache   available
+Mem:           15983        2547        8963          74        4893       13436
+Swap:              0           0           0
+[exit 0]
+$ kubectl -n exit137 get pod node-hog-global -o json | python3 -c 'import json,sys; p=json.load(sys.stdin); print(p["status"].get("phase"), p["status"].get("qosClass"), p["status"].get("reason"), p["status"].get("message")); print(json.dumps(p["status"]["containerStatuses"][0]))'
+Running BestEffort None None
+{"containerID": "containerd://e34223c5db7c34aeab8f90ef1552b0c57faa9088c6a3b1ec92f0a8e72cc87343", "image": "docker.io/library/python:3.12-alpine", "imageID": "docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9", "lastState": {"terminated": {"containerID": "containerd://38465a6a9ca7dee83aa84993012a80c2513eeb124996accc42558e8b21ece994", "exitCode": 137, "finishedAt": "2026-11-05T22:07:25Z", "reason": "OOMKilled", "startedAt": "2026-11-05T22:07:24Z"}}, "name": "app", "ready": true, "resources": {}, "restartCount": 1, "started": true, "state": {"running": {"startedAt": "2026-11-05T22:07:26Z"}}, "user": {"linux": {"gid": 0, "supplementalGroups": [0, 1, 2, 3, 4, 6, 10, 11, 20, 26, 27], "uid": 0}}, "volumeMounts": [{"mountPath": "/var/run/secrets/kubernetes.io/serviceaccount", "name": "kube-api-access-bz85r", "readOnly": true, "recursiveReadOnly": "Disabled"}]}
+[exit 0]
+== node-hog-global pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-besteffort.slice/kubelet-kubepods-besteffort-pod6a7bbb1d_c440_49bf_90bc_9688c39a928a.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 4
+oom_group_kill 2
+sock_throttled 0
+== kernel log
+[  647.820405] Memory cgroup out of memory: Killed process 51002 (python) total-vm:3083284kB, anon-rss:2955844kB, file-rss:8kB, shmem-rss:0kB, UID:0 pgtables:5844kB oom_score_adj:1000
+[  647.854187] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=cri-containerd-29357f94c11a174a8f98682e953e59258a512ccfe0cd8a6753a62ee88bac01c5.scope,mems_allowed=0,oom_memcg=/system.slice/docker-2adbcc818edc55767b66a36a16e2c16917722775c5c2e105baf6cf3625513a13.scope,task_memcg=/system.slice/docker-2adbcc818edc55767b66a36a16e2c16917722775c5c2e105baf6cf3625513a13.scope/kubelet.slice/kubelet-kubepods.slice/ku
+[  647.854251] Memory cgroup out of memory: Killed process 16813 (python) total-vm:26248kB, anon-rss:11452kB, file-rss:8kB, shmem-rss:0kB, UID:0 pgtables:96kB oom_score_adj:998
+[  647.866390] Memory cgroup out of memory: Killed process 16813 (python) total-vm:26248kB, anon-rss:11452kB, file-rss:8kB, shmem-rss:0kB, UID:0 pgtables:96kB oom_score_adj:998
+$ kubectl get events -A --field-selector reason=SystemOOM
+No resources found
+[exit 0]
+$ kubectl get events -A --field-selector reason=Evicted
+No resources found
+[exit 0]
+$ kubectl -n exit137 logs node-hog-global --previous --tail=1
+unable to retrieve container logs for containerd://38465a6a9ca7dee83aa84993012a80c2513eeb124996accc42558e8b21ece994[exit 0]
+$ kubectl describe node aurora-lab-worker2 | grep -E 'MemoryPressure'
+  MemoryPressure   False   Thu, 05 Nov 2026 22:04:03 +0000   Thu, 05 Nov 2026 21:57:55 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+[exit 0]

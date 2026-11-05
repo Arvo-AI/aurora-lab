@@ -1,0 +1,169 @@
+pod/exec-handled condition met
+pod/handled condition met
+pod/no-handler condition met
+pod/prestop-long condition met
+pod/prestop-slow condition met
+pod/sh-single condition met
+pod/shared-pidns condition met
+pod/slow-drain condition met
+pod/trap-ignore condition met
+pod/wrapper-handled condition met
+delete issued at 22:15:51.802243371
+case exit reason deletionTimestamp finishedAt stop_seconds
+exec-handled 0 Completed 2026-11-05T22:15:52Z 2026-11-05T22:15:51Z -0.8
+handled 0 Completed 2026-11-05T22:15:52Z 2026-11-05T22:15:52Z 0.2
+no-handler 137 Error 2026-11-05T22:16:02Z 2026-11-05T22:16:02Z 10.2
+prestop-long 0 Completed 2026-11-05T22:16:02Z 2026-11-05T22:16:02Z 10.2
+prestop-slow 137 Error 2026-11-05T22:16:04Z 2026-11-05T22:16:04Z 12.2
+sh-single 0 Completed 2026-11-05T22:15:52Z 2026-11-05T22:15:52Z 0.2
+shared-pidns 143 Error 2026-11-05T22:15:53Z 2026-11-05T22:15:52Z 0.2
+slow-drain 137 Error 2026-11-05T22:16:03Z 2026-11-05T22:16:02Z 10.2
+trap-ignore 137 Error 2026-11-05T22:16:03Z 2026-11-05T22:16:02Z 10.2
+wrapper-handled 137 Error 2026-11-05T22:16:03Z 2026-11-05T22:16:02Z 10.2
+$ kubectl -n exit137 get pod no-handler -o jsonpath='{.status.containerStatuses[0].state.terminated}'
+{"containerID":"containerd://dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d","exitCode":137,"finishedAt":"2026-11-05T22:16:02Z","reason":"Error","startedAt":"2026-11-05T22:14:53Z"}[exit 0]
+--- log exec-handled
+up
+got SIGTERM, exiting
+--- log handled
+up
+got SIGTERM, exiting
+--- log no-handler
+up
+--- log prestop-long
+up
+got SIGTERM, exiting
+--- log prestop-slow
+up
+got SIGTERM, draining for 5 s
+--- log sh-single
+up
+got SIGTERM, exiting
+--- log shared-pidns
+up
+--- log slow-drain
+up
+got SIGTERM, draining for 30 s
+--- log trap-ignore
+got SIGTERM, ignoring it
+--- log wrapper-handled
+up
+== containerd log, no-handler (killed) then handled (exited on SIGTERM)
+Nov 05 22:14:53 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:53.139033558Z" level=info msg="CreateContainer within sandbox \"897af4f038926222d48d7525c35606d7d38bd657dced06e02b2a183041a0e58d\" for name:\"app\" returns container 
+Nov 05 22:14:53 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:53.146054643Z" level=info msg="StartContainer for \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\""
+Nov 05 22:14:53 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:53.161376682Z" level=info msg="connecting to shim dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d" address="unix:///run/containerd/s/d24661f24b1d5af4
+Nov 05 22:14:53 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:53.452759401Z" level=info msg="StartContainer for \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\" returns successfully"
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.151293534Z" level=info msg="StopContainer for \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\" with timeout 10 (s)"
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.151660103Z" level=info msg="Stop container \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\" with signal terminated"
+Nov 05 22:16:02 aurora-lab-worker containerd[139]: time="2026-11-05T22:16:02.159792526Z" level=info msg="Kill container \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\""
+Nov 05 22:16:02 aurora-lab-worker containerd[139]: time="2026-11-05T22:16:02.167434644Z" level=info msg="received container exit event container_id:\"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\"  id:\"dd17fc6b8375556d6
+Nov 05 22:16:02 aurora-lab-worker containerd[139]: time="2026-11-05T22:16:02.190558813Z" level=info msg="StopContainer for \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\" returns successfully"
+Nov 05 22:16:02 aurora-lab-worker containerd[139]: time="2026-11-05T22:16:02.191081548Z" level=info msg="Container to stop \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\" must be in running or unknown state, current sta
+Nov 05 22:16:02 aurora-lab-worker containerd[139]: time="2026-11-05T22:16:02.736700160Z" level=info msg="RemoveContainer for \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\""
+Nov 05 22:16:02 aurora-lab-worker containerd[139]: time="2026-11-05T22:16:02.741045286Z" level=info msg="RemoveContainer for \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\" returns successfully"
+Nov 05 22:16:02 aurora-lab-worker containerd[139]: time="2026-11-05T22:16:02.741837918Z" level=error msg="ContainerStatus for \"dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d\" failed" error="rpc error: code = NotFound des
+---
+Nov 05 22:14:53 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:53.530677193Z" level=info msg="CreateContainer within sandbox \"3f2fef87b4453cfda79de1391f8327c51a85906fb4f90b2aaedb2ec097937bc8\" for name:\"app\" returns container 
+Nov 05 22:14:53 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:53.532990832Z" level=info msg="StartContainer for \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\""
+Nov 05 22:14:53 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:53.552640077Z" level=info msg="connecting to shim 489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0" address="unix:///run/containerd/s/d6da35ab2416df66
+Nov 05 22:14:54 aurora-lab-worker containerd[139]: time="2026-11-05T22:14:54.158884525Z" level=info msg="StartContainer for \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\" returns successfully"
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.019063276Z" level=info msg="StopContainer for \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\" with timeout 10 (s)"
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.021059477Z" level=info msg="Stop container \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\" with signal terminated"
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.040006678Z" level=info msg="received container exit event container_id:\"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\"  id:\"489c0178659562462
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.069699219Z" level=info msg="StopContainer for \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\" returns successfully"
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.070392428Z" level=info msg="Container to stop \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\" must be in running or unknown state, current sta
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.697140316Z" level=info msg="RemoveContainer for \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\""
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.701716425Z" level=info msg="RemoveContainer for \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\" returns successfully"
+Nov 05 22:15:52 aurora-lab-worker containerd[139]: time="2026-11-05T22:15:52.702241819Z" level=error msg="ContainerStatus for \"489c01786595624622ba8524e05f7805c8db07c40c6fb527ef234a523142d5e0\" failed" error="rpc error: code = NotFound des
+$ kubectl -n exit137 get events --sort-by=.lastTimestamp --field-selector reason=Killing
+LAST SEEN   TYPE     REASON    OBJECT                 MESSAGE
+19s         Normal   Killing   pod/probe-trap         Container app failed liveness probe, will be restarted
+19s         Normal   Killing   pod/probe-no-handler   Container app failed liveness probe, will be restarted
+16s         Normal   Killing   pod/exec-handled       Stopping container app
+15s         Normal   Killing   pod/prestop-long       Stopping container app
+15s         Normal   Killing   pod/prestop-slow       Stopping container app
+15s         Normal   Killing   pod/no-handler         Stopping container app
+15s         Normal   Killing   pod/handled            Stopping container app
+15s         Normal   Killing   pod/sh-single          Stopping container app
+15s         Normal   Killing   pod/shared-pidns       Stopping container app
+15s         Normal   Killing   pod/slow-drain         Stopping container app
+15s         Normal   Killing   pod/trap-ignore        Stopping container app
+15s         Normal   Killing   pod/wrapper-handled    Stopping container app
+4s          Normal   Killing   pod/probe-handled      Container app failed liveness probe, will be restarted
+[exit 0]
+$ kubectl -n exit137 get events --sort-by=.lastTimestamp --field-selector reason=FailedPreStopHook
+LAST SEEN   TYPE      REASON              OBJECT             MESSAGE
+5s          Warning   FailedPreStopHook   pod/prestop-long   PreStopHook failed
+3s          Warning   FailedPreStopHook   pod/prestop-slow   PreStopHook failed
+[exit 0]
+$ kubectl -n exit137 describe pod no-handler
+Name:             no-handler
+Namespace:        exit137
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-worker/172.18.0.4
+Start Time:       Thu, 05 Nov 2026 22:14:52 +0000
+Labels:           group=stop
+Annotations:      <none>
+Status:           Failed
+IP:               10.244.1.21
+IPs:
+  IP:  10.244.1.21
+Containers:
+  app:
+    Container ID:  containerd://dd17fc6b8375556d651e2799b60fb00743953f4978dfb7738840c0e8cd0c312d
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      /code/nohandler.py
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    137
+      Started:      Thu, 05 Nov 2026 22:14:53 +0000
+      Finished:     Thu, 05 Nov 2026 22:16:02 +0000
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        10m
+      memory:     32Mi
+    Environment:  <none>
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-m6vmb (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      code
+    Optional:  false
+  kube-api-access-m6vmb:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              kubernetes.io/hostname=aurora-lab-worker
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  75s   default-scheduler  Successfully assigned exit137/no-handler to aurora-lab-worker
+  Normal  Pulled     74s   kubelet            spec.containers{app}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal  Created    74s   kubelet            spec.containers{app}: Container created
+  Normal  Started    74s   kubelet            spec.containers{app}: Container started
+  Normal  Killing    15s   kubelet            spec.containers{app}: Stopping container app
+[exit 0]

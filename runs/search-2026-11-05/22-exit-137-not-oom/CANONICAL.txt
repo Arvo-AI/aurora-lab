@@ -1,0 +1,8 @@
+Canonical transcript: this folder, Actions run 42118907407, 2026-11-05 22:08 to 22:19 UTC.
+Earlier runs of the same scenario, kept and not cherry-picked:
+  superseded/run-1-42115692201  first version of repro.sh, fewer cases. Tally 80 of 80 OOMKilled.
+  superseded/run-2-42117205012  Tally 79 of 80. Its 11-global-oom.txt is NOT a global OOM: the node
+                                cap from section 08 was still set, because docker update --memory 0
+                                does not clear a limit. The canonical run fixes that.
+OOM reason tally over all three runs: 238 OOMKilled, 2 Error, of 240 pods. Each pod allocates 150 MiB
+under a 128Mi limit. One round of six (run 2, round 2) has 71 kernel lines instead of 80.

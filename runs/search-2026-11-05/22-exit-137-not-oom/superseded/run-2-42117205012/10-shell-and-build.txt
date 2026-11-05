@@ -1,0 +1,60 @@
+=== a: SIGKILL in a plain shell
+$ bash -c 'sleep 100 & kill -9 $!; wait $!; echo status $?'
+bash: line 1: 50325 Killed                  sleep 100
+status 137
+[exit 0]
+=== b: kernel OOM kill of a service in a cgroup, no container
+$ sudo systemd-run --wait --pipe --collect --unit=x137-demo -p MemoryMax=128M -p MemorySwapMax=0 python3 -c 'b = b"\x01" * (300 << 20); print("allocated")'
+Running as unit: x137-demo.service
+Finished with result: oom-kill
+Main processes terminated with: code=killed/status=KILL
+Service runtime: 83ms
+CPU time consumed: 83ms
+Memory peak: 2.7M
+Memory swap peak: 0B
+[exit 1]
+$ journalctl -u x137-demo --no-pager | tail -5
+Nov 05 22:07:16 runnervm7aw5e systemd[1]: Started x137-demo.service - /usr/bin/python3 -c "b = b\"\\x01\" * (300 << 20); print(\"allocated\")".
+Nov 05 22:07:16 runnervm7aw5e systemd[1]: x137-demo.service: A process of this unit has been killed by the OOM killer.
+Nov 05 22:07:16 runnervm7aw5e systemd[1]: x137-demo.service: Main process exited, code=killed, status=9/KILL
+Nov 05 22:07:16 runnervm7aw5e systemd[1]: x137-demo.service: Failed with result 'oom-kill'.
+[exit 0]
+=== c: same, in a shell
+$ sudo systemd-run --scope -q -p MemoryMax=128M -p MemorySwapMax=0 -p OOMPolicy=continue bash -c 'python3 -c "b = b\"\\x01\" * (300 << 20)"; echo python status $?'
+/usr/bin/bash: line 1: 50336 Killed                  python3 -c "b = b\"\\x01\" * (300 << 20)"
+python status 137
+[exit 0]
+$ sudo dmesg | grep -E 'Killed process' | tail -2 | cut -c1-200
+[  636.626281] Memory cgroup out of memory: Killed process 50328 (python3) total-vm:325548kB, anon-rss:130716kB, file-rss:6692kB, shmem-rss:0kB, UID:0 pgtables:332kB oom_score_adj:0
+[  636.735447] Memory cgroup out of memory: Killed process 50336 (python3) total-vm:325548kB, anon-rss:130348kB, file-rss:6496kB, shmem-rss:0kB, UID:0 pgtables:324kB oom_score_adj:500
+[exit 0]
+=== d: docker build
+$ docker buildx create --name x137 --driver docker-container --driver-opt memory=256m --driver-opt memory-swap=256m --bootstrap >/dev/null 2>&1
+[exit 0]
+$ docker buildx build --builder x137 --no-cache --progress=plain /tmp/x137b 2>&1 | tail -14
+
+#6 [2/2] RUN python -c "b = b'\x01' * (600 << 20); print('allocated')"
+#6 ERROR: process "/bin/sh -c python -c \"b = b'\\x01' * (600 << 20); print('allocated')\"" did not complete successfully: cannot allocate memory
+------
+ > [2/2] RUN python -c "b = b'\x01' * (600 << 20); print('allocated')":
+------
+WARNING: No output specified with docker-container driver. Build result will only remain in the build cache. To push result image into registry use --push or to load image into docker use --load
+Dockerfile:2
+--------------------
+   1 |     FROM python:3.12-alpine
+   2 | >>> RUN python -c "b = b'\x01' * (600 << 20); print('allocated')"
+   3 |     
+--------------------
+ERROR: failed to build: failed to solve: ResourceExhausted: process "/bin/sh -c python -c \"b = b'\\x01' * (600 << 20); print('allocated')\"" did not complete successfully: cannot allocate memory
+[exit 102]
+=== e: docker build, legacy builder
+$ DOCKER_BUILDKIT=0 docker build --no-cache --memory 256m --memory-swap 256m /tmp/x137b 2>&1 | tail -8
+            environment-variable.
+
+Sending build context to Docker daemon  2.048kB
+Step 1/2 : FROM python:3.12-alpine
+ ---> 38fd5a425aa9
+Step 2/2 : RUN python -c "b = b'\x01' * (600 << 20); print('allocated')"
+ ---> Running in 1670dc3ce0e1
+The command '/bin/sh -c python -c "b = b'\x01' * (600 << 20); print('allocated')"' returned a non-zero code: 137
+[exit 137]

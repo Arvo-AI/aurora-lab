@@ -1,0 +1,125 @@
+pod/exec-handled condition met
+pod/handled condition met
+pod/no-handler condition met
+pod/prestop-long condition met
+pod/sh-single condition met
+pod/shared-pidns condition met
+pod/trap-ignore condition met
+pod/wrapper-handled condition met
+delete issued at 21:53:03.286276398
+pod "trap-ignore" deleted from exit137 namespace
+pod "no-handler" deleted from exit137 namespace
+pod "shared-pidns" deleted from exit137 namespace
+pod "handled" deleted from exit137 namespace
+pod "wrapper-handled" deleted from exit137 namespace
+pod "exec-handled" deleted from exit137 namespace
+pod "sh-single" deleted from exit137 namespace
+pod "prestop-long" deleted from exit137 namespace
+case exit reason deletionTimestamp finishedAt stop_seconds
+exec-handled 0 Completed 2026-11-05T21:53:04Z 2026-11-05T21:53:03Z -0.3
+handled 0 Completed 2026-11-05T21:53:04Z 2026-11-05T21:53:03Z -0.3
+no-handler 137 Error 2026-11-05T21:53:14Z 2026-11-05T21:53:13Z 9.7
+prestop-long 0 Completed 2026-11-05T21:53:14Z 2026-11-05T21:53:14Z 10.7
+sh-single 0 Completed 2026-11-05T21:53:04Z 2026-11-05T21:53:04Z 0.7
+shared-pidns 143 Error 2026-11-05T21:53:04Z 2026-11-05T21:53:03Z -0.3
+trap-ignore 137 Error 2026-11-05T21:53:14Z 2026-11-05T21:53:13Z 9.7
+wrapper-handled 137 Error 2026-11-05T21:53:14Z 2026-11-05T21:53:13Z 9.7
+$ kubectl -n exit137 get pod no-handler -o jsonpath='{.status.containerStatuses[0].state.terminated}'
+{"containerID":"containerd://89814140780b92d34160019e9db843cda67cff506fa4faa2970c636b09339f96","exitCode":137,"finishedAt":"2026-11-05T21:53:13Z","reason":"Error","startedAt":"2026-11-05T21:52:09Z"}[exit 0]
+$ kubectl -n exit137 logs no-handler
+unable to retrieve container logs for containerd://89814140780b92d34160019e9db843cda67cff506fa4faa2970c636b09339f96[exit 0]
+$ kubectl -n exit137 logs handled
+unable to retrieve container logs for containerd://2ab20012e2a672339466b2a5022bf1260749cb713695a1a2ace0f032ce928ae7[exit 0]
+$ kubectl -n exit137 logs trap-ignore
+unable to retrieve container logs for containerd://c2a1cc97b164d01aae6a357e51ca412bd6ca77ce85895fb2d3a14ad9d918c75a[exit 0]
+$ kubectl -n exit137 logs prestop-long
+unable to retrieve container logs for containerd://bab99693cf1d3229a68831f7bd4b06580062ef062622f4be345c251f044d0fc6[exit 0]
+$ kubectl -n exit137 get events --sort-by=.lastTimestamp --field-selector reason=Killing
+LAST SEEN   TYPE     REASON    OBJECT                 MESSAGE
+24s         Normal   Killing   pod/probe-handled      Container app failed liveness probe, will be restarted
+14s         Normal   Killing   pod/exec-handled       Stopping container app
+14s         Normal   Killing   pod/handled            Stopping container app
+14s         Normal   Killing   pod/no-handler         Stopping container app
+14s         Normal   Killing   pod/prestop-long       Stopping container app
+14s         Normal   Killing   pod/probe-no-handler   Container app failed liveness probe, will be restarted
+14s         Normal   Killing   pod/probe-trap         Container app failed liveness probe, will be restarted
+14s         Normal   Killing   pod/sh-single          Stopping container app
+14s         Normal   Killing   pod/shared-pidns       Stopping container app
+14s         Normal   Killing   pod/trap-ignore        Stopping container app
+14s         Normal   Killing   pod/wrapper-handled    Stopping container app
+[exit 0]
+$ kubectl -n exit137 get events --sort-by=.lastTimestamp --field-selector reason=FailedPreStopHook
+LAST SEEN   TYPE      REASON              OBJECT             MESSAGE
+3s          Warning   FailedPreStopHook   pod/prestop-long   PreStopHook failed
+[exit 0]
+$ kubectl -n exit137 describe pod no-handler
+Name:             no-handler
+Namespace:        exit137
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-worker/172.18.0.4
+Start Time:       Thu, 05 Nov 2026 21:52:07 +0000
+Labels:           group=stop
+Annotations:      <none>
+Status:           Failed
+IP:               10.244.1.10
+IPs:
+  IP:  10.244.1.10
+Containers:
+  app:
+    Container ID:  containerd://89814140780b92d34160019e9db843cda67cff506fa4faa2970c636b09339f96
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      /code/nohandler.py
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    137
+      Started:      Thu, 05 Nov 2026 21:52:09 +0000
+      Finished:     Thu, 05 Nov 2026 21:53:13 +0000
+    Ready:          False
+    Restart Count:  0
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        10m
+      memory:     32Mi
+    Environment:  <none>
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-wq7bd (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      code
+    Optional:  false
+  kube-api-access-wq7bd:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              kubernetes.io/hostname=aurora-lab-worker
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  70s   default-scheduler  Successfully assigned exit137/no-handler to aurora-lab-worker
+  Normal  Pulled     69s   kubelet            spec.containers{app}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal  Created    69s   kubelet            spec.containers{app}: Container created
+  Normal  Started    68s   kubelet            spec.containers{app}: Container started
+  Normal  Killing    14s   kubelet            spec.containers{app}: Stopping container app
+[exit 0]

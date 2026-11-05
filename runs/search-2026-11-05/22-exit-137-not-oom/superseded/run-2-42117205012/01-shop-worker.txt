@@ -1,0 +1,124 @@
+$ kubectl -n shop get pods -l app=worker -o wide
+NAME                      READY   STATUS    RESTARTS     AGE   IP            NODE                NOMINATED NODE   READINESS GATES
+worker-6df4dfbb9f-p9fxb   1/1     Running   3 (6s ago)   66s   10.244.2.18   aurora-lab-worker   <none>           <none>
+[exit 0]
+$ kubectl -n shop describe pod worker-6df4dfbb9f-p9fxb
+Name:             worker-6df4dfbb9f-p9fxb
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-worker/172.18.0.4
+Start Time:       Thu, 05 Nov 2026 22:01:37 +0000
+Labels:           app=worker
+                  pod-template-hash=6df4dfbb9f
+Annotations:      <none>
+Status:           Running
+IP:               10.244.2.18
+IPs:
+  IP:           10.244.2.18
+Controlled By:  ReplicaSet/worker-6df4dfbb9f
+Containers:
+  worker:
+    Container ID:  containerd://7d87aad80a8c71f9cc65db0c060fa5d345acdb50c61c071ad4c2d7eef6cfc050
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      /code/worker.py
+    State:          Running
+      Started:      Thu, 05 Nov 2026 22:02:37 +0000
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    137
+      Started:      Thu, 05 Nov 2026 22:02:17 +0000
+      Finished:     Thu, 05 Nov 2026 22:02:37 +0000
+    Ready:          True
+    Restart Count:  3
+    Limits:
+      memory:  192Mi
+    Requests:
+      cpu:     50m
+      memory:  64Mi
+    Liveness:  exec [test -f /tmp/worker-heartbeat] delay=5s timeout=1s period=5s successThreshold=1 failureThreshold=2
+    Environment:
+      BATCH_SIZE:  500
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-thfxw (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-thfxw:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  66s                default-scheduler  Successfully assigned shop/worker-6df4dfbb9f-p9fxb to aurora-lab-worker
+  Normal   Killing    16s (x3 over 56s)  kubelet            spec.containers{worker}: Container worker failed liveness probe, will be restarted
+  Normal   Pulled     6s (x4 over 66s)   kubelet            spec.containers{worker}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    6s (x4 over 66s)   kubelet            spec.containers{worker}: Container created
+  Normal   Started    6s (x4 over 66s)   kubelet            spec.containers{worker}: Container started
+  Warning  Unhealthy  1s (x7 over 61s)   kubelet            spec.containers{worker}: Liveness probe failed:
+[exit 0]
+$ kubectl -n shop get events --field-selector involvedObject.name=worker-6df4dfbb9f-p9fxb --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON      OBJECT                        MESSAGE
+66s         Normal    Scheduled   pod/worker-6df4dfbb9f-p9fxb   Successfully assigned shop/worker-6df4dfbb9f-p9fxb to aurora-lab-worker
+16s         Normal    Killing     pod/worker-6df4dfbb9f-p9fxb   Container worker failed liveness probe, will be restarted
+6s          Normal    Pulled      pod/worker-6df4dfbb9f-p9fxb   Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+6s          Normal    Created     pod/worker-6df4dfbb9f-p9fxb   Container created
+6s          Normal    Started     pod/worker-6df4dfbb9f-p9fxb   Container started
+1s          Warning   Unhealthy   pod/worker-6df4dfbb9f-p9fxb   Liveness probe failed:
+[exit 0]
+$ kubectl -n shop top pod worker-6df4dfbb9f-p9fxb --containers
+POD                       NAME     CPU(cores)   MEMORY(bytes)   
+worker-6df4dfbb9f-p9fxb   worker   7m           3Mi             
+[exit 0]
+$ kubectl -n shop get pod worker-6df4dfbb9f-p9fxb -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+worker-6df4dfbb9f-p9fxb	4	Error	137	2026-11-05T22:02:37Z	2026-11-05T22:02:57Z
+[exit 0]
+== worker-6df4dfbb9f-p9fxb pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-podcef8aa7f_4a77_4604_9f89_74e3e357aa59.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+== roll back the probe
+$ time kubectl -n shop rollout undo deploy/worker
+Warning: resource deployments/worker was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/worker rolled back
+
+real	0m0.086s
+user	0m0.074s
+sys	0m0.027s
+[exit 0]
+$ kubectl -n shop rollout status deploy/worker --timeout=120s
+Waiting for deployment "worker" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "worker" rollout to finish: 1 old replicas are pending termination...
+deployment "worker" successfully rolled out
+[exit 0]
+$ kubectl -n shop get pods -l app=worker
+NAME                      READY   STATUS    RESTARTS   AGE
+worker-6cf88d4b58-htdlp   1/1     Running   0          61s
+[exit 0]

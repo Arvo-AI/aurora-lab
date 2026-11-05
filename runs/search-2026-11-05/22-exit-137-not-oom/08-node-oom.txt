@@ -1,0 +1,82 @@
+$ docker update --memory 3g --memory-swap 3g aurora-lab-worker2
+aurora-lab-worker2
+[exit 0]
+$ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}' aurora-lab-worker2
+aurora-lab-worker2 201.3MiB / 3GiB
+[exit 0]
+$ kubectl -n exit137 get pod node-hog -o jsonpath='{.status.phase} {.status.qosClass} {.status.reason}{"\n"}'
+Running BestEffort 
+[exit 0]
+$ kubectl -n exit137 get pod node-hog -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+node-hog	1	OOMKilled	137	2026-11-05T22:17:25Z	2026-11-05T22:17:39Z
+[exit 0]
+$ kubectl -n exit137 get pod node-hog -o jsonpath='{.status.containerStatuses[0].state}{"\n"}'
+{"running":{"startedAt":"2026-11-05T22:17:39Z"}}
+[exit 0]
+$ kubectl -n exit137 get pod node-hog -o jsonpath='{.spec.containers[0].resources}{"\n"}'
+{}
+[exit 0]
+$ kubectl -n exit137 logs node-hog --previous --tail=2
+held 2800 MiB
+held 2850 MiB
+[exit 0]
+== node-hog pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-besteffort.slice/kubelet-kubepods-besteffort-pod0cb25332_4860_4f52_be76_8fcfd9f23b37.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 2
+oom_group_kill 1
+sock_throttled 0
+== kernel log
+[  966.665024] Memory cgroup out of memory: Killed process 40685 (python) total-vm:164828kB, anon-rss:130316kB, file-rss:5380kB, shmem-rss:0kB, UID:0 pgtables:312kB oom_score_adj:992
+[  997.572456] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=cri-containerd-4d81581e9bfd19b2329ddc031821e802843b1b5e4ac3f47725e208eb09f44c71.scope,mems_allowed=0,oom_memcg=/system.slice/docker-e5ddbd8a44d43a9818d46eea775d414644d8ca647e87e3437aa1f042a7d48a91.scope,task_memcg=/system.slice/docker-e5ddbd8a44d43a9818d46eea775d414644d8ca647e87e3437aa1f042a7d48a91.scope/kubelet.slice/kubelet-kubepods.slice/ku
+[  997.572559] Memory cgroup out of memory: Killed process 46400 (python) total-vm:2981060kB, anon-rss:2954500kB, file-rss:8kB, shmem-rss:0kB, UID:0 pgtables:5848kB oom_score_adj:1000
+[  997.575680] Memory cgroup out of memory: Killed process 46400 (python) total-vm:2981060kB, anon-rss:2954500kB, file-rss:8kB, shmem-rss:0kB, UID:0 pgtables:5848kB oom_score_adj:1000
+$ kubectl -n exit137 get events --field-selector involvedObject.name=node-hog --sort-by=.lastTimestamp
+LAST SEEN   TYPE     REASON      OBJECT         MESSAGE
+16s         Normal   Scheduled   pod/node-hog   Successfully assigned exit137/node-hog to aurora-lab-worker2
+2s          Normal   Pulled      pod/node-hog   Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+2s          Normal   Created     pod/node-hog   Container created
+2s          Normal   Started     pod/node-hog   Container started
+[exit 0]
+$ kubectl get events -A --field-selector involvedObject.kind=Node --sort-by=.lastTimestamp
+NAMESPACE   LAST SEEN   TYPE     REASON                    OBJECT                          MESSAGE
+default     8m31s       Normal   Starting                  node/aurora-lab-control-plane   
+default     8m29s       Normal   Starting                  node/aurora-lab-worker          
+default     8m30s       Normal   Starting                  node/aurora-lab-worker2         
+default     8m45s       Normal   NodeHasSufficientMemory   node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasSufficientMemory
+default     8m45s       Normal   NodeHasNoDiskPressure     node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasNoDiskPressure
+default     8m45s       Normal   NodeHasSufficientPID      node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasSufficientPID
+default     8m45s       Normal   NodeAllocatableEnforced   node/aurora-lab-control-plane   Updated Node Allocatable limit across pods
+default     8m45s       Normal   Starting                  node/aurora-lab-control-plane   Starting kubelet.
+default     8m40s       Normal   NodeAllocatableEnforced   node/aurora-lab-control-plane   Updated Node Allocatable limit across pods
+default     8m40s       Normal   NodeHasSufficientPID      node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasSufficientPID
+default     8m40s       Normal   NodeHasNoDiskPressure     node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasNoDiskPressure
+default     8m40s       Normal   NodeHasSufficientMemory   node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasSufficientMemory
+default     8m40s       Normal   Starting                  node/aurora-lab-control-plane   Starting kubelet.
+default     8m34s       Normal   RegisteredNode            node/aurora-lab-control-plane   Node aurora-lab-control-plane event: Registered Node aurora-lab-control-plane in Controller
+default     8m33s       Normal   NodeHasNoDiskPressure     node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeHasNoDiskPressure
+default     8m33s       Normal   NodeHasSufficientMemory   node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeHasSufficientMemory
+default     8m33s       Normal   NodeAllocatableEnforced   node/aurora-lab-worker          Updated Node Allocatable limit across pods
+default     8m33s       Normal   CIDRAssignmentFailed      node/aurora-lab-worker          Node aurora-lab-worker status is now: CIDRAssignmentFailed
+default     8m33s       Normal   NodeHasSufficientMemory   node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeHasSufficientMemory
+default     8m33s       Normal   CIDRAssignmentFailed      node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: CIDRAssignmentFailed
+default     8m33s       Normal   NodeAllocatableEnforced   node/aurora-lab-worker2         Updated Node Allocatable limit across pods
+default     8m33s       Normal   NodeHasSufficientPID      node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeHasSufficientPID
+default     8m33s       Normal   NodeHasNoDiskPressure     node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeHasNoDiskPressure
+default     8m33s       Normal   NodeHasSufficientPID      node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeHasSufficientPID
+default     8m29s       Normal   RegisteredNode            node/aurora-lab-worker          Node aurora-lab-worker event: Registered Node aurora-lab-worker in Controller
+default     8m29s       Normal   RegisteredNode            node/aurora-lab-worker2         Node aurora-lab-worker2 event: Registered Node aurora-lab-worker2 in Controller
+default     8m22s       Normal   NodeReady                 node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeReady
+default     8m21s       Normal   NodeReady                 node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeReady
+default     8m20s       Normal   NodeReady                 node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeReady
+[exit 0]
+$ kubectl describe node aurora-lab-worker2 | grep -E 'MemoryPressure|memory:'
+  MemoryPressure   False   Thu, 05 Nov 2026 22:15:36 +0000   Thu, 05 Nov 2026 22:09:08 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  memory:             16366512Ki
+  memory:             16366512Ki
+[exit 0]
+$ docker update --memory 64g --memory-swap 64g aurora-lab-worker2
+aurora-lab-worker2
+[exit 0]

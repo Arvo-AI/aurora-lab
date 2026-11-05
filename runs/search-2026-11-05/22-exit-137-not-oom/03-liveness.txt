@@ -1,0 +1,127 @@
+$ kubectl -n exit137 get pod probe-trap -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+probe-trap	2	Error	137	2026-11-05T22:15:18Z	2026-11-05T22:15:38Z
+[exit 0]
+$ kubectl -n exit137 get pod probe-no-handler -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+probe-no-handler	2	Error	137	2026-11-05T22:15:18Z	2026-11-05T22:15:38Z
+[exit 0]
+$ kubectl -n exit137 get pod probe-handled -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+probe-handled	2	Completed	0	2026-11-05T22:15:18Z	2026-11-05T22:15:28Z
+[exit 0]
+$ kubectl -n exit137 describe pod probe-no-handler
+Name:             probe-no-handler
+Namespace:        exit137
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-worker/172.18.0.4
+Start Time:       Thu, 05 Nov 2026 22:14:52 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.32
+IPs:
+  IP:  10.244.1.32
+Containers:
+  app:
+    Container ID:  containerd://6d592800e6127fcc59061b31ee4426e712d3f691b1227b75e914c27fdc6daea7
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      /code/nohandler.py
+    State:          Running
+      Started:      Thu, 05 Nov 2026 22:15:38 +0000
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    137
+      Started:      Thu, 05 Nov 2026 22:15:18 +0000
+      Finished:     Thu, 05 Nov 2026 22:15:38 +0000
+    Ready:          True
+    Restart Count:  2
+    Limits:
+      memory:  64Mi
+    Requests:
+      cpu:        10m
+      memory:     32Mi
+    Liveness:     exec [cat /tmp/healthy] delay=5s timeout=1s period=5s successThreshold=1 failureThreshold=2
+    Environment:  <none>
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-rstbj (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      code
+    Optional:  false
+  kube-api-access-rstbj:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              kubernetes.io/hostname=aurora-lab-worker
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  49s                default-scheduler  Successfully assigned exit137/probe-no-handler to aurora-lab-worker
+  Warning  Unhealthy  13s (x4 over 38s)  kubelet            spec.containers{app}: Liveness probe failed: cat: can't open '/tmp/healthy': No such file or directory
+  Normal   Killing    13s (x2 over 33s)  kubelet            spec.containers{app}: Container app failed liveness probe, will be restarted
+  Normal   Pulled     3s (x3 over 47s)   kubelet            spec.containers{app}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    3s (x3 over 47s)   kubelet            spec.containers{app}: Container created
+  Normal   Started    3s (x3 over 47s)   kubelet            spec.containers{app}: Container started
+[exit 0]
+$ kubectl -n exit137 get events --field-selector involvedObject.name=probe-no-handler --sort-by=.lastTimestamp -o custom-columns=FIRST:.firstTimestamp,LAST:.lastTimestamp,COUNT:.count,REASON:.reason,MSG:.message
+FIRST                  LAST                   COUNT   REASON      MSG
+2026-11-05T22:14:52Z   2026-11-05T22:14:52Z   1       Scheduled   Successfully assigned exit137/probe-no-handler to aurora-lab-worker
+2026-11-05T22:15:03Z   2026-11-05T22:15:28Z   4       Unhealthy   Liveness probe failed: cat: can't open '/tmp/healthy': No such file or directory
+
+2026-11-05T22:15:08Z   2026-11-05T22:15:28Z   2       Killing     Container app failed liveness probe, will be restarted
+2026-11-05T22:14:54Z   2026-11-05T22:15:38Z   3       Pulled      Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+2026-11-05T22:14:54Z   2026-11-05T22:15:38Z   3       Created     Container created
+2026-11-05T22:14:54Z   2026-11-05T22:15:38Z   3       Started     Container started
+[exit 0]
+== probe-no-handler pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-podf04eed59_eea4_4f3c_bc6e_9d05a8d002bf.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+== probe-trap pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod3174a742_be3c_4634_9fb5_0b37b71b5b8d.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+== probe-handled pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod68587d41_6d8c_4656_b562_229c60d7ffbb.slice
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+== containerd log for probe-no-handler last container d5ce58f2c686
+"StopContainer for \"d5ce58f2c686630f7425cb50c0832b2df6a01466c6a50f70b2b1413569ae832b\" with timeout 10 (s)"
+"Stop container \"d5ce58f2c686630f7425cb50c0832b2df6a01466c6a50f70b2b1413569ae832b\" with signal terminated"
+"Kill container \"d5ce58f2c686630f7425cb50c0832b2df6a01466c6a50f70b2b1413569ae832b\""
+[end]
+== containerd log for probe-handled last container c2c69c1d5c78
+"StopContainer for \"c2c69c1d5c78f1ff17d14a19acc1bd74317a68a94ac5d96f95520bda62d4f487\" with timeout 10 (s)"
+"Stop container \"c2c69c1d5c78f1ff17d14a19acc1bd74317a68a94ac5d96f95520bda62d4f487\" with signal terminated"
+[end]

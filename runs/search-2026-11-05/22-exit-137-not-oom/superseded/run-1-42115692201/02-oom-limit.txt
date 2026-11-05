@@ -1,0 +1,143 @@
+$ kubectl -n exit137 get pod oom-limit -o jsonpath='{.metadata.name}{"\t"}{.status.containerStatuses[0].restartCount}{"\t"}{.status.containerStatuses[0].lastState.terminated.reason}{"\t"}{.status.containerStatuses[0].lastState.terminated.exitCode}{"\t"}{.status.containerStatuses[0].lastState.terminated.startedAt}{"\t"}{.status.containerStatuses[0].lastState.terminated.finishedAt}{"\n"}'
+oom-limit	1	OOMKilled	137	2026-11-05T21:52:09Z	2026-11-05T21:52:30Z
+[exit 0]
+$ kubectl -n exit137 get pod oom-limit -o jsonpath='{.status.containerStatuses[0].lastState.terminated}'
+{"containerID":"containerd://bfaad9fe1cc6622bd1cf957accbb6d94a773d346e1de82bb378d3200fdfddd6b","exitCode":137,"finishedAt":"2026-11-05T21:52:30Z","reason":"OOMKilled","startedAt":"2026-11-05T21:52:09Z"}[exit 0]
+$ kubectl -n exit137 describe pod oom-limit
+Name:             oom-limit
+Namespace:        exit137
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-worker/172.18.0.4
+Start Time:       Thu, 05 Nov 2026 21:52:08 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.1.17
+IPs:
+  IP:  10.244.1.17
+Containers:
+  app:
+    Container ID:  containerd://c1ea3efda02355cb1e552264e1b2b15e1abe324ffee98014d755877d9bf6fb85
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      -u
+      -c
+      import time; print('up'); time.sleep(20); b = b'\x01' * (150 << 20); print('allocated'); time.sleep(3600)
+    State:          Running
+      Started:      Thu, 05 Nov 2026 21:52:30 +0000
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Thu, 05 Nov 2026 21:52:09 +0000
+      Finished:     Thu, 05 Nov 2026 21:52:30 +0000
+    Ready:          True
+    Restart Count:  1
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:        10m
+      memory:     128Mi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qfgxh (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-qfgxh:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              kubernetes.io/hostname=aurora-lab-worker
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age               From               Message
+  ----    ------     ----              ----               -------
+  Normal  Scheduled  25s               default-scheduler  Successfully assigned exit137/oom-limit to aurora-lab-worker
+  Normal  Pulled     3s (x2 over 25s)  kubelet            spec.containers{app}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal  Created    3s (x2 over 24s)  kubelet            spec.containers{app}: Container created
+  Normal  Started    3s (x2 over 24s)  kubelet            spec.containers{app}: Container started
+[exit 0]
+$ kubectl -n exit137 get events --field-selector involvedObject.name=oom-limit --sort-by=.lastTimestamp
+LAST SEEN   TYPE     REASON      OBJECT          MESSAGE
+25s         Normal   Scheduled   pod/oom-limit   Successfully assigned exit137/oom-limit to aurora-lab-worker
+3s          Normal   Pulled      pod/oom-limit   Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+3s          Normal   Created     pod/oom-limit   Container created
+3s          Normal   Started     pod/oom-limit   Container started
+[exit 0]
+$ kubectl get events -A --field-selector involvedObject.kind=Node --sort-by=.lastTimestamp
+NAMESPACE   LAST SEEN   TYPE     REASON                    OBJECT                          MESSAGE
+default     5m11s       Normal   Starting                  node/aurora-lab-control-plane   
+default     5m9s        Normal   Starting                  node/aurora-lab-worker2         
+default     5m10s       Normal   Starting                  node/aurora-lab-worker          
+default     5m20s       Normal   Starting                  node/aurora-lab-control-plane   Starting kubelet.
+default     5m20s       Normal   NodeAllocatableEnforced   node/aurora-lab-control-plane   Updated Node Allocatable limit across pods
+default     5m20s       Normal   NodeHasSufficientMemory   node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasSufficientMemory
+default     5m20s       Normal   NodeHasNoDiskPressure     node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasNoDiskPressure
+default     5m20s       Normal   NodeHasSufficientPID      node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeHasSufficientPID
+default     5m15s       Normal   RegisteredNode            node/aurora-lab-control-plane   Node aurora-lab-control-plane event: Registered Node aurora-lab-control-plane in Controller
+default     5m13s       Normal   NodeAllocatableEnforced   node/aurora-lab-worker          Updated Node Allocatable limit across pods
+default     5m13s       Normal   NodeAllocatableEnforced   node/aurora-lab-worker2         Updated Node Allocatable limit across pods
+default     5m13s       Normal   NodeHasSufficientPID      node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeHasSufficientPID
+default     5m13s       Normal   NodeHasSufficientMemory   node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeHasSufficientMemory
+default     5m13s       Normal   Starting                  node/aurora-lab-worker          Starting kubelet.
+default     5m13s       Normal   CIDRAssignmentFailed      node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: CIDRAssignmentFailed
+default     5m13s       Normal   NodeHasNoDiskPressure     node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeHasNoDiskPressure
+default     5m12s       Normal   NodeHasSufficientMemory   node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeHasSufficientMemory
+default     5m12s       Normal   NodeHasNoDiskPressure     node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeHasNoDiskPressure
+default     5m12s       Normal   NodeHasSufficientPID      node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeHasSufficientPID
+default     5m10s       Normal   RegisteredNode            node/aurora-lab-worker          Node aurora-lab-worker event: Registered Node aurora-lab-worker in Controller
+default     5m10s       Normal   RegisteredNode            node/aurora-lab-worker2         Node aurora-lab-worker2 event: Registered Node aurora-lab-worker2 in Controller
+default     5m2s        Normal   NodeReady                 node/aurora-lab-control-plane   Node aurora-lab-control-plane status is now: NodeReady
+default     5m1s        Normal   NodeReady                 node/aurora-lab-worker          Node aurora-lab-worker status is now: NodeReady
+default     4m59s       Normal   NodeReady                 node/aurora-lab-worker2         Node aurora-lab-worker2 status is now: NodeReady
+[exit 0]
+== memory.events from inside the replacement container
+$ kubectl -n exit137 exec oom-limit -- cat /sys/fs/cgroup/memory.events
+low 0
+high 0
+max 0
+oom 0
+oom_kill 0
+oom_group_kill 0
+sock_throttled 0
+[exit 0]
+$ kubectl -n exit137 exec oom-limit -- cat /sys/fs/cgroup/memory.oom.group
+1
+[exit 0]
+== memory.events on the node, pod cgroup
+== oom-limit pod cgroup: /sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod3bc38477_194b_45ea_8a32_9a62adfcefe8.slice
+low 0
+high 0
+max 29
+oom 1
+oom_kill 2
+oom_group_kill 1
+sock_throttled 0
+== kernel log
+[  737.160056] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=cri-containerd-bfaad9fe1cc6622bd1cf957accbb6d94a773d346e1de82bb378d3200fdfddd6b.scope,mems_allowed=0,oom_memcg=/system.slice/docker-30099571b729af91a5580e56ab27a7926d010fe503310ac3661c390bdcaa446b.scope/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod3bc38477_194b_45ea_8a32_9a62adfcefe8.slice,task_memcg=/system.slice/docker-30099571b729af91a5580e56ab27a7926d010fe503310ac3661c390bdcaa446b.scope/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-burstable.slice/kubelet-kubepods-burstable-pod3bc38477_194b_45ea_8a32_9a62adfcefe8.slice/cri-containerd-bfaad9fe1cc6622bd1cf957accbb6d94a773d346e1de82bb378d3200fdfddd6b.scope,task=python,pid=19533,uid=0
+[  737.160169] Memory cgroup out of memory: Killed process 19533 (python) total-vm:164828kB, anon-rss:130364kB, file-rss:5464kB, shmem-rss:0kB, UID:0 pgtables:316kB oom_score_adj:992
+[  737.160303] Memory cgroup out of memory: Killed process 19533 (python) total-vm:164828kB, anon-rss:130364kB, file-rss:5464kB, shmem-rss:0kB, UID:0 pgtables:316kB oom_score_adj:992
+== crictl
+$ docker exec aurora-lab-worker crictl ps -a --name app --pod $(docker exec aurora-lab-worker crictl pods --name oom-limit -q) -o json | python3 -c 'import json,sys; [print(c["id"], c["state"]) for c in json.load(sys.stdin)["containers"]]'
+c1ea3efda02355cb1e552264e1b2b15e1abe324ffee98014d755877d9bf6fb85 CONTAINER_RUNNING
+bfaad9fe1cc6622bd1cf957accbb6d94a773d346e1de82bb378d3200fdfddd6b CONTAINER_EXITED
+[exit 0]
+$ docker exec aurora-lab-worker crictl inspect bfaad9fe1cc6622bd1cf957accbb6d94a773d346e1de82bb378d3200fdfddd6b | python3 -c 'import json,sys; s=json.load(sys.stdin)["status"]; print(s["reason"], s["exitCode"], s["message"])'
+OOMKilled 137 
+[exit 0]
+== containerd log
+Nov 05 21:52:30 aurora-lab-worker containerd[138]: time="2026-11-05T21:52:30.125085803Z" level=info msg="TaskOOM event container_id:\"bfaad9fe1cc6622bd1cf957accbb6d94a773d346e1de82bb378d3200fdfddd6b\""
