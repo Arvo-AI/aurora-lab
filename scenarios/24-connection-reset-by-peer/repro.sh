@@ -16,8 +16,9 @@ kubectl apply -f "$C/rst.yaml"
 kubectl -n rst rollout status deploy/srv --timeout=180s
 kubectl -n rst wait --for=condition=Ready pod/client pod/sshbox --timeout=180s
 
-c() { kubectl -n rst exec client -- "$@"; }
-sh_c() { kubectl -n rst exec client -- sh -c "$1"; }
+# timeout: a stuck exec must not eat the whole job
+c() { timeout 300 kubectl -n rst exec client -- "$@"; }
+sh_c() { timeout 300 kubectl -n rst exec client -- sh -c "$1"; }
 SVC=$(kubectl -n rst get svc srv -o jsonpath='{.spec.clusterIP}')
 EMPTY=$(kubectl -n rst get svc empty -o jsonpath='{.spec.clusterIP}')
 CLIENT_IP=$(kubectl -n rst get pod client -o jsonpath='{.status.podIP}')
@@ -93,10 +94,11 @@ done
 kubectl -n rst scale deploy/srv --replicas=3
 rollcount() {
   echo "# config: $1"; ready
+  sh_c 'rm -f /tmp/l.new /tmp/l.keep'
   sh_c "(/app/rstclient load -d 70s -c 8 'http://$SVC:8080/slow?ms=200' > /tmp/l.new 2>&1) & (/app/rstclient load -d 70s -c 8 -keepalive 'http://$SVC:8080/slow?ms=200' > /tmp/l.keep 2>&1) & sleep 0" </dev/null >/dev/null 2>&1 &
   sleep 3
   for i in 1 2 3; do kubectl -n rst rollout restart deploy/srv >/dev/null; kubectl -n rst rollout status deploy/srv --timeout=120s >/dev/null; sleep 1; done
-  echo "rollouts done at $(date -u +%T)"; sh_c 'while pgrep -x rstclient >/dev/null; do sleep 1; done'
+  echo "rollouts done at $(date -u +%T)"; sh_c 'for i in $(seq 1 120); do [ -s /tmp/l.new ] && [ -s /tmp/l.keep ] && break; sleep 1; done'
   echo "--- new connection per request"; sh_c 'cat /tmp/l.new'
   echo "--- keepalive"; sh_c 'cat /tmp/l.keep'
 }
