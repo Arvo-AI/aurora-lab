@@ -196,7 +196,7 @@ burst() { # burst <url> [extra curl args]: 30 requests, 10 at a time; prints sta
   ctrl --tail=100 | grep 'GET /retry/x' | grep -c '503, 200'
   echo
   echo "# every 503 in the last 15 minutes, split by whether an upstream was contacted"
-  CMD="kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --since=15m | grep -E '\" 503 [0-9]+ ' | sed -E 's/.*\\] \\[([^]]*)\\] \\[[^]]*\\] (.*) [0-9a-f]{32}\$/\\1 \\2/' | awk '{print \$1, (\$2==\"-\" ? \"generated-by-nginx\" : \"sent-by-upstream\")}' | sort | uniq -c"
+  CMD="kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --since=15m | grep -E '\" 503 [0-9]+ ' | sed -E 's/.* \\[([^]]*)\\] \\[[^]]*\\] (.*) [0-9a-f]{32}\$/\\1 \\2/' | awk '{print \$1, (\$2==\"-\" ? \"generated-by-nginx\" : \"sent-by-upstream\")}' | sort | uniq -c"
   echo "\$ $CMD"; eval "$CMD"
   echo
   run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --since=15m | grep -oE 'limiting (requests|connections)' | sort | uniq -c"

@@ -140,7 +140,8 @@ kubectl -n r503 delete gateway ngf --ignore-not-found >/dev/null
 
 echo "# $(date -u +%FT%TZ) Traefik reading the same Ingress objects, with its ingress-nginx annotation provider"
 run 'helm repo add traefik https://traefik.github.io/charts >/dev/null && helm repo update >/dev/null && helm search repo traefik/traefik | head -2'
-run "helm install traefik traefik/traefik -n traefik --create-namespace --set providers.kubernetesIngress.enabled=false --set providers.kubernetesCRD.enabled=false --set providers.kubernetesIngressNGINX.enabled=true --set service.type=ClusterIP --set 'additionalArguments={--accesslog=true}' --wait --timeout 5m | head -6"
+run "helm install traefik traefik/traefik -n traefik --create-namespace --set providers.kubernetesIngress.enabled=false --set providers.kubernetesCRD.enabled=false --set providers.kubernetesIngressNGINX.enabled=true --set service.type=ClusterIP --set 'additionalArguments={--accesslog=true}' | head -6"
+run 'kubectl -n traefik rollout status deploy/traefik --timeout=180s'
 sleep 20
 run 'kubectl -n traefik get pods,svc'
 B=http://traefik.traefik.svc
@@ -162,7 +163,8 @@ metadata: {name: nic-app, namespace: r503}
 spec:
   ingressClassName: nic
   rules:
-    - http:
+    - host: nic.lab
+      http:
         paths:
           - {path: /app, pathType: Prefix, backend: {service: {name: backend, port: {number: 8080}}}}
           - {path: /scaled, pathType: Prefix, backend: {service: {name: scaled, port: {number: 8080}}}}
@@ -177,7 +179,8 @@ metadata:
 spec:
   ingressClassName: nic
   rules:
-    - http:
+    - host: nic.lab
+      http:
         paths:
           - {path: /limited, pathType: Prefix, backend: {service: {name: backend, port: {number: 8080}}}}
 Y
@@ -186,9 +189,9 @@ run 'kubectl -n nic get pods,svc'
 run 'kubectl -n r503 describe ingress nic-limited | tail -6'
 SVC="$(kubectl -n nic get svc -o jsonpath='{.items[0].metadata.name}')"
 B="http://$SVC.nic.svc"
-for p in /app/ok /app/fail503 /scaled; do one "$B" "$p"; done
-echo "\$ 30 requests, 10 at a time, /limited/ok"; burst "$B/limited/ok"
-one "$B" /limited/ok
+for p in /app/ok /app/fail503 /scaled; do one "$B" "$p" -H 'Host: nic.lab'; done
+echo "\$ 30 requests, 10 at a time, /limited/ok"; burst "-H 'Host: nic.lab' $B/limited/ok"
+one "$B" /limited/ok -H 'Host: nic.lab'
 sleep 2
 run "kubectl -n nic logs deploy/\$(kubectl -n nic get deploy -o jsonpath='{.items[0].metadata.name}') --tail=60 | grep -E '/scaled|limiting|/limited|fail503' | tail -8"
 kubectl -n nic get deploy -o jsonpath='{.items[0].spec.template.spec.containers[0].image}'; echo
