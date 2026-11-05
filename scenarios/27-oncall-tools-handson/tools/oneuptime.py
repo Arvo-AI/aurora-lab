@@ -40,28 +40,44 @@ class OU(Tool):
         sev = first("/incident-severity", {"_id": True, "name": True}); self.log("sev", sev)
         sev0 = sev[0]["_id"]
         self.step("create an Incoming Request monitor with two criteria: request body contains \"status\":\"firing\" opens an incident, \"status\":\"resolved\" brings it back; turn on grouping by requestBody.alerts[*].fingerprint")
+        self.online, self.off, self.sev0 = online, off, sev0
+        steps = self.steps([])
+        c, m, t = self.api("POST", "/api/monitor", {"data": {"name": "Alertmanager", "projectId": self.pid, "monitorType": "Incoming Request", "monitorSteps": steps}}, trim=500)
+        self.mon = m; self.url = self.hook(m)
+    def hook(self, m):
+        c, g, t = self.api("POST", f"/api/monitor/{m['_id']}/get-item", {"select": {"incomingRequestSecretKey": True}}, trim=300)
+        key = g["incomingRequestSecretKey"]; key = key.get("value") if isinstance(key, dict) else key
+        return f"{B}/heartbeat/{key}"
+    def steps(self, policies):
+        online, off, sev0 = self.online, self.off, self.sev0
         crit = lambda sid, flt, inc, name: {"_type": "MonitorCriteriaInstance", "value": {"id": oid(), "monitorStatusId": {"_type": "ObjectID", "value": sid}, "filterCondition": "Any",
             "filters": [{"checkOn": "Request Body", "filterType": "Contains", "value": flt}], "incidents": inc, "alerts": [], "createAlerts": False, "createIncidents": bool(inc), "changeMonitorStatus": True, "name": name, "description": name}}
-        inc = [{"title": "{{requestBody.commonLabels.alertname}}", "description": "{{requestBody.commonAnnotations.summary}}", "incidentSeverityId": {"_type": "ObjectID", "value": sev0}, "autoResolveIncident": True, "id": oid(), "onCallPolicyIds": []}]
+        inc = [{"title": "{{requestBody.commonLabels.alertname}}", "description": "{{requestBody.commonAnnotations.summary}}", "incidentSeverityId": {"_type": "ObjectID", "value": sev0}, "autoResolveIncident": True, "id": oid(), "onCallPolicyIds": policies}]
         firing = crit(off, '"status":"firing"', inc, "firing"); firing["value"]["incidentGrouping"] = {"groupByJSONPath": "requestBody.alerts[*].fingerprint", "resolvedWhenJSONPath": "requestBody.alerts[*].status", "resolvedWhenValue": "resolved"}
-        steps = {"_type": "MonitorSteps", "value": {"defaultMonitorStatusId": {"_type": "ObjectID", "value": online}, "monitorStepsInstanceArray": [{"_type": "MonitorStep", "value": {"id": oid(), "monitorDestination": None, "requestType": "GET",
+        return {"_type": "MonitorSteps", "value": {"defaultMonitorStatusId": {"_type": "ObjectID", "value": online}, "monitorStepsInstanceArray": [{"_type": "MonitorStep", "value": {"id": oid(), "monitorDestination": None, "requestType": "GET",
             "monitorCriteria": {"_type": "MonitorCriteria", "value": {"monitorCriteriaInstanceArray": [firing, crit(online, '"status":"resolved"', [], "resolved")]}}}}]}}
-        c, m, t = self.api("POST", "/api/monitor", {"data": {"name": "Alertmanager", "projectId": self.pid, "monitorType": "Incoming Request", "monitorSteps": steps}}, trim=1500)
-        self.mon = m
-        c, g, t = self.api("POST", f"/api/monitor/{m['_id']}/get-item", {"select": {"incomingRequestSecretKey": True, "monitorSteps": True}}, trim=600)
-        key = g["incomingRequestSecretKey"]; key = key.get("value") if isinstance(key, dict) else key
-        self.url = f"{B}/heartbeat/{key}"
     def post(self, body):
         c, j, t = self.http("POST", self.url, bytes(body)); return c, t
     def alerts(self):
-        c, j, t = self.api("POST", "/api/incident/get-list?skip=0&limit=50", {"query": {"projectId": self.pid}, "select": {"title": True, "incidentNumber": True, "currentIncidentState": {"name": True}, "isResolved": True}, "sort": {}}, quiet=True)
+        c, j, t = self.api("POST", "/api/incident/get-list?skip=0&limit=50", {"query": {"projectId": self.pid}, "select": {"title": True, "incidentNumber": True, "currentIncidentState": {"name": True}}, "sort": {}}, quiet=True)
         return [{"n": x.get("incidentNumber"), "title": x.get("title"), "state": (x.get("currentIncidentState") or {}).get("name")} for x in (j or {}).get("data", [])]
     def oncall(self):
-        self.api("POST", "/api/incident/get-list?skip=0&limit=50", {"query": {"projectId": self.pid}, "select": {"title": True}, "sort": {}})
-        self.api("POST", f"/api/monitor/{self.mon['_id']}/get-item", {"select": {"currentMonitorStatus": {"name": True}, "incomingRequestReceivedAt": True, "incomingMonitorRequest": True}}, trim=1500)
-        self.api("POST", "/api/monitor-log/get-list?skip=0&limit=10", {"query": {"projectId": self.pid}, "select": {"logBody": True}, "sort": {}}, trim=1500)
-        self.sh("docker logs oneuptime-app-1 --tail=60 2>&1 | grep -iE 'error|incoming|heartbeat|monitor' | tail -25", trim=5000)
-        self.untested("oncall: pending")
+        P = self.pid
+        c, me, t = self.api("POST", "/api/user/get-list?skip=0&limit=5", {"query": {}, "select": {"_id": True, "email": True}, "sort": {}}, trim=300)
+        uid = (me or {}).get("data", [{}])[0].get("_id") if me else None
+        c, pol, t = self.api("POST", "/api/on-call-duty-policy", {"data": {"name": "checkout", "projectId": P}}, trim=300)
+        c, sch, t = self.api("POST", "/api/on-call-duty-policy-schedule", {"data": {"name": "primary", "projectId": P}}, trim=300)
+        for o, name in ((1, "first"), (2, "second")):
+            c, rule, t = self.api("POST", "/api/on-call-duty-policy-escalation-rule", {"data": {"name": name, "projectId": P, "onCallDutyPolicyId": pol["_id"], "order": o, "escalateAfterInMinutes": 1}}, trim=300)
+            if uid and rule: self.api("POST", "/api/on-call-duty-policy-escalation-rule-user", {"data": {"projectId": P, "onCallDutyPolicyId": pol["_id"], "onCallDutyPolicyEscalationRuleId": rule["_id"], "userId": uid}}, trim=300)
+        c, m2, t = self.api("POST", "/api/monitor", {"data": {"name": "Alertmanager paged", "projectId": P, "monitorType": "Incoming Request", "monitorSteps": self.steps([pol["_id"]])}}, trim=300)
+        self.url = self.hook(m2)
+        self.post(FIRING); time.sleep(100)
+        c, j, t = self.api("POST", "/api/on-call-duty-policy-execution-log/get-list?skip=0&limit=10", {"query": {"projectId": P}, "select": {"status": True, "statusMessage": True, "lastEscalationRuleExecutedAt": True, "lastExecutedEscalationRuleOrder": True, "executeNextEscalationRuleInMinutes": True, "createdAt": True}, "sort": {}}, trim=1800)
+        self.r["escalation"] = {"execution_log": (j or {}).get("data"), "raw_http": c}
+        self.api("POST", "/api/on-call-duty-policy-execution-log-timeline/get-list?skip=0&limit=10", {"query": {"projectId": P}, "select": {"status": True, "statusMessage": True, "createdAt": True}, "sort": {}}, trim=2500)
+        self.snap("during_escalation", wait=1); self.post(RESOLVED); self.snap("after_final_resolve", wait=20)
+        self.untested("Delivery: no SMTP or Twilio was configured on OneUptime, so we read its on-call execution log. Schedules were created but a rotation layer was not exercised.")
     def after(self):
         self.sh("docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'")
 OU().run()
