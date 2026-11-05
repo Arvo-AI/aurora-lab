@@ -36,7 +36,7 @@ class IR(Tool):
         c, j, t = self.http("GET", B + "/api/alert-groups", quiet=True)
         items = (j or {}).get("items") if isinstance(j, dict) else (j or [])
         self.raw_alert = (items or [None])[0]
-        return [{"id": x.get("id"), "title": x.get("title"), "status": x.get("status"), "assignee": x.get("assignee_name") or x.get("assignee"), "alerts_count": x.get("alerts_count") or x.get("child_alerts_count") or x.get("occurrence_count")} for x in (items or [])]
+        return [{"id": x.get("id"), "title": x.get("title"), "status": x.get("status"), "assignee": x.get("assignee_name") or x.get("assignee"), "alert_count": x.get("alert_count")} for x in (items or [])]
     def oncall(self):
         self.log("raw alert group", json.dumps(self.raw_alert)[:1500])
         u = {}
