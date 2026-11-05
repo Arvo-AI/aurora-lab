@@ -43,7 +43,9 @@ class IR(Tool):
         for n in ("alice", "bob"):
             c, j, t = self.http("POST", B + "/api/admin/users", {"username": n, "email": n + "@example.com", "password": "lab-password-1", "group_id": self.g}); u[n] = j["id"]
             self.http("POST", f"{B}/api/teams/{self.tm}/users", {"user_id": u[n], "role": "responder"})
-        c, rot, t = self.http("POST", B + "/api/rotations", {"team_id": self.tm, "name": "primary", "start_at": iso(hours=-1), "rotation_type": "daily", "reminder_interval_seconds": 0})
+        c, rot, t = self.http("POST", B + "/api/rotations", {"team_id": self.tm, "name": "primary", "start_at": iso(hours=-1)[:-1], "rotation_type": "daily", "reminder_interval_seconds": 0})
+        if c >= 400:
+            self.dc("logs incidentrelay --tail=40", trim=3000)
         for i, n in enumerate(("alice", "bob")):
             self.http("POST", f"{B}/api/rotations/{rot['id']}/members", {"user_id": u[n], "position": i})
         c, ch, t = self.http("POST", B + "/api/channels", {"team_id": self.tm, "name": "lab-sink", "channel_type": "webhook", "config": {"webhook_url": f"{SINK}/incidentrelay/hook"}})
