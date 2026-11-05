@@ -25,6 +25,14 @@ memevents() {
   echo "== $pod pod cgroup: $cg"
   [ -n "$cg" ] && docker exec "$node" cat "$cg/memory.events"
 }
+# Stop, Kill and OOM lines containerd logged for the container a pod last lost.
+ctrlog() {
+  local cid
+  cid=$(k -n $NS get pod "$1" -o jsonpath='{.status.containerStatuses[0].lastState.terminated.containerID}'); cid=${cid#containerd://}
+  echo "== containerd log for $1 last container ${cid:0:12}"
+  docker exec $W journalctl -u containerd --no-pager | grep "$cid" | grep -E 'StopContainer for .* with timeout|Stop container|Kill container|TaskOOM' | sed -E 's/^.*msg=//' | cut -c1-140
+  echo "[end]"
+}
 wait_restart() {
   local pod=$1 n=${2:-1} i
   for i in $(seq 1 60); do
@@ -158,6 +166,8 @@ section_probe() {
   memevents $W probe-no-handler
   memevents $W probe-trap
   memevents $W probe-handled
+  ctrlog probe-no-handler
+  ctrlog probe-handled
 }
 
 section_nonsignal() {
@@ -178,6 +188,9 @@ section_nonsignal() {
   say "kubectl -n $NS get pod host-kill -o jsonpath='$LAST_FMT'"
   say "kubectl -n $NS get events --field-selector involvedObject.name=host-kill --sort-by=.lastTimestamp"
   memevents $W host-kill
+  ctrlog plain-exit
+  ctrlog host-kill
+  ctrlog oom-limit
 }
 
 section_oom_child() {
@@ -241,7 +254,8 @@ section_node_oom() {
   say "kubectl get events -A --field-selector involvedObject.kind=Node --sort-by=.lastTimestamp"
   say "kubectl describe node $W2 | grep -E 'MemoryPressure|memory:'"
   k -n $NS delete pod node-hog --grace-period=0 --force >/dev/null 2>&1
-  docker update --memory 0 --memory-swap 0 $W2 >/dev/null 2>&1 || docker update --memory 12g --memory-swap 12g $W2 >/dev/null 2>&1
+  # --memory 0 does not clear a limit; a value above the host's RAM does.
+  say "docker update --memory 64g --memory-swap 64g $W2"
 }
 
 section_global_oom() {
@@ -255,7 +269,7 @@ section_global_oom() {
   say "kubectl -n $NS get pod node-hog-global -o json | python3 -c 'import json,sys; p=json.load(sys.stdin); print(p[\"status\"].get(\"phase\"), p[\"status\"].get(\"qosClass\"), p[\"status\"].get(\"reason\"), p[\"status\"].get(\"message\")); print(json.dumps(p[\"status\"][\"containerStatuses\"][0]))'"
   memevents $W2 node-hog-global
   echo "== kernel log"
-  sudo dmesg | grep -E 'oom-kill:|Out of memory|Killed process' | tail -4 | cut -c1-420
+  sudo dmesg | grep -E 'oom-kill:|Out of memory|Killed process' | tail -6 | cut -c1-420
   say "kubectl get events -A --field-selector reason=SystemOOM"
   say "kubectl get events -A --field-selector reason=Evicted"
   say "kubectl -n $NS logs node-hog-global --previous --tail=1"
