@@ -1,0 +1,41 @@
+name: Repro
+# Runs one scenario on a throwaway kind cluster and uploads what it captured.
+# A scenario may add repro.sh, which runs after the fault is injected and writes to $OUT.
+on:
+  workflow_dispatch:
+    inputs:
+      ref: { description: Branch holding the scenario, required: true }
+      scenario: { description: Scenario id or number prefix, required: true }
+      kind: { description: Bring up the kind cluster, type: boolean, default: true }
+permissions:
+  contents: read
+jobs:
+  repro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: "${{ inputs.ref }}" }
+      - name: Versions
+        run: |
+          mkdir -p out
+          { date -u; kind version; kubectl version --client; docker version --format '{{.Server.Version}}'; uname -a; } > out/versions.txt 2>&1
+      - name: Cluster
+        if: ${{ inputs.kind }}
+        run: ./lab.sh up 2>&1 | tee out/up.log
+      - name: Selftest
+        if: ${{ inputs.kind }}
+        env: { SCENARIO: "${{ inputs.scenario }}" }
+        run: |
+          kubectl --kubeconfig .kubeconfig version >> out/versions.txt 2>&1 || true
+          ./lab.sh selftest "$SCENARIO" 2>&1 | tee out/selftest.log
+      - name: Scenario repro
+        env: { SCENARIO: "${{ inputs.scenario }}" }
+        run: |
+          d=$(find scenarios -maxdepth 1 -type d -name "$SCENARIO*" | head -1)
+          [ -x "$d/repro.sh" ] || exit 0
+          if [ "${{ inputs.kind }}" = true ]; then ./lab.sh break "$SCENARIO" 2>&1 | tee out/break.log; export KUBECONFIG="$PWD/.kubeconfig"; fi
+          OUT="$PWD/out" "$d/repro.sh" 2>&1 | tee out/repro.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "repro-${{ inputs.scenario }}", path: out/ }
