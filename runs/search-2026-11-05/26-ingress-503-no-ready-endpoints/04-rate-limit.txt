@@ -1,0 +1,133 @@
+# 2026-11-05T23:11:20Z limit_req on a healthy backend, ingress-nginx
+$ kubectl -n r503 get ingress limited -o jsonpath='{.metadata.annotations}'
+{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"nginx.ingress.kubernetes.io/limit-rps\":\"2\"},\"name\":\"limited\",\"namespace\":\"r503\"},\"spec\":{\"ingressClassName\":\"nginx\",\"rules\":[{\"http\":{\"paths\":[{\"backend\":{\"service\":{\"name\":\"backend\",\"port\":{\"number\":8080}}},\"path\":\"/limited\",\"pathType\":\"Prefix\"}]}}]}}\n","nginx.ingress.kubernetes.io/limit-rps":"2"}
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg conf | grep -n -E "limit_req |limit_req_zone|limit_conn " | head -12
+216:	limit_req_zone $limit_cjUwM19saW1pdGVkXzMwZmRkNTI5LTlhN2ItNGI2Mi1iMDFmLTMxMTI3YWMxZDdmNQ zone=r503_limited_30fdd529-9a7b-4b62-b01f-31127ac1d7f5_rps:5m rate=2r/s;
+1658:			limit_req zone=r503_limited_30fdd529-9a7b-4b62-b01f-31127ac1d7f5_rps burst=10 nodelay;
+1757:			limit_req zone=r503_limited_30fdd529-9a7b-4b62-b01f-31127ac1d7f5_rps burst=10 nodelay;
+1856:			limit_conn r503_connlim_030df06b-af70-46f0-87b8-8ef4dcdbc4a9_conn 2;
+1955:			limit_conn r503_connlim_030df06b-af70-46f0-87b8-8ef4dcdbc4a9_conn 2;
+
+$ 30 requests, 10 at a time, GET /limited/ok
+     11 200
+     19 503
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=300 | grep -E 'limiting requests' | tail -3
+2026/11/05 23:11:21 [error] 856#856: *4887 limiting requests, excess: 10.914 by zone "r503_limited_30fdd529-9a7b-4b62-b01f-31127ac1d7f5_rps", client: 10.244.1.21, server: _, request: "GET /limited/ok HTTP/1.1", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/11/05 23:11:21 [error] 854#854: *4888 limiting requests, excess: 10.914 by zone "r503_limited_30fdd529-9a7b-4b62-b01f-31127ac1d7f5_rps", client: 10.244.1.21, server: _, request: "GET /limited/ok HTTP/1.1", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/11/05 23:11:21 [error] 856#856: *4889 limiting requests, excess: 10.910 by zone "r503_limited_30fdd529-9a7b-4b62-b01f-31127ac1d7f5_rps", client: 10.244.1.21, server: _, request: "GET /limited/ok HTTP/1.1", host: "ingress-nginx-controller.ingress-nginx.svc"
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=300 | grep -E 'GET /limited/ok' | grep ' 503 ' | tail -3
+10.244.1.21 - - [05/Nov/2026:23:11:21 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1" 116 0.000 [r503-backend-8080] [] - - - - 3c598f646f0b55228702d615802a1f44
+10.244.1.21 - - [05/Nov/2026:23:11:21 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1" 116 0.000 [r503-backend-8080] [] - - - - e2b33a79787cb81ceb0d08289da764ba
+10.244.1.21 - - [05/Nov/2026:23:11:21 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1" 116 0.000 [r503-backend-8080] [] - - - - f68eced950e4fb6abf438c8e72c3f5e4
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=300 | grep -E 'GET /limited/ok' | grep ' 200 ' | tail -2
+10.244.1.21 - - [05/Nov/2026:23:11:21 +0000] "GET /limited/ok HTTP/1.1" 200 71 "-" "curl/8.12.1" 116 0.001 [r503-backend-8080] [] 10.244.2.14:8080 71 0.001 200 7c3d4839c254f78add39edbd75aac2e3
+10.244.1.21 - - [05/Nov/2026:23:11:21 +0000] "GET /limited/ok HTTP/1.1" 200 71 "-" "curl/8.12.1" 116 0.001 [r503-backend-8080] [] 10.244.2.14:8080 71 0.001 200 ea25626c2e332e4d33f80136650afcde
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=300 | grep -c 'limiting requests'
+19
+
+$ for p in $(kubectl -n r503 get pods -l app=backend -o name); do kubectl -n r503 logs $p | grep -c 'GET /limited'; done
+5
+6
+
+$ curl -si (limit_req rejection)
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:35 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+$ curl -si (Service with no endpoints)
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:35 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+$ cmp, bodies and headers, Date line removed
+identical
+b36ec3fbdc57df668aa32b3eee568c4f  /tmp/a
+b36ec3fbdc57df668aa32b3eee568c4f  /tmp/b
+
+# 2026-11-05T23:11:36Z X-Forwarded-For does not move the limit key by default
+     11 200
+     19 503
+
+# 2026-11-05T23:11:46Z use-forwarded-headers true in the controller ConfigMap
+$ kubectl -n ingress-nginx patch configmap ingress-nginx-controller --type=merge -p '{"data":{"use-forwarded-headers":"true"}}'
+configmap/ingress-nginx-controller patched
+
+     30 200
+
+$ kubectl -n ingress-nginx patch configmap ingress-nginx-controller --type=json -p '[{"op":"remove","path":"/data/use-forwarded-headers"}]'
+configmap/ingress-nginx-controller patched
+
+# 2026-11-05T23:12:16Z limit-req-status-code 429
+$ kubectl -n ingress-nginx patch configmap ingress-nginx-controller --type=merge -p '{"data":{"limit-req-status-code":"429"}}'
+configmap/ingress-nginx-controller patched
+
+$ 30 requests, 10 at a time, GET /limited/ok
+     11 200
+     19 429
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg conf | grep -E "limit_req_status" | sort | uniq -c
+      1 	limit_req_status                429;
+
+HTTP/1.1 429 Too Many Requests
+Date: Thu, 05 Nov 2026 23:12:39 GMT
+Content-Type: text/html
+Content-Length: 162
+Connection: keep-alive
+
+<html>
+<head><title>429 Too Many Requests</title></head>
+<body>
+<center><h1>429 Too Many Requests</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+$ kubectl -n ingress-nginx patch configmap ingress-nginx-controller --type=json -p '[{"op":"remove","path":"/data/limit-req-status-code"}]'
+configmap/ingress-nginx-controller patched
+
+# 2026-11-05T23:12:55Z limit-whitelist with the client's IP
+$ kubectl -n r503 annotate ingress limited nginx.ingress.kubernetes.io/limit-whitelist=10.244.1.21/32 --overwrite
+ingress.networking.k8s.io/limited annotated
+
+$ 30 requests, 10 at a time, GET /limited/ok
+     30 200
+$ kubectl -n r503 annotate ingress limited nginx.ingress.kubernetes.io/limit-whitelist-
+ingress.networking.k8s.io/limited annotated
+
+# 2026-11-05T23:13:11Z limit-connections 2, six slow requests at once
+      2 200
+      4 503
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=100 | grep -E 'limiting connections' | tail -2
+2026/11/05 23:13:11 [error] 1723#1723: *6650 limiting connections by zone "r503_connlim_030df06b-af70-46f0-87b8-8ef4dcdbc4a9_conn", client: 10.244.1.21, server: _, request: "GET /connlim/sleep/2 HTTP/1.1", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/11/05 23:13:11 [error] 1723#1723: *6651 limiting connections by zone "r503_connlim_030df06b-af70-46f0-87b8-8ef4dcdbc4a9_conn", client: 10.244.1.21, server: _, request: "GET /connlim/sleep/2 HTTP/1.1", host: "ingress-nginx-controller.ingress-nginx.svc"
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=100 | grep -E 'GET /connlim' | tail -6
+2026/11/05 23:13:11 [error] 1723#1723: *6650 limiting connections by zone "r503_connlim_030df06b-af70-46f0-87b8-8ef4dcdbc4a9_conn", client: 10.244.1.21, server: _, request: "GET /connlim/sleep/2 HTTP/1.1", host: "ingress-nginx-controller.ingress-nginx.svc"
+10.244.1.21 - - [05/Nov/2026:23:13:11 +0000] "GET /connlim/sleep/2 HTTP/1.1" 503 190 "-" "curl/8.12.1" 121 0.000 [r503-backend-8080] [] - - - - e46c380d3895ed7c5b7caf106fa0b249
+10.244.1.21 - - [05/Nov/2026:23:13:11 +0000] "GET /connlim/sleep/2 HTTP/1.1" 503 190 "-" "curl/8.12.1" 121 0.000 [r503-backend-8080] [] - - - - 2aab17c2a61068213ded4dbd0aaf90f1
+2026/11/05 23:13:11 [error] 1723#1723: *6651 limiting connections by zone "r503_connlim_030df06b-af70-46f0-87b8-8ef4dcdbc4a9_conn", client: 10.244.1.21, server: _, request: "GET /connlim/sleep/2 HTTP/1.1", host: "ingress-nginx-controller.ingress-nginx.svc"
+10.244.1.21 - - [05/Nov/2026:23:13:13 +0000] "GET /connlim/sleep/2 HTTP/1.1" 200 76 "-" "curl/8.12.1" 121 2.002 [r503-backend-8080] [] 10.244.2.14:8080 76 2.002 200 ffc1a8f721c7b3161ac0222dd62e7003
+10.244.1.21 - - [05/Nov/2026:23:13:13 +0000] "GET /connlim/sleep/2 HTTP/1.1" 200 76 "-" "curl/8.12.1" 121 2.002 [r503-backend-8080] [] 10.244.1.23:8080 76 2.002 200 ec575fe172280d8e4724f7b405d218dc
+

@@ -1,0 +1,2 @@
+broken 26-ingress-503-no-ready-endpoints after 30s
+selftest: 1 passed, 0 failed, evidence in runs/selftest-20261105T230439Z-aurora-lab

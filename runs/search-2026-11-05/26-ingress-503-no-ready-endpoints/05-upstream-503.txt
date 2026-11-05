@@ -1,0 +1,104 @@
+# 2026-11-05T23:13:15Z upstream 503 through ingress-nginx
+### GET /app/fail503
+HTTP/1.1 503 Service Unavailable
+Date: Thu, 05 Nov 2026 23:13:15 GMT
+Content-Type: application/json
+Content-Length: 68
+Connection: keep-alive
+Retry-After: 5
+
+time_total=0.005821
+{"error": "backend unavailable", "pod": "backend-5959b75855-j98xf"}
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:13:15 +0000] "GET /app/fail503 HTTP/1.1" 503 68 "-" "curl/8.12.1" 117 0.001 [r503-backend-8080] [] 10.244.2.14:8080 68 0.001 503 2d18f3c17deab02d5228ea2b7d9a9ac9
+
+$ kubectl -n r503 exec curl -- curl -si http://backend:8080/app/fail503
+HTTP/1.0 503 Service Unavailable
+Server: demo-app/1.0 
+Date: Thu, 05 Nov 2026 23:13:18 GMT
+Content-Type: application/json
+Content-Length: 68
+Retry-After: 5
+
+{"error": "backend unavailable", "pod": "backend-5959b75855-grf8w"}
+
+# an nginx behind the controller answering 503 itself, server_tokens off
+### GET /nginxup
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:13:18 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+time_total=0.002198
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:13:18 +0000] "GET /nginxup HTTP/1.1" 503 190 "-" "curl/8.12.1" 113 0.000 [r503-inner-8080] [] 10.244.1.22:8080 190 0.000 503 7d50a21ab7234776c949650f9423674d
+
+$ cmp, headers and body, Date line removed
+identical
+b36ec3fbdc57df668aa32b3eee568c4f  /tmp/a
+b36ec3fbdc57df668aa32b3eee568c4f  /tmp/b
+
+# custom-http-errors: 503 with default-backend: errors
+### GET /masked/fail503
+HTTP/1.1 503 Service Unavailable
+Date: Thu, 05 Nov 2026 23:13:20 GMT
+Content-Type: application/json
+Content-Length: 81
+Connection: keep-alive
+
+time_total=0.003126
+{"page": "custom error page", "x_code": "503", "pod": "errors-544454678b-drmhc"}
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:13:20 +0000] "GET /masked/fail503 HTTP/1.1" 503 81 "-" "curl/8.12.1" 120 0.001 [custom-default-backend-r503-errors] [] 10.244.1.23:8080 : 10.244.2.16:8080 0 : 81 0.001 : 0.000 503 : 503 481c26417e73231952ec0ed8b16acb1c
+
+# default: an upstream 503 is not retried
+     10 200
+     10 503
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=100 | grep 'GET /noretry/x' | tail -3
+10.244.1.21 - - [05/Nov/2026:23:13:22 +0000] "GET /noretry/x HTTP/1.1" 200 70 "-" "curl/8.12.1" 115 0.001 [r503-mixed-8080] [] 10.244.2.17:8080 70 0.001 200 a872ad7a7ce4bbd60b57075d1f473a19
+10.244.1.21 - - [05/Nov/2026:23:13:22 +0000] "GET /noretry/x HTTP/1.1" 200 70 "-" "curl/8.12.1" 115 0.001 [r503-mixed-8080] [] 10.244.2.17:8080 70 0.000 200 2ea402a6cb8d97e1c2310db440e98d8e
+10.244.1.21 - - [05/Nov/2026:23:13:22 +0000] "GET /noretry/x HTTP/1.1" 503 66 "-" "curl/8.12.1" 115 0.000 [r503-mixed-8080] [] 10.244.1.25:8080 66 0.001 503 0af18d4e4cb31c27106d95f417efd54f
+
+# proxy-next-upstream: error timeout http_503
+$ kubectl -n r503 get ingress retry -o jsonpath='{.metadata.annotations}'
+{"kubectl.kubernetes.io/last-applied-configuration":"{\"apiVersion\":\"networking.k8s.io/v1\",\"kind\":\"Ingress\",\"metadata\":{\"annotations\":{\"nginx.ingress.kubernetes.io/proxy-next-upstream\":\"error timeout http_503\"},\"name\":\"retry\",\"namespace\":\"r503\"},\"spec\":{\"ingressClassName\":\"nginx\",\"rules\":[{\"http\":{\"paths\":[{\"backend\":{\"service\":{\"name\":\"mixed\",\"port\":{\"number\":8080}}},\"path\":\"/retry\",\"pathType\":\"Prefix\"}]}}]}}\n","nginx.ingress.kubernetes.io/proxy-next-upstream":"error timeout http_503"}
+     20 200
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=100 | grep 'GET /retry/x' | tail -4
+10.244.1.21 - - [05/Nov/2026:23:13:25 +0000] "GET /retry/x HTTP/1.1" 200 68 "-" "curl/8.12.1" 113 0.002 [r503-mixed-8080] [] 10.244.1.25:8080, 10.244.2.17:8080 0, 68 0.000, 0.001 503, 200 9f4cfc553bb589947ed1f4c7782a7e5a
+10.244.1.21 - - [05/Nov/2026:23:13:25 +0000] "GET /retry/x HTTP/1.1" 200 68 "-" "curl/8.12.1" 113 0.001 [r503-mixed-8080] [] 10.244.1.25:8080, 10.244.2.17:8080 0, 68 0.001, 0.001 503, 200 6d0b2b083936fbe8c9badfd5b8077583
+10.244.1.21 - - [05/Nov/2026:23:13:25 +0000] "GET /retry/x HTTP/1.1" 200 68 "-" "curl/8.12.1" 113 0.001 [r503-mixed-8080] [] 10.244.1.25:8080, 10.244.2.17:8080 0, 68 0.000, 0.001 503, 200 51d15e5bbdeef7c40849e458debcdf65
+10.244.1.21 - - [05/Nov/2026:23:13:25 +0000] "GET /retry/x HTTP/1.1" 200 68 "-" "curl/8.12.1" 113 0.001 [r503-mixed-8080] [] 10.244.1.25:8080, 10.244.2.17:8080 0, 68 0.000, 0.001 503, 200 54bc03b648f45af35057eafcdb392e36
+
+$ retry access log lines with two upstream attempts
+18
+
+# every 503 in the last 15 minutes, split by whether an upstream was contacted
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --since=15m | grep -E '" 503 [0-9]+ ' | sed -E 's/.* \[([^]]*)\] \[[^]]*\] (.*) [0-9a-f]{32}$/\1 \2/' | awk '{print $1, ($2=="-" ? "generated-by-nginx" : "sent-by-upstream")}' | sort | uniq -c
+      1 custom-default-backend-r503-errors sent-by-upstream
+     52 r503-backend-8080 generated-by-nginx
+      2 r503-backend-8080 sent-by-upstream
+      1 r503-backend-9999 generated-by-nginx
+      1 r503-badselector-8080 generated-by-nginx
+      2 r503-inner-8080 sent-by-upstream
+     10 r503-mixed-8080 sent-by-upstream
+      1 r503-no-such-service-8080 generated-by-nginx
+      1 r503-notready-8080 generated-by-nginx
+      4 r503-scaled-8080 generated-by-nginx
+      7 shop-api-8080 generated-by-nginx
+      2 shop-api-8080 sent-by-upstream
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --since=15m | grep -oE 'limiting (requests|connections)' | sort | uniq -c
+      4 limiting connections
+     75 limiting requests
+

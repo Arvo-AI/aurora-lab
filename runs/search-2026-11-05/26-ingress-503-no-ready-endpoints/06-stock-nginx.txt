@@ -1,0 +1,225 @@
+# 2026-11-05T23:13:27Z stock nginx
+nginx version: nginx/1.27.5
+$ kubectl -n r503 get cm stock-conf -o jsonpath='{.data.default\.conf}'
+# Each location produces one candidate cause on stock nginx.
+log_format lab '$remote_addr "$request" $status rt=$request_time us=$upstream_status ua=$upstream_addr lrs=$limit_req_status';
+limit_req_zone $binary_remote_addr zone=one:1m rate=2r/s;
+limit_req_zone $binary_remote_addr zone=dry:1m rate=2r/s;
+limit_req_zone $binary_remote_addr zone=four29:1m rate=2r/s;
+limit_conn_zone $binary_remote_addr zone=conn:1m;
+upstream alldown { server backend:8080 down; }
+upstream closed { server 127.0.0.1:9; }
+upstream onlymaxconns { server backend:8080 max_conns=1; }
+upstream pair { server faila:8080; server failb:8080; }
+server {
+    listen 80;
+    access_log /dev/stdout lab;
+    location /ok { proxy_pass http://backend:8080/ok; }
+    location /refused { proxy_pass http://closed/; }
+    location /alldown { proxy_pass http://alldown/; }
+    location /maxconns { proxy_pass http://onlymaxconns/sleep/2; }
+    location /limit { limit_req zone=one; proxy_pass http://backend:8080/ok; }
+    location /dry { limit_req zone=dry; limit_req_dry_run on; proxy_pass http://backend:8080/ok; }
+    location /four29 { limit_req zone=four29; limit_req_status 429; proxy_pass http://backend:8080/ok; }
+    location /conn { limit_conn conn 1; proxy_pass http://backend:8080/sleep/2; }
+    location /maint { return 503; }
+    location /app503 { proxy_pass http://backend:8080/fail503; }
+    location /app503-server { proxy_pass http://backend:8080/fail503; proxy_pass_header Server; }
+    location /intercept {
+        proxy_pass http://backend:8080/fail503;
+        proxy_intercept_errors on;
+        error_page 503 /sorry;
+    }
+    location = /sorry { internal; return 503 "we will be back soon\n"; }
+    location /pair { proxy_pass http://pair/; proxy_next_upstream error timeout http_503; }
+}
+
+### GET /ok
+HTTP/1.1 200 OK
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:27 GMT
+Content-Type: application/json
+Content-Length: 63
+Connection: keep-alive
+
+time_total=0.001369
+{"ok": true, "pod": "backend-5959b75855-j98xf", "path": "/ok"}
+
+--- nginx log
+10.244.1.21 "GET /ok HTTP/1.1" 200 rt=0.001 us=200 ua=10.96.100.99:8080 lrs=-
+
+### GET /refused
+HTTP/1.1 502 Bad Gateway
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:29 GMT
+Content-Type: text/html
+Content-Length: 157
+Connection: keep-alive
+
+time_total=0.001449
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.27.5</center>
+</body>
+</html>
+
+--- nginx log
+10.244.1.21 "GET /refused HTTP/1.1" 502 rt=0.001 us=502 ua=127.0.0.1:9 lrs=-
+2026/11/05 23:13:29 [error] 29#29: *3 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.21, server: , request: "GET /refused HTTP/1.1", upstream: "http://127.0.0.1:9/", host: "10.244.2.15"
+
+### GET /alldown
+HTTP/1.1 502 Bad Gateway
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:30 GMT
+Content-Type: text/html
+Content-Length: 157
+Connection: keep-alive
+
+time_total=0.000681
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.27.5</center>
+</body>
+</html>
+
+--- nginx log
+2026/11/05 23:13:30 [error] 28#28: *5 no live upstreams while connecting to upstream, client: 10.244.1.21, server: , request: "GET /alldown HTTP/1.1", upstream: "http://alldown/", host: "10.244.2.15"
+10.244.1.21 "GET /alldown HTTP/1.1" 502 rt=0.000 us=502 ua=alldown lrs=-
+
+### GET /maint
+HTTP/1.1 503 Service Temporarily Unavailable
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:31 GMT
+Content-Type: text/html
+Content-Length: 197
+Connection: keep-alive
+
+time_total=0.000596
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx/1.27.5</center>
+</body>
+</html>
+
+--- nginx log
+10.244.1.21 "GET /maint HTTP/1.1" 503 rt=0.000 us=- ua=- lrs=-
+
+### GET /app503
+HTTP/1.1 503 Service Unavailable
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:32 GMT
+Content-Type: application/json
+Content-Length: 68
+Connection: keep-alive
+Retry-After: 5
+
+time_total=0.001343
+{"error": "backend unavailable", "pod": "backend-5959b75855-j98xf"}
+
+--- nginx log
+10.244.1.21 "GET /app503 HTTP/1.1" 503 rt=0.001 us=503 ua=10.96.100.99:8080 lrs=-
+
+### GET /app503-server
+HTTP/1.1 503 Service Unavailable
+Date: Thu, 05 Nov 2026 23:13:34 GMT
+Content-Type: application/json
+Content-Length: 68
+Connection: keep-alive
+Server: demo-app/1.0
+Retry-After: 5
+
+time_total=0.001413
+{"error": "backend unavailable", "pod": "backend-5959b75855-grf8w"}
+
+--- nginx log
+10.244.1.21 "GET /app503-server HTTP/1.1" 503 rt=0.001 us=503 ua=10.96.100.99:8080 lrs=-
+
+### GET /intercept
+HTTP/1.1 503 Service Temporarily Unavailable
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:35 GMT
+Content-Type: application/octet-stream
+Content-Length: 21
+Connection: keep-alive
+
+time_total=0.001314
+we will be back soon
+
+--- nginx log
+10.244.1.21 "GET /intercept HTTP/1.1" 503 rt=0.001 us=503 ua=10.96.100.99:8080 lrs=-
+
+### GET /pair
+HTTP/1.1 503 Service Unavailable
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:36 GMT
+Content-Type: application/json
+Content-Length: 66
+Connection: keep-alive
+Retry-After: 5
+
+time_total=0.002420
+{"error": "backend unavailable", "pod": "failb-54bb58ddd8-j6tjr"}
+
+--- nginx log
+2026/11/05 23:13:36 [warn] 27#27: *13 upstream server temporarily disabled while reading response header from upstream, client: 10.244.1.21, server: , request: "GET /pair HTTP/1.1", upstream: "http://10.96.36.140:8080/", host: "10.244.2.15"
+10.244.1.21 "GET /pair HTTP/1.1" 503 rt=0.001 us=503, 503 ua=10.96.36.140:8080, 10.96.53.244:8080 lrs=-
+
+### GET /pair
+HTTP/1.1 502 Bad Gateway
+Server: nginx/1.27.5
+Date: Thu, 05 Nov 2026 23:13:37 GMT
+Content-Type: text/html
+Content-Length: 157
+Connection: keep-alive
+
+time_total=0.004061
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.27.5</center>
+</body>
+</html>
+
+--- nginx log
+2026/11/05 23:13:37 [warn] 27#27: *16 upstream server temporarily disabled while reading response header from upstream, client: 10.244.1.21, server: , request: "GET /pair HTTP/1.1", upstream: "http://10.96.53.244:8080/", host: "10.244.2.15"
+2026/11/05 23:13:37 [error] 27#27: *16 no live upstreams while connecting to upstream, client: 10.244.1.21, server: , request: "GET /pair HTTP/1.1", upstream: "http://pair/", host: "10.244.2.15"
+10.244.1.21 "GET /pair HTTP/1.1" 502 rt=0.001 us=503, 502 ua=10.96.53.244:8080, pair lrs=-
+
+### /maxconns, 3 at once
+      1 200
+      2 502
+10.244.1.21 "GET /maxconns HTTP/1.1" 502 rt=0.000 us=502 ua=onlymaxconns lrs=-
+2026/11/05 23:13:39 [error] 27#27: *20 no live upstreams while connecting to upstream, client: 10.244.1.21, server: , request: "GET /maxconns HTTP/1.1", upstream: "http://onlymaxconns/sleep/2", host: "10.244.2.15"
+2026/11/05 23:13:39 [error] 27#27: *21 no live upstreams while connecting to upstream, client: 10.244.1.21, server: , request: "GET /maxconns HTTP/1.1", upstream: "http://onlymaxconns/sleep/2", host: "10.244.2.15"
+10.244.1.21 "GET /maxconns HTTP/1.1" 502 rt=0.000 us=502 ua=onlymaxconns lrs=-
+10.244.1.21 "GET /maxconns HTTP/1.1" 200 rt=2.001 us=200 ua=10.96.100.99:8080 lrs=-
+### /limit, 12 at once
+      1 200
+     11 503
+2026/11/05 23:13:42 [error] 27#27: *33 limiting requests, excess: 0.982 by zone "one", client: 10.244.1.21, server: , request: "GET /limit HTTP/1.1", host: "10.244.2.15"
+10.244.1.21 "GET /limit HTTP/1.1" 503 rt=0.000 us=- ua=- lrs=REJECTED
+2026/11/05 23:13:42 [error] 27#27: *34 limiting requests, excess: 0.980 by zone "one", client: 10.244.1.21, server: , request: "GET /limit HTTP/1.1", host: "10.244.2.15"
+10.244.1.21 "GET /limit HTTP/1.1" 503 rt=0.000 us=- ua=- lrs=REJECTED
+### /dry, 12 at once (limit_req_dry_run on)
+     12 200
+2026/11/05 23:13:43 [error] 28#28: *55 limiting requests, dry run, excess: 0.976 by zone "dry", client: 10.244.1.21, server: , request: "GET /dry HTTP/1.1", host: "10.244.2.15"
+10.244.1.21 "GET /dry HTTP/1.1" 200 rt=0.001 us=200 ua=10.96.100.99:8080 lrs=REJECTED_DRY_RUN
+10.244.1.21 "GET /dry HTTP/1.1" 200 rt=0.002 us=200 ua=10.96.100.99:8080 lrs=REJECTED_DRY_RUN
+10.244.1.21 "GET /dry HTTP/1.1" 200 rt=0.001 us=200 ua=10.96.100.99:8080 lrs=REJECTED_DRY_RUN
+### /four29, 12 at once
+      1 200
+     11 429
+### /conn, 3 at once
+      1 200
+      2 503
+10.244.1.21 "GET /conn HTTP/1.1" 503 rt=0.000 us=- ua=- lrs=-
+2026/11/05 23:13:45 [error] 28#28: *75 limiting connections by zone "conn", client: 10.244.1.21, server: , request: "GET /conn HTTP/1.1", host: "10.244.2.15"
+10.244.1.21 "GET /conn HTTP/1.1" 503 rt=0.000 us=- ua=- lrs=-
+10.244.1.21 "GET /conn HTTP/1.1" 200 rt=2.001 us=200 ua=10.96.100.99:8080 lrs=-

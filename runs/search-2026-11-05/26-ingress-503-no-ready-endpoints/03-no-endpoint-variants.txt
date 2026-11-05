@@ -1,0 +1,315 @@
+# 2026-11-05T23:10:57Z no-endpoint variants through ingress-nginx
+$ kubectl -n r503 get svc,endpointslices,ingress
+NAME                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/backend       ClusterIP   10.96.100.99    <none>        8080/TCP   91s
+service/badselector   ClusterIP   10.96.21.45     <none>        8080/TCP   91s
+service/dfltsvc       ClusterIP   10.96.127.99    <none>        8080/TCP   91s
+service/errors        ClusterIP   10.96.153.160   <none>        8080/TCP   91s
+service/faila         ClusterIP   10.96.36.140    <none>        8080/TCP   91s
+service/failb         ClusterIP   10.96.53.244    <none>        8080/TCP   91s
+service/inner         ClusterIP   10.96.14.69     <none>        8080/TCP   90s
+service/mixed         ClusterIP   10.96.51.6      <none>        8080/TCP   91s
+service/notready      ClusterIP   10.96.38.128    <none>        8080/TCP   91s
+service/scaled        ClusterIP   10.96.73.46     <none>        8080/TCP   91s
+service/shared        ClusterIP   10.96.148.182   <none>        8080/TCP   91s
+
+NAME                                               ADDRESSTYPE   PORTS     ENDPOINTS                 AGE
+endpointslice.discovery.k8s.io/backend-h8rzs       IPv4          8080      10.244.1.23,10.244.2.14   91s
+endpointslice.discovery.k8s.io/badselector-9g6fs   IPv4          <unset>   <unset>                   91s
+endpointslice.discovery.k8s.io/dfltsvc-nm2rc       IPv4          <unset>   <unset>                   91s
+endpointslice.discovery.k8s.io/errors-xwq77        IPv4          8080      10.244.2.16               91s
+endpointslice.discovery.k8s.io/faila-tvlwz         IPv4          8080      10.244.1.26               91s
+endpointslice.discovery.k8s.io/failb-vnbzp         IPv4          8080      10.244.2.18               91s
+endpointslice.discovery.k8s.io/inner-7bdrp         IPv4          8080      10.244.1.22               90s
+endpointslice.discovery.k8s.io/mixed-hmn6l         IPv4          8080      10.244.1.25,10.244.2.17   91s
+endpointslice.discovery.k8s.io/notready-52pzq      IPv4          8080      10.244.1.24               91s
+endpointslice.discovery.k8s.io/scaled-mthph        IPv4          <unset>   <unset>                   91s
+endpointslice.discovery.k8s.io/shared-5b5jm        IPv4          <unset>   <unset>                   91s
+
+NAME                                    CLASS   HOSTS   ADDRESS     PORTS   AGE
+ingress.networking.k8s.io/app           nginx   *       localhost   80      91s
+ingress.networking.k8s.io/badselector   nginx   *       localhost   80      91s
+ingress.networking.k8s.io/connlim       nginx   *       localhost   80      91s
+ingress.networking.k8s.io/denied        nginx   *       localhost   80      91s
+ingress.networking.k8s.io/dflt          nginx   *       localhost   80      91s
+ingress.networking.k8s.io/limited       nginx   *       localhost   80      91s
+ingress.networking.k8s.io/masked        nginx   *       localhost   80      91s
+ingress.networking.k8s.io/missing       nginx   *       localhost   80      91s
+ingress.networking.k8s.io/nginxup       nginx   *       localhost   80      91s
+ingress.networking.k8s.io/noretry       nginx   *       localhost   80      91s
+ingress.networking.k8s.io/notready      nginx   *       localhost   80      91s
+ingress.networking.k8s.io/retry         nginx   *       localhost   80      91s
+ingress.networking.k8s.io/scaled        nginx   *       localhost   80      91s
+ingress.networking.k8s.io/sharedplain   nginx   *       localhost   80      91s
+ingress.networking.k8s.io/svcup         nginx   *       localhost   80      91s
+ingress.networking.k8s.io/wrongport     nginx   *       localhost   80      91s
+
+$ kubectl -n r503 get pods -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE                 NOMINATED NODE   READINESS GATES
+backend-5959b75855-grf8w    1/1     Running   0          91s   10.244.1.23   aurora-lab-worker2   <none>           <none>
+backend-5959b75855-j98xf    1/1     Running   0          91s   10.244.2.14   aurora-lab-worker    <none>           <none>
+curl                        1/1     Running   0          91s   10.244.1.21   aurora-lab-worker2   <none>           <none>
+errors-544454678b-drmhc     1/1     Running   0          91s   10.244.2.16   aurora-lab-worker    <none>           <none>
+faila-694f497997-7jcpt      1/1     Running   0          91s   10.244.1.26   aurora-lab-worker2   <none>           <none>
+failb-54bb58ddd8-j6tjr      1/1     Running   0          91s   10.244.2.18   aurora-lab-worker    <none>           <none>
+inner-bf68b69df-dkfgq       1/1     Running   0          90s   10.244.1.22   aurora-lab-worker2   <none>           <none>
+mixbad-fb44f7676-n78f4      1/1     Running   0          91s   10.244.1.25   aurora-lab-worker2   <none>           <none>
+mixgood-85cf6dbd9f-4cms2    1/1     Running   0          91s   10.244.2.17   aurora-lab-worker    <none>           <none>
+notready-5548c46b45-rjgn6   0/1     Running   0          91s   10.244.1.24   aurora-lab-worker2   <none>           <none>
+stock-84dcc5cd49-986xf      1/1     Running   0          90s   10.244.2.15   aurora-lab-worker    <none>           <none>
+
+### GET /app/ok
+HTTP/1.1 200 OK
+Date: Thu, 05 Nov 2026 23:10:57 GMT
+Content-Type: application/json
+Content-Length: 67
+Connection: keep-alive
+
+time_total=0.002435
+{"ok": true, "pod": "backend-5959b75855-j98xf", "path": "/app/ok"}
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:10:57 +0000] "GET /app/ok HTTP/1.1" 200 67 "-" "curl/8.12.1" 112 0.001 [r503-backend-8080] [] 10.244.2.14:8080 67 0.001 200 7edda00194e95ecad4fb6b687f6e3fd2
+
+### GET /scaled
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:00 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+time_total=0.001488
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:11:00 +0000] "GET /scaled HTTP/1.1" 503 190 "-" "curl/8.12.1" 112 0.000 [r503-scaled-8080] [] - - - - bdeb3254019ec676a50fd1fd085e5e49
+
+### GET /badselector
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:02 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+time_total=0.001828
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:11:02 +0000] "GET /badselector HTTP/1.1" 503 190 "-" "curl/8.12.1" 117 0.000 [r503-badselector-8080] [] - - - - de2e815c1c2b0dbae1a4ca055a3979f7
+
+### GET /notready
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:04 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+time_total=0.001732
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:11:04 +0000] "GET /notready HTTP/1.1" 503 190 "-" "curl/8.12.1" 114 0.000 [r503-notready-8080] [] - - - - 08dcd0991ceb41defc473a448dbf8b6d
+
+### GET /missing
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:06 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+time_total=0.001677
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:11:06 +0000] "GET /missing HTTP/1.1" 503 190 "-" "curl/8.12.1" 113 0.000 [r503-no-such-service-8080] [] - - - - 3535d2d463560f945bd4a952ced0cdfc
+
+### GET /wrongport
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:09 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+time_total=0.001770
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:11:09 +0000] "GET /wrongport HTTP/1.1" 503 190 "-" "curl/8.12.1" 115 0.000 [r503-backend-9999] [] - - - - f2d29bf7f769859ce95696067cb8d0a3
+
+### GET /denied
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:11:11 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+time_total=0.001693
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:11:11 +0000] "GET /denied HTTP/1.1" 503 190 "-" "curl/8.12.1" 112 0.000 [r503-backend-8080] [] - - - - f4bee2aa7f6e0ba15089376195073570
+
+### GET /svcup
+HTTP/1.1 502 Bad Gateway
+Date: Thu, 05 Nov 2026 23:11:13 GMT
+Content-Type: text/html
+Content-Length: 150
+Connection: keep-alive
+
+time_total=0.001964
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+2026/11/05 23:11:13 [error] 855#855: *4747 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.21, server: _, request: "GET /svcup HTTP/1.1", upstream: "http://10.96.148.182:8080/svcup", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/11/05 23:11:13 [error] 855#855: *4747 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.21, server: _, request: "GET /svcup HTTP/1.1", upstream: "http://10.96.148.182:8080/svcup", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/11/05 23:11:13 [error] 855#855: *4747 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.21, server: _, request: "GET /svcup HTTP/1.1", upstream: "http://10.96.148.182:8080/svcup", host: "ingress-nginx-controller.ingress-nginx.svc"
+10.244.1.21 - - [05/Nov/2026:23:11:13 +0000] "GET /svcup HTTP/1.1" 502 150 "-" "curl/8.12.1" 111 0.000 [r503-shared-8080] [] 10.96.148.182:8080, 10.96.148.182:8080, 10.96.148.182:8080 0, 0, 0 0.000, 0.000, 0.000 502, 502, 502 7500d78f067fa589a05a3eb9d27d01ac
+
+### GET /sharedplain
+HTTP/1.1 502 Bad Gateway
+Date: Thu, 05 Nov 2026 23:11:15 GMT
+Content-Type: text/html
+Content-Length: 150
+Connection: keep-alive
+
+time_total=0.002212
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+--- controller log
+2026/11/05 23:11:15 [error] 855#855: *4776 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.21, server: _, request: "GET /sharedplain HTTP/1.1", upstream: "http://10.96.148.182:8080/sharedplain", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/11/05 23:11:15 [error] 855#855: *4776 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.21, server: _, request: "GET /sharedplain HTTP/1.1", upstream: "http://10.96.148.182:8080/sharedplain", host: "ingress-nginx-controller.ingress-nginx.svc"
+2026/11/05 23:11:15 [error] 855#855: *4776 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.21, server: _, request: "GET /sharedplain HTTP/1.1", upstream: "http://10.96.148.182:8080/sharedplain", host: "ingress-nginx-controller.ingress-nginx.svc"
+10.244.1.21 - - [05/Nov/2026:23:11:15 +0000] "GET /sharedplain HTTP/1.1" 502 150 "-" "curl/8.12.1" 117 0.001 [r503-shared-8080] [] 10.96.148.182:8080, 10.96.148.182:8080, 10.96.148.182:8080 0, 0, 0 0.001, 0.000, 0.000 502, 502, 502 22d4ad4341ca0110335db8058dbfad3b
+
+### GET /dflt
+HTTP/1.1 200 OK
+Date: Thu, 05 Nov 2026 23:11:18 GMT
+Content-Type: application/json
+Content-Length: 65
+Connection: keep-alive
+
+time_total=0.002875
+{"ok": true, "pod": "backend-5959b75855-grf8w", "path": "/dflt"}
+
+--- controller log
+10.244.1.21 - - [05/Nov/2026:23:11:18 +0000] "GET /dflt HTTP/1.1" 200 65 "-" "curl/8.12.1" 110 0.001 [custom-default-backend-r503-backend] [] 10.244.1.23:8080 65 0.002 200 6d6c3e2f44c47dfafce9ac7e4110d574
+
+$ controller warnings for this namespace, timestamps removed, counted
+     28 W controller.go:1241] Service "r503/scaled" does not have any active Endpoint.
+     27 W controller.go:1241] Service "r503/badselector" does not have any active Endpoint.
+     26 W controller.go:1241] Service "r503/notready" does not have any active Endpoint.
+     25 W controller.go:1135] Error obtaining Endpoints for Service "r503/no-such-service": no object matching key "r503/no-such-service" in local store
+     17 W controller.go:1241] Service "r503/backend" does not have any active Endpoint.
+     15 W controller.go:1241] Service "r503/dfltsvc" does not have any active Endpoint.
+      8 W controller.go:1241] Service "r503/mixed" does not have any active Endpoint.
+      5 W controller.go:1135] Error obtaining Endpoints for Service "r503/inner": no object matching key "r503/inner" in local store
+      3 E annotations.go:216] "error reading Ingress annotation" err="unexpected error reading secret r503/no-such-secret: no object matching key \"r503/no-such-secret\" in local store" name="BasicDigestAuth" ingress="r503/denied"
+      2 W backend_ssl.go:47] Error obtaining X.509 certificate: no object matching key "r503/no-such-secret" in local store
+
+$ denied location in the rendered config
+2451-			
+2452:			# Location denied. Reason: "unexpected error reading secret r503/no-such-secret: no object matching key \"r503/no-such-secret\" in local store"
+2453-			return 503;
+--
+2490-			
+2491:			# Location denied. Reason: "unexpected error reading secret r503/no-such-secret: no object matching key \"r503/no-such-secret\" in local store"
+2492-			return 503;
+
+# HTTP/2 through the controller's TLS port: no reason phrase on the wire
+$ kubectl -n r503 exec curl -- curl -sik --http2 https://ingress-nginx-controller.ingress-nginx.svc/scaled
+HTTP/2 503 
+date: Thu, 05 Nov 2026 23:11:20 GMT
+content-type: text/html
+content-length: 190
+strict-transport-security: max-age=31536000; includeSubDomains
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+$ kubectl -n r503 exec curl -- curl -sik --http2 https://ingress-nginx-controller.ingress-nginx.svc/app/fail503
+HTTP/2 503 
+date: Thu, 05 Nov 2026 23:11:20 GMT
+content-type: application/json
+content-length: 68
+retry-after: 5
+strict-transport-security: max-age=31536000; includeSubDomains
+
+{"error": "backend unavailable", "pod": "backend-5959b75855-grf8w"}
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg backends list
+custom-default-backend-r503-backend
+custom-default-backend-r503-errors
+r503-backend-8080
+r503-backend-9999
+r503-badselector-8080
+r503-dfltsvc-8080
+r503-inner-8080
+r503-mixed-8080
+r503-no-such-service-8080
+r503-notready-8080
+r503-scaled-8080
+r503-shared-8080
+shop-api-8080
+upstream-default-backend
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg conf | grep -n -E 'server_tokens|more_clear_headers|limit_req_status|limit_conn_status|proxy_next_upstream ' | sort -t: -k2 -u | head -12
+2775:			proxy_next_upstream                     error timeout http_503;
+351:			proxy_next_upstream                     error timeout;
+81:	limit_conn_status               503;
+80:	limit_req_status                503;
+90:	more_clear_headers Server;
+88:	server_tokens off;
+

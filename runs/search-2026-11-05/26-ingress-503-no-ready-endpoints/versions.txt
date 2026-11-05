@@ -1,0 +1,9 @@
+Thu Nov  5 23:03:26 UTC 2026
+kind v0.33.0 go1.26.7 linux/amd64
+Client Version: v1.37.2
+Kustomize Version: v5.8.1
+28.0.4
+Linux runnervm7aw5e 7.0.0-1017-azure #17~24.04.1-Ubuntu SMP PREEMPT Thu Sep 24 18:46:57 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+Client Version: v1.37.2
+Kustomize Version: v5.8.1
+Server Version: v1.37.0

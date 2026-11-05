@@ -1,0 +1,106 @@
+# 2026-11-05T23:09:32Z restore redis
+$ kubectl -n shop scale deploy/redis --replicas=1
+deployment.apps/redis scaled
+
+$ kubectl -n shop rollout status deploy/redis --timeout=120s
+Waiting for deployment "redis" rollout to finish: 0 of 1 updated replicas are available...
+deployment "redis" successfully rolled out
+
+ingress returned 200 4s after redis was Available
+$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=api
+NAME        ADDRESSTYPE   PORTS   ENDPOINTS                 AGE
+api-gpgw9   IPv4          8080    10.244.1.20,10.244.2.13   98s
+
+$ kubectl -n shop patch deploy api --type=json -p '[{"op":"replace","path":"/spec/template/spec/containers/0/readinessProbe/httpGet/path","value":"/healthz"}]'
+deployment.apps/api patched
+
+$ kubectl -n shop rollout status deploy/api --timeout=120s
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+
+# 2026-11-05T23:09:40Z same redis outage, readiness on /healthz
+$ kubectl -n shop scale deploy/redis --replicas=0
+deployment.apps/redis scaled
+
+$ kubectl -n shop get pods -l app=api
+NAME                  READY   STATUS        RESTARTS   AGE
+api-db478d6c9-gjc85   0/1     Terminating   0          117s
+api-db478d6c9-kh4d7   0/1     Terminating   0          116s
+api-f64486c4c-r9klb   1/1     Running       0          27s
+api-f64486c4c-t2nsx   1/1     Running       0          26s
+
+$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=api
+NAME        ADDRESSTYPE   PORTS   ENDPOINTS                                         AGE
+api-gpgw9   IPv4          8080    10.244.1.20,10.244.2.13,10.244.2.20 + 1 more...   2m5s
+
+$ kubectl -n r503 exec curl -- curl -si http://ingress-nginx-controller.ingress-nginx.svc/items
+HTTP/1.1 503 Service Unavailable
+Date: Thu, 05 Nov 2026 23:10:05 GMT
+Content-Type: application/json
+Content-Length: 32
+Connection: keep-alive
+
+{"error": "backend unavailable"}
+$ kubectl -n r503 exec curl -- curl -s -o /dev/null -w "%{http_code} %{time_total}s\n" http://ingress-nginx-controller.ingress-nginx.svc/items
+503 0.002753s
+
+$ kubectl -n shop exec deploy/loadgen -- wget -S -O - -T 5 http://frontend/api/items
+Connecting to frontend (10.96.195.44:80)
+  HTTP/1.1 503 Service Unavailable
+wget: server returned error: HTTP/1.1 503 Service Unavailable
+command terminated with exit code 1
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=400 | grep -E 'GET /items' | tail -3
+10.244.1.21 - - [05/Nov/2026:23:09:38 +0000] "GET /items HTTP/1.1" 200 38 "-" "curl/8.12.1" 111 0.002 [shop-api-8080] [] 10.244.2.13:8080 38 0.002 200 a12050693867c87648c7ae8149e6ee19
+10.244.1.21 - - [05/Nov/2026:23:10:05 +0000] "GET /items HTTP/1.1" 503 32 "-" "curl/8.12.1" 111 0.001 [shop-api-8080] [] 10.244.2.20:8080 32 0.001 503 7c2a237aee916b2908d0001cc0ac6667
+10.244.1.21 - - [05/Nov/2026:23:10:05 +0000] "GET /items HTTP/1.1" 503 32 "-" "curl/8.12.1" 111 0.002 [shop-api-8080] [] 10.244.1.27:8080 32 0.002 503 e0472c11a69942693db64bcee128af10
+
+$ kubectl -n shop logs -l app=api --tail=3 --prefix
+[pod/api-f64486c4c-r9klb/api] 10.244.2.6 "GET /items HTTP/1.1" 503 -
+[pod/api-f64486c4c-r9klb/api] request failed: redis error: [Errno 111] Connection refused
+[pod/api-f64486c4c-r9klb/api] 10.244.1.18 "GET /items HTTP/1.0" 503 -
+[pod/api-f64486c4c-t2nsx/api] 10.244.2.6 "GET /items HTTP/1.1" 503 -
+[pod/api-f64486c4c-t2nsx/api] request failed: redis error: [Errno 111] Connection refused
+[pod/api-f64486c4c-t2nsx/api] 10.244.1.18 "GET /items HTTP/1.0" 503 -
+[pod/api-db478d6c9-gjc85/api] 10.244.1.1 "GET /items HTTP/1.1" 503 -
+[pod/api-db478d6c9-gjc85/api] request failed: redis error: [Errno 111] Connection refused
+[pod/api-db478d6c9-gjc85/api] 10.244.1.1 "GET /items HTTP/1.1" 503 -
+[pod/api-db478d6c9-kh4d7/api] 10.244.2.1 "GET /items HTTP/1.1" 503 -
+[pod/api-db478d6c9-kh4d7/api] request failed: redis error: [Errno 111] Connection refused
+[pod/api-db478d6c9-kh4d7/api] 10.244.2.1 "GET /items HTTP/1.1" 503 -
+
+$ kubectl -n shop logs deploy/loadgen --tail=3
+2026-11-05T23:10:02Z GET /api/items -> 503
+2026-11-05T23:10:04Z GET /api/items -> 503
+2026-11-05T23:10:06Z GET /api/items -> 503
+
+# 2026-11-05T23:10:08Z fix verified: redis back, readiness on /healthz
+$ kubectl -n shop scale deploy/redis --replicas=1
+deployment.apps/redis scaled
+
+$ kubectl -n shop rollout status deploy/redis --timeout=120s
+Waiting for deployment "redis" rollout to finish: 0 of 1 updated replicas are available...
+deployment "redis" successfully rolled out
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg backends get shop-api-8080 | grep -A4 '"endpoints"'
+  "endpoints": [
+    {
+      "address": "10.244.2.20",
+      "port": "8080"
+    },
+
+$ kubectl -n shop logs deploy/loadgen --tail=5
+2026-11-05T23:10:38Z GET /api/items -> 200
+2026-11-05T23:10:40Z GET /api/items -> 200
+2026-11-05T23:10:42Z GET /api/items -> 200
+2026-11-05T23:10:44Z GET /api/items -> 200
+2026-11-05T23:10:46Z GET /api/items -> 200
+
+$ kubectl -n r503 exec curl -- sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do curl -s -o /dev/null -w \"%{http_code}\n\" http://ingress-nginx-controller.ingress-nginx.svc/items; done | sort | uniq -c"
+     10 200
+

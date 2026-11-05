@@ -1,0 +1,447 @@
+# 2026-11-05T23:13:51Z Envoy Gateway
+$ helm install eg oci://docker.io/envoyproxy/gateway-helm --version v1.9.3 -n envoy-gateway-system --create-namespace --wait --timeout 5m | head -8
+Pulled: docker.io/envoyproxy/gateway-helm:v1.9.3
+Digest: sha256:be1b8f163a338f94e7d6532336c08d6856fc70a0b790ac14a2826a54d23e0dd3
+NAME: eg
+LAST DEPLOYED: Thu Nov  5 23:13:53 2026
+NAMESPACE: envoy-gateway-system
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+**************************************************************************
+
+$ kubectl -n envoy-gateway-system wait --for=condition=Available deploy/envoy-gateway --timeout=180s
+deployment.apps/envoy-gateway condition met
+
+gatewayclass.gateway.networking.k8s.io/eg created
+gateway.gateway.networking.k8s.io/eg created
+backendtrafficpolicy.gateway.envoyproxy.io/limited created
+httproute.gateway.networking.k8s.io/eg-app created
+httproute.gateway.networking.k8s.io/eg-limited created
+httproute.gateway.networking.k8s.io/eg-scaled created
+httproute.gateway.networking.k8s.io/eg-missing created
+$ kubectl -n envoy-gateway-system get pods,svc
+NAME                                          READY   STATUS    RESTARTS   AGE
+pod/envoy-gateway-6776489b4b-m77fn            1/1     Running   0          34s
+pod/envoy-r503-eg-31712ab1-677bc9c444-q8wc4   2/2     Running   0          29s
+
+NAME                             TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                                            AGE
+service/envoy-gateway            ClusterIP      10.96.165.215   <none>        18000/TCP,18001/TCP,18002/TCP,19001/TCP,9443/TCP   34s
+service/envoy-r503-eg-31712ab1   LoadBalancer   10.96.154.235   <pending>     80:32516/TCP                                       29s
+
+$ kubectl -n r503 get gateway eg
+NAME   CLASS   ADDRESS   PROGRAMMED   AGE
+eg     eg                False        31s
+
+### GET /app/ok
+HTTP/1.1 200 OK
+server: demo-app/1.0
+date: Thu, 05 Nov 2026 23:14:35 GMT
+content-type: application/json
+content-length: 67
+
+{"ok": true, "pod": "backend-5959b75855-j98xf", "path": "/app/ok"}
+
+### GET /app/fail503
+HTTP/1.1 503 Service Unavailable
+server: demo-app/1.0
+date: Thu, 05 Nov 2026 23:14:35 GMT
+content-type: application/json
+content-length: 68
+retry-after: 5
+
+{"error": "backend unavailable", "pod": "backend-5959b75855-grf8w"}
+
+### GET /scaled
+HTTP/1.1 503 Service Unavailable
+date: Thu, 05 Nov 2026 23:14:35 GMT
+content-length: 0
+
+
+### GET /missing
+HTTP/1.1 500 Internal Server Error
+date: Thu, 05 Nov 2026 23:14:35 GMT
+content-length: 0
+
+
+$ 30 requests, 10 at a time, /limited/ok
+      5 200
+     25 429
+### GET /limited/ok
+HTTP/1.1 429 Too Many Requests
+content-length: 18
+content-type: text/plain
+x-ratelimit-limit: 5
+x-ratelimit-remaining: 0
+x-ratelimit-reset: 1
+date: Thu, 05 Nov 2026 23:14:35 GMT
+
+local_rate_limited
+$ kubectl -n envoy-gateway-system logs pod/envoy-r503-eg-31712ab1-677bc9c444-q8wc4 -c envoy --tail=300 | grep -E '"response_code":(500|503)' | tail -4
+{":authority":"envoy-r503-eg-31712ab1.envoy-gateway-system.svc","bytes_received":0,"bytes_sent":68,"connection_termination_details":null,"downstream_local_address":"10.244.2.22:10080","downstream_remote_address":"10.244.1.21:50716","duration":1,"method":"GET","protocol":"HTTP/1.1","requested_server_name":null,"response_code":503,"response_code_details":"via_upstream","response_flags":"-","route_name":"httproute/r503/eg-app/rule/0/match/0/*","start_time":"2026-11-05T23:14:35.318Z","upstream_cluster":"httproute/r503/eg-app/rule/0","upstream_host":"10.244.1.23:8080","upstream_local_address":"10.244.2.22:32838","upstream_transport_failure_reason":null,"user-agent":"curl/8.12.1","x-envoy-origin-path":"/app/fail503","x-envoy-upstream-service-time":null,"x-forwarded-for":"10.244.1.21","x-request-id":"18c5579c-2cd3-4555-8062-9c488230f708"}
+{":authority":"envoy-r503-eg-31712ab1.envoy-gateway-system.svc","bytes_received":0,"bytes_sent":0,"connection_termination_details":null,"downstream_local_address":"10.244.2.22:10080","downstream_remote_address":"10.244.1.21:50726","duration":0,"method":"GET","protocol":"HTTP/1.1","requested_server_name":null,"response_code":503,"response_code_details":"direct_response","response_flags":"-","route_name":"httproute/r503/eg-scaled/rule/0/match/0/*","start_time":"2026-11-05T23:14:35.413Z","upstream_cluster":null,"upstream_host":null,"upstream_local_address":null,"upstream_transport_failure_reason":null,"user-agent":"curl/8.12.1","x-envoy-origin-path":"/scaled","x-envoy-upstream-service-time":null,"x-forwarded-for":"10.244.1.21","x-request-id":"41afbdb1-3785-47a1-bfad-742e7d84038c"}
+{":authority":"envoy-r503-eg-31712ab1.envoy-gateway-system.svc","bytes_received":0,"bytes_sent":0,"connection_termination_details":null,"downstream_local_address":"10.244.2.22:10080","downstream_remote_address":"10.244.1.21:50730","duration":0,"method":"GET","protocol":"HTTP/1.1","requested_server_name":null,"response_code":500,"response_code_details":"direct_response","response_flags":"-","route_name":"httproute/r503/eg-missing/rule/0/match/0/*","start_time":"2026-11-05T23:14:35.508Z","upstream_cluster":null,"upstream_host":null,"upstream_local_address":null,"upstream_transport_failure_reason":null,"user-agent":"curl/8.12.1","x-envoy-origin-path":"/missing","x-envoy-upstream-service-time":null,"x-forwarded-for":"10.244.1.21","x-request-id":"027bbc73-2ada-4d51-bb70-4116de1b5656"}
+
+$ kubectl -n envoy-gateway-system logs pod/envoy-r503-eg-31712ab1-677bc9c444-q8wc4 -c envoy --tail=300 | grep -E '"response_code":429' | tail -1
+{":authority":"envoy-r503-eg-31712ab1.envoy-gateway-system.svc","bytes_received":0,"bytes_sent":18,"connection_termination_details":null,"downstream_local_address":"10.244.2.22:10080","downstream_remote_address":"10.244.1.21:51022","duration":0,"method":"GET","protocol":"HTTP/1.1","requested_server_name":null,"response_code":429,"response_code_details":"local_rate_limited","response_flags":"RL","route_name":"httproute/r503/eg-limited/rule/0/match/0/*","start_time":"2026-11-05T23:14:35.741Z","upstream_cluster":"httproute/r503/eg-limited/rule/0","upstream_host":null,"upstream_local_address":null,"upstream_transport_failure_reason":null,"user-agent":"curl/8.12.1","x-envoy-origin-path":"/limited/ok","x-envoy-upstream-service-time":null,"x-forwarded-for":"10.244.1.21","x-request-id":"887064f9-9108-40ed-98e2-75acbf7355ab"}
+
+docker.io/envoyproxy/envoy:distroless-v1.39.5@sha256:9d84a586119a27b50437dbb01eccd4722832741539b1ed53c8e9d6da6067a6e0
+NAME	NAMESPACE           	REVISION	UPDATED                                	STATUS  	CHART              	APP VERSION
+eg  	envoy-gateway-system	1       	2026-11-05 23:13:53.647504859 +0000 UTC	deployed	gateway-helm-v1.9.3	v1.9.3     
+# 2026-11-05T23:14:38Z NGINX Gateway Fabric
+$ kubectl kustomize 'https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.8.1' | kubectl apply --server-side --force-conflicts -f - | tail -3
+customresourcedefinition.apiextensions.k8s.io/udproutes.gateway.networking.k8s.io serverside-applied
+validatingadmissionpolicy.admissionregistration.k8s.io/safe-upgrades.gateway.networking.k8s.io serverside-applied
+validatingadmissionpolicybinding.admissionregistration.k8s.io/safe-upgrades.gateway.networking.k8s.io serverside-applied
+
+$ helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric --version 2.8.1 -n nginx-gateway --create-namespace --set nginx.service.type=ClusterIP --wait --timeout 5m | head -6
+Pulled: ghcr.io/nginx/charts/nginx-gateway-fabric:2.8.1
+Digest: sha256:f474def07eae1ebe37591507801118fbe11b676fa93ad50d28f5097df9b3f94b
+NAME: ngf
+LAST DEPLOYED: Thu Nov  5 23:14:44 2026
+NAMESPACE: nginx-gateway
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+
+gateway.gateway.networking.k8s.io/ngf created
+ratelimitpolicy.gateway.nginx.org/limited created
+httproute.gateway.networking.k8s.io/ngf-app created
+httproute.gateway.networking.k8s.io/ngf-limited created
+httproute.gateway.networking.k8s.io/ngf-scaled created
+httproute.gateway.networking.k8s.io/ngf-missing created
+$ kubectl -n r503 get gateway ngf
+NAME   CLASS   ADDRESS        PROGRAMMED   AGE
+ngf    nginx   10.96.227.58   True         30s
+
+$ kubectl -n r503 get pods,svc -l gateway.networking.k8s.io/gateway-name=ngf
+NAME                             READY   STATUS    RESTARTS   AGE
+pod/ngf-nginx-85b9d964b4-68hbf   1/1     Running   0          30s
+
+NAME                TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+service/ngf-nginx   ClusterIP   10.96.227.58   <none>        80/TCP    30s
+
+$ kubectl -n r503 describe ratelimitpolicy limited | tail -14
+      Last Transition Time:  2026-11-05T23:15:02Z
+      Message:               The Policy is accepted
+      Observed Generation:   1
+      Reason:                Accepted
+      Status:                True
+      Type:                  Accepted
+      Last Transition Time:  2026-11-05T23:15:02Z
+      Message:               Policy is programmed in the data plane
+      Observed Generation:   1
+      Reason:                Programmed
+      Status:                True
+      Type:                  Programmed
+    Controller Name:         gateway.nginx.org/nginx-gateway-controller
+Events:                      <none>
+
+### GET /app/ok
+HTTP/1.1 200 OK
+Server: nginx
+Date: Thu, 05 Nov 2026 23:15:33 GMT
+Content-Type: application/json
+Content-Length: 67
+Connection: keep-alive
+
+{"ok": true, "pod": "backend-5959b75855-grf8w", "path": "/app/ok"}
+
+### GET /app/fail503
+HTTP/1.1 503 Service Unavailable
+Server: nginx
+Date: Thu, 05 Nov 2026 23:15:33 GMT
+Content-Type: application/json
+Content-Length: 68
+Connection: keep-alive
+Retry-After: 5
+
+{"error": "backend unavailable", "pod": "backend-5959b75855-grf8w"}
+
+### GET /scaled
+HTTP/1.1 503 Service Temporarily Unavailable
+Server: nginx
+Date: Thu, 05 Nov 2026 23:15:33 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+### GET /missing
+HTTP/1.1 500 Internal Server Error
+Server: nginx
+Date: Thu, 05 Nov 2026 23:15:33 GMT
+Content-Type: text/html
+Content-Length: 170
+Connection: keep-alive
+
+<html>
+<head><title>500 Internal Server Error</title></head>
+<body>
+<center><h1>500 Internal Server Error</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+$ 30 requests, 10 at a time, /limited/ok
+      1 200
+     29 503
+### GET /limited/ok
+HTTP/1.1 503 Service Temporarily Unavailable
+Server: nginx
+Date: Thu, 05 Nov 2026 23:15:33 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+$ kubectl -n r503 logs pod/ngf-nginx-85b9d964b4-68hbf --tail=300 | grep -E 'GET|limiting' | tail -10
+Defaulted container "nginx" out of: nginx, init (init)
+2026/11/05 23:15:33 [error] 38#38: *45 limiting requests, excess: 0.922 by zone "r503_rl_limited_rule0", client: 10.244.1.21, server: ~^, request: "GET /limited/ok HTTP/1.1", host: "ngf-nginx.r503.svc"
+10.244.1.21 - - [05/Nov/2026:23:15:33 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1"
+2026/11/05 23:15:33 [error] 39#39: *46 limiting requests, excess: 0.922 by zone "r503_rl_limited_rule0", client: 10.244.1.21, server: ~^, request: "GET /limited/ok HTTP/1.1", host: "ngf-nginx.r503.svc"
+10.244.1.21 - - [05/Nov/2026:23:15:33 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1"
+2026/11/05 23:15:33 [error] 39#39: *47 limiting requests, excess: 0.922 by zone "r503_rl_limited_rule0", client: 10.244.1.21, server: ~^, request: "GET /limited/ok HTTP/1.1", host: "ngf-nginx.r503.svc"
+10.244.1.21 - - [05/Nov/2026:23:15:33 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1"
+2026/11/05 23:15:33 [error] 38#38: *48 limiting requests, excess: 0.918 by zone "r503_rl_limited_rule0", client: 10.244.1.21, server: ~^, request: "GET /limited/ok HTTP/1.1", host: "ngf-nginx.r503.svc"
+10.244.1.21 - - [05/Nov/2026:23:15:33 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1"
+2026/11/05 23:15:33 [error] 38#38: *49 limiting requests, excess: 0.728 by zone "r503_rl_limited_rule0", client: 10.244.1.21, server: ~^, request: "GET /limited/ok HTTP/1.1", host: "ngf-nginx.r503.svc"
+10.244.1.21 - - [05/Nov/2026:23:15:33 +0000] "GET /limited/ok HTTP/1.1" 503 190 "-" "curl/8.12.1"
+
+Defaulted container "nginx" out of: nginx, init (init)
+nginx version: nginx/1.31.7
+ghcr.io/nginx/nginx-gateway-fabric/nginx:2.8.1
+# 2026-11-05T23:15:36Z Traefik reading the same Ingress objects, with its ingress-nginx annotation provider
+$ helm repo add traefik https://traefik.github.io/charts >/dev/null && helm repo update >/dev/null && helm search repo traefik/traefik | head -2
+NAME                	CHART VERSION	APP VERSION	DESCRIPTION                                       
+traefik/traefik     	42.3.0       	v3.7.17    	A Traefik based Kubernetes ingress controller     
+
+$ helm install traefik traefik/traefik -n traefik --create-namespace --set providers.kubernetesIngress.enabled=false --set providers.kubernetesCRD.enabled=false --set providers.kubernetesIngressNGINX.enabled=true --set service.type=ClusterIP --set 'additionalArguments={--accesslog=true}' | head -6
+NAME: traefik
+LAST DEPLOYED: Thu Nov  5 23:15:37 2026
+NAMESPACE: traefik
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+
+$ kubectl -n traefik rollout status deploy/traefik --timeout=180s
+Waiting for deployment "traefik" rollout to finish: 0 of 1 updated replicas are available...
+deployment "traefik" successfully rolled out
+
+$ kubectl -n traefik get pods,svc
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/traefik-5d6dc65c8d-2hrsq   1/1     Running   0          34s
+
+NAME              TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+service/traefik   LoadBalancer   10.96.43.219   <pending>     80:31818/TCP,443:31772/TCP   34s
+
+### GET /app/ok
+HTTP/1.1 200 OK
+Content-Length: 67
+Content-Type: application/json
+Date: Thu, 05 Nov 2026 23:16:11 GMT
+Server: demo-app/1.0
+
+{"ok": true, "pod": "backend-5959b75855-j98xf", "path": "/app/ok"}
+
+### GET /app/fail503
+HTTP/1.1 503 Service Unavailable
+Content-Length: 68
+Content-Type: application/json
+Date: Thu, 05 Nov 2026 23:16:11 GMT
+Retry-After: 5
+Server: demo-app/1.0
+
+{"error": "backend unavailable", "pod": "backend-5959b75855-grf8w"}
+
+### GET /scaled
+HTTP/1.1 503 Service Unavailable
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Date: Thu, 05 Nov 2026 23:16:11 GMT
+Content-Length: 20
+
+no available server
+
+### GET /badselector
+HTTP/1.1 503 Service Unavailable
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Date: Thu, 05 Nov 2026 23:16:11 GMT
+Content-Length: 20
+
+no available server
+
+### GET /missing
+HTTP/1.1 503 Service Unavailable
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Date: Thu, 05 Nov 2026 23:16:11 GMT
+Content-Length: 20
+
+no available server
+
+### GET /notready
+HTTP/1.1 503 Service Unavailable
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Date: Thu, 05 Nov 2026 23:16:11 GMT
+Content-Length: 20
+
+no available server
+
+$ 30 requests, 10 at a time, /limited/ok (limit-rps 2 annotation, unchanged)
+     10 200
+     20 429
+### GET /limited/ok
+HTTP/1.1 429 Too Many Requests
+Retry-After: 1
+X-Retry-In: 349.745949ms
+Date: Thu, 05 Nov 2026 23:16:12 GMT
+Content-Length: 17
+
+Too Many Requests
+$ kubectl -n traefik logs deploy/traefik --tail=80 | grep -v -E '/limited' | tail -12
+[90m2026-11-05T23:15:40Z[0m [33mWRN[0m [1mCannot resolve backend addresses, emitting empty backend[0m [36merror=[0m[31m[1m"service port not found"[0m[0m [36mingress=[0mwrongport [36mnamespace=[0mr503 [36mproviderName=[0mkubernetesingressnginx [36mservice=[0mbackend
+[90m2026-11-05T23:15:40Z[0m [33mWRN[0m [1mCannot resolve backend addresses, emitting empty backend[0m [36merror=[0m[31m[1m"getting service: service \"no-such-service\" not found"[0m[0m [36mingress=[0mmissing [36mnamespace=[0mr503 [36mproviderName=[0mkubernetesingressnginx [36mservice=[0mno-such-service
+[90m2026-11-05T23:15:40Z[0m [31mERR[0m [1mCannot resolve auth secret, skipping ingress[0m [36merror=[0m[31m[1m"getting secret no-such-secret: secret \"no-such-secret\" not found"[0m[0m [36mingress=[0m"r503/denied rule-0 path-0" [36mnamespace=[0mr503 [36mproviderName=[0mkubernetesingressnginx
+[90m2026-11-05T23:15:51Z[0m [33mWRN[0m [1mCannot resolve backend addresses, emitting empty backend[0m [36merror=[0m[31m[1m"service port not found"[0m[0m [36mingress=[0mwrongport [36mnamespace=[0mr503 [36mproviderName=[0mkubernetesingressnginx [36mservice=[0mbackend
+[90m2026-11-05T23:15:51Z[0m [33mWRN[0m [1mCannot resolve backend addresses, emitting empty backend[0m [36merror=[0m[31m[1m"getting service: service \"no-such-service\" not found"[0m[0m [36mingress=[0mmissing [36mnamespace=[0mr503 [36mproviderName=[0mkubernetesingressnginx [36mservice=[0mno-such-service
+[90m2026-11-05T23:15:51Z[0m [31mERR[0m [1mCannot resolve auth secret, skipping ingress[0m [36merror=[0m[31m[1m"getting secret no-such-secret: secret \"no-such-secret\" not found"[0m[0m [36mingress=[0m"r503/denied rule-0 path-0" [36mnamespace=[0mr503 [36mproviderName=[0mkubernetesingressnginx
+10.244.1.21 - - [05/Nov/2026:23:16:11 +0000] "GET /app/ok HTTP/1.1" 200 67 "-" "-" 1 "r503-4-app-3-rule-0-path-0@kubernetesingressnginx" "http://10.244.2.14:8080" 1ms
+10.244.1.21 - - [05/Nov/2026:23:16:11 +0000] "GET /app/fail503 HTTP/1.1" 503 68 "-" "-" 2 "r503-4-app-3-rule-0-path-0@kubernetesingressnginx" "http://10.244.1.23:8080" 1ms
+10.244.1.21 - - [05/Nov/2026:23:16:11 +0000] "GET /scaled HTTP/1.1" 503 20 "-" "-" 3 "r503-4-scaled-6-rule-0-path-0@kubernetesingressnginx" "-" 0ms
+10.244.1.21 - - [05/Nov/2026:23:16:11 +0000] "GET /badselector HTTP/1.1" 503 20 "-" "-" 4 "r503-4-badselector-11-rule-0-path-0@kubernetesingressnginx" "-" 0ms
+10.244.1.21 - - [05/Nov/2026:23:16:11 +0000] "GET /missing HTTP/1.1" 503 20 "-" "-" 5 "r503-4-missing-7-rule-0-path-0@kubernetesingressnginx" "-" 0ms
+10.244.1.21 - - [05/Nov/2026:23:16:11 +0000] "GET /notready HTTP/1.1" 503 20 "-" "-" 6 "r503-4-notready-8-rule-0-path-0@kubernetesingressnginx" "-" 0ms
+
+$ kubectl -n traefik logs deploy/traefik --tail=80 | grep -E '/limited' | tail -2
+10.244.1.21 - - [05/Nov/2026:23:16:12 +0000] "GET /limited/ok HTTP/1.1" 429 17 "-" "-" 36 "r503-4-limited-7-rule-0-path-0@kubernetesingressnginx" "-" 0ms
+10.244.1.21 - - [05/Nov/2026:23:16:12 +0000] "GET /limited/ok HTTP/1.1" 429 17 "-" "-" 37 "r503-4-limited-7-rule-0-path-0@kubernetesingressnginx" "-" 0ms
+
+docker.io/traefik:v3.7.17
+NAME   	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART         	APP VERSION
+traefik	traefik  	1       	2026-11-05 23:15:37.145712936 +0000 UTC	deployed	traefik-42.3.0	v3.7.17    
+# 2026-11-05T23:16:14Z F5 NGINX Ingress Controller, a different project from ingress-nginx
+$ helm install nic oci://ghcr.io/nginx/charts/nginx-ingress -n nic --create-namespace --set controller.service.type=ClusterIP --set controller.ingressClass.name=nic --wait --timeout 5m | head -6
+Pulled: ghcr.io/nginx/charts/nginx-ingress:2.8.1
+Digest: sha256:8ffb710f039c7f9314820593c22ddb344c1295b571c8177af8f8dac43045ed96
+NAME: nic
+LAST DEPLOYED: Thu Nov  5 23:16:15 2026
+NAMESPACE: nic
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+
+ingress.networking.k8s.io/nic-app created
+ingress.networking.k8s.io/nic-limited created
+$ kubectl -n nic get pods,svc
+NAME                                                READY   STATUS    RESTARTS   AGE
+pod/nic-nginx-ingress-controller-57c756857b-r54xq   1/1     Running   0          26s
+
+NAME                                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/nic-nginx-ingress-controller   ClusterIP   10.96.162.115   <none>        80/TCP,443/TCP   26s
+
+$ kubectl -n r503 describe ingress nic-limited | tail -6
+              /limited   backend:8080 (10.244.1.23:8080,10.244.2.14:8080)
+Annotations:  nginx.org/limit-req-rate: 2r/s
+Events:
+  Type    Reason          Age   From                      Message
+  ----    ------          ----  ----                      -------
+  Normal  AddedOrUpdated  20s   nginx-ingress-controller  Configuration for r503/nic-limited was added or updated
+
+### GET /app/ok
+HTTP/1.1 404 Not Found
+Server: nginx/1.31.8
+Date: Thu, 05 Nov 2026 23:16:42 GMT
+Content-Type: text/html
+Content-Length: 153
+Connection: keep-alive
+
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx/1.31.8</center>
+</body>
+</html>
+
+### GET /app/fail503
+HTTP/1.1 404 Not Found
+Server: nginx/1.31.8
+Date: Thu, 05 Nov 2026 23:16:42 GMT
+Content-Type: text/html
+Content-Length: 153
+Connection: keep-alive
+
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx/1.31.8</center>
+</body>
+</html>
+
+### GET /scaled
+HTTP/1.1 404 Not Found
+Server: nginx/1.31.8
+Date: Thu, 05 Nov 2026 23:16:42 GMT
+Content-Type: text/html
+Content-Length: 153
+Connection: keep-alive
+
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<center><h1>404 Not Found</h1></center>
+<hr><center>nginx/1.31.8</center>
+</body>
+</html>
+
+$ 30 requests, 10 at a time, /limited/ok
+      1 200
+     29 429
+### GET /limited/ok
+HTTP/1.1 429 Too Many Requests
+Server: nginx/1.31.8
+Date: Thu, 05 Nov 2026 23:16:42 GMT
+Content-Type: text/html
+Content-Length: 169
+Connection: keep-alive
+
+<html>
+<head><title>429 Too Many Requests</title></head>
+<body>
+<center><h1>429 Too Many Requests</h1></center>
+<hr><center>nginx/1.31.8</center>
+</body>
+</html>
+
+$ kubectl -n nic logs deploy/$(kubectl -n nic get deploy -o jsonpath='{.items[0].metadata.name}') --tail=60 | grep -E '/scaled|limiting|/limited|fail503' | tail -8
+2026/11/05 23:16:42 [error] 52#52: *37 limiting requests, excess: 0.922 by zone "r503/nic-limited", client: 10.244.1.21, server: nic.lab, request: "GET /limited/ok HTTP/1.1", host: "nic.lab"
+10.244.1.21 - - [05/Nov/2026:23:16:42 +0000] "GET /limited/ok HTTP/1.1" 429 169 "-" "curl/8.12.1" "-"
+2026/11/05 23:16:42 [error] 52#52: *38 limiting requests, excess: 0.922 by zone "r503/nic-limited", client: 10.244.1.21, server: nic.lab, request: "GET /limited/ok HTTP/1.1", host: "nic.lab"
+10.244.1.21 - - [05/Nov/2026:23:16:42 +0000] "GET /limited/ok HTTP/1.1" 429 169 "-" "curl/8.12.1" "-"
+2026/11/05 23:16:42 [error] 52#52: *39 limiting requests, excess: 0.920 by zone "r503/nic-limited", client: 10.244.1.21, server: nic.lab, request: "GET /limited/ok HTTP/1.1", host: "nic.lab"
+10.244.1.21 - - [05/Nov/2026:23:16:42 +0000] "GET /limited/ok HTTP/1.1" 429 169 "-" "curl/8.12.1" "-"
+2026/11/05 23:16:42 [error] 52#52: *40 limiting requests, excess: 0.734 by zone "r503/nic-limited", client: 10.244.1.21, server: nic.lab, request: "GET /limited/ok HTTP/1.1", host: "nic.lab"
+10.244.1.21 - - [05/Nov/2026:23:16:42 +0000] "GET /limited/ok HTTP/1.1" 429 169 "-" "curl/8.12.1" "-"
+
+nginx/nginx-ingress:5.7.1
+NAME	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART              	APP VERSION
+nic 	nic      	1       	2026-11-05 23:16:15.456968911 +0000 UTC	deployed	nginx-ingress-2.8.1	5.7.1      

@@ -1,0 +1,149 @@
+# 2026-11-05T23:09:26Z fault state
+$ kubectl -n r503 exec curl -- curl -si http://ingress-nginx-controller.ingress-nginx.svc/items
+HTTP/1.1 503 Service Temporarily Unavailable
+Date: Thu, 05 Nov 2026 23:09:29 GMT
+Content-Type: text/html
+Content-Length: 190
+Connection: keep-alive
+
+<html>
+<head><title>503 Service Temporarily Unavailable</title></head>
+<body>
+<center><h1>503 Service Temporarily Unavailable</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+$ kubectl -n r503 exec curl -- curl -s -o /dev/null -w "%{http_code} %{time_total}s\n" http://ingress-nginx-controller.ingress-nginx.svc/items
+503 0.001561s
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=400 | grep -E 'GET /items' | tail -3
+10.244.1.17 - - [05/Nov/2026:23:08:41 +0000] "GET /items HTTP/1.1" 503 190 "-" "Wget" 110 0.000 [shop-api-8080] [] - - - - d9108bdc1a7b0da972ba59c25b6e0835
+10.244.1.21 - - [05/Nov/2026:23:09:29 +0000] "GET /items HTTP/1.1" 503 190 "-" "curl/8.12.1" 111 0.000 [shop-api-8080] [] - - - - 6609907c27065de95363bd20295cdd7b
+10.244.1.21 - - [05/Nov/2026:23:09:29 +0000] "GET /items HTTP/1.1" 503 190 "-" "curl/8.12.1" 111 0.000 [shop-api-8080] [] - - - - 41004382f7ecb587a20838cc1154047f
+
+$ kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=2000 | grep 'shop/api' | tail -2
+W1105 23:09:26.985104      14 controller.go:1241] Service "shop/api" does not have any active Endpoint.
+W1105 23:09:30.001075      14 controller.go:1241] Service "shop/api" does not have any active Endpoint.
+
+$ kubectl -n shop get pods -l app=api -o wide
+NAME                  READY   STATUS    RESTARTS   AGE   IP            NODE                 NOMINATED NODE   READINESS GATES
+api-db478d6c9-gjc85   0/1     Running   0          83s   10.244.1.20   aurora-lab-worker2   <none>           <none>
+api-db478d6c9-kh4d7   0/1     Running   0          82s   10.244.2.13   aurora-lab-worker    <none>           <none>
+
+$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=api
+NAME        ADDRESSTYPE   PORTS   ENDPOINTS                 AGE
+api-gpgw9   IPv4          8080    10.244.1.20,10.244.2.13   91s
+
+$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=api -o yaml | grep -E "ready|serving|terminating|addresses|- 10\."
+  - addresses:
+    - 10.244.1.20
+      ready: false
+      serving: false
+      terminating: false
+  - addresses:
+    - 10.244.2.13
+      ready: false
+      serving: false
+      terminating: false
+
+$ kubectl -n shop get endpointslices -l kubernetes.io/service-name=api -o jsonpath='{range .items[*].endpoints[*]}{.addresses[0]} ready={.conditions.ready}{"\n"}{end}'
+10.244.1.20 ready=false
+10.244.2.13 ready=false
+
+$ kubectl -n shop get endpoints api
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME   ENDPOINTS   AGE
+api                91s
+
+$ kubectl -n shop describe pod -l app=api | grep -E 'Readiness|Warning' | sort | uniq -c | tail -6
+      2     Readiness:  http-get http://:8080/items delay=0s timeout=1s period=5s successThreshold=1 failureThreshold=3
+
+$ kubectl -n shop get events --field-selector reason=Unhealthy --sort-by=.lastTimestamp | tail -3
+82s         Warning   Unhealthy   pod/api-db478d6c9-kh4d7         Readiness probe failed: Get "http://10.244.2.13:8080/items": dial tcp 10.244.2.13:8080: connect: connection refused
+2s          Warning   Unhealthy   pod/api-db478d6c9-gjc85         Readiness probe failed: HTTP probe failed with statuscode: 503
+1s          Warning   Unhealthy   pod/api-db478d6c9-kh4d7         Readiness probe failed: HTTP probe failed with statuscode: 503
+
+$ kubectl -n shop logs deploy/loadgen --tail=4
+2026-11-05T23:09:24Z GET /api/items -> 502
+2026-11-05T23:09:26Z GET /api/items -> 502
+2026-11-05T23:09:28Z GET /api/items -> 502
+2026-11-05T23:09:30Z GET /api/items -> 502
+
+$ kubectl -n shop logs -l app=frontend --tail=100 --prefix | grep -v healthz | tail -4
+[pod/frontend-76d98597b9-6jn99/nginx] 2026/11/05 23:09:22 [error] 30#30: *64 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.17, server: , request: "GET /api/items HTTP/1.1", upstream: "http://10.96.188.125:8080/items", host: "frontend"
+[pod/frontend-76d98597b9-6jn99/nginx] 10.244.1.17 - - [05/Nov/2026:23:09:22 +0000] "GET /api/items HTTP/1.1" 502 157 "-" "Wget" "-"
+[pod/frontend-76d98597b9-6jn99/nginx] 10.244.1.17 - - [05/Nov/2026:23:09:26 +0000] "GET /api/items HTTP/1.1" 502 157 "-" "Wget" "-"
+[pod/frontend-76d98597b9-6jn99/nginx] 2026/11/05 23:09:26 [error] 30#30: *66 connect() failed (111: Connection refused) while connecting to upstream, client: 10.244.1.17, server: , request: "GET /api/items HTTP/1.1", upstream: "http://10.96.188.125:8080/items", host: "frontend"
+
+$ kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg backends get shop-api-8080
+{
+  "name": "shop-api-8080",
+  "noServer": false,
+  "port": 8080,
+  "service": {
+    "metadata": {},
+    "spec": {
+      "clusterIP": "10.96.188.125",
+      "clusterIPs": [
+        "10.96.188.125"
+      ],
+      "internalTrafficPolicy": "Cluster",
+      "ipFamilies": [
+        "IPv4"
+      ],
+      "ipFamilyPolicy": "SingleStack",
+      "ports": [
+        {
+          "port": 8080,
+          "protocol": "TCP",
+          "targetPort": 8080
+        }
+      ],
+      "selector": {
+        "app": "api"
+      },
+      "sessionAffinity": "None",
+      "type": "ClusterIP"
+    },
+    "status": {
+      "loadBalancer": {}
+    }
+  },
+  "sessionAffinityConfig": {
+    "cookieSessionAffinity": {
+      "name": ""
+    },
+    "mode": "",
+    "name": ""
+  },
+  "sslPassthrough": false,
+  "trafficShapingPolicy": {
+    "cookie": "",
+    "header": "",
+    "headerPattern": "",
+    "headerValue": "",
+    "weight": 0,
+    "weightTotal": 0
+  },
+  "upstreamHashByConfig": {
+    "upstream-hash-by-subset-size": 3
+  }
+}
+
+$ kubectl -n r503 exec curl -- curl -si --max-time 5 http://10.244.1.20:8080/items
+HTTP/1.0 503 Service Unavailable
+Server: BaseHTTP/0.6 Python/3.12.16
+Date: Thu, 05 Nov 2026 23:09:32 GMT
+Content-Type: application/json
+Content-Length: 32
+
+{"error": "backend unavailable"}
+$ kubectl -n r503 exec curl -- curl -si --max-time 5 http://10.244.1.20:8080/healthz
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.12.16
+Date: Thu, 05 Nov 2026 23:09:32 GMT
+Content-Type: application/json
+Content-Length: 16
+
+{"status": "ok"}
