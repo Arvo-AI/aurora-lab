@@ -1,0 +1,24 @@
+id: 23-exit-143-liveness-sigterm
+title: api pods restart with exit code 143 because a release made /healthz slower than the probe timeout; the kubelet sent the SIGTERM
+alert: "KubeContainerRestarting [warning] namespace=shop deployment=api: api containers are restarting, last exit code 143. The application logs show no error."
+change: >
+  The api-code ConfigMap was edited so that /healthz takes 2 seconds (a new
+  dependency check) and so that the process exits 143 on SIGTERM, and the api
+  Deployment was restarted. The liveness and readiness probes keep the default
+  timeoutSeconds of 1.
+root_cause: >
+  Every probe times out because /healthz now takes longer than timeoutSeconds.
+  After failureThreshold misses the kubelet logs "failed liveness probe, will be
+  restarted" and sends SIGTERM, and the container exits 143 with reason Error.
+  143 is 128 + 15: nothing crashed. The new pods never become Ready, so the
+  rollout stalls and the old pods carry the traffic.
+must_identify:
+  - Exit code 143 is SIGTERM, sent by the kubelet after the liveness probe failed, shown by the Unhealthy and Killing events
+  - The /healthz change in the api-code ConfigMap made the endpoint slower than the probe's timeoutSeconds
+acceptable_fixes:
+  - Revert the api-code ConfigMap change and restart the api
+  - Make /healthz answer without the slow check, or raise timeoutSeconds to fit it, and roll the api
+wrong_answers:
+  - Treating 143 as an application crash or a memory problem
+  - Raising memory limits
+  - Removing the liveness probe as the fix
