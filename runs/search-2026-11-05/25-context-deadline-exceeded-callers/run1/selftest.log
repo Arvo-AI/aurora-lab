@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "<string>", line 12, in <module>
+AssertionError
+error: no objects passed to apply
+FAIL 25-context-deadline-exceeded-callers: fault did not appear within 240s
+selftest: 0 passed, 1 failed, evidence in runs/selftest-20261105T214709Z-aurora-lab

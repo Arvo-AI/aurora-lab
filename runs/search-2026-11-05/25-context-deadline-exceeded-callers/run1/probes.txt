@@ -1,0 +1,292 @@
+# 2026-11-05T21:53:09Z
+namespace/deadline created
+configmap/srv created
+pod/http-slow-1s5 created
+pod/http-slow-1s5-timeout3 created
+pod/http-hung-timeout10 created
+pod/http-dropped-host created
+pod/tcp-dropped-host created
+pod/exec-slow created
+pod/grpc-silent created
+pod/liveness-slow created
+pod/cpu-throttled created
+pod/cpu-unthrottled created
+pod/client created
+pod/client condition met
+pod/cpu-throttled condition met
+pod/cpu-unthrottled condition met
+pod/exec-slow condition met
+pod/grpc-silent condition met
+pod/http-dropped-host condition met
+pod/http-hung-timeout10 condition met
+pod/http-slow-1s5 condition met
+pod/http-slow-1s5-timeout3 condition met
+pod/liveness-slow condition met
+pod/tcp-dropped-host condition met
+pod/client condition met
+
+$ kubectl -n deadline get pods -o wide
+NAME                     READY   STATUS    RESTARTS      AGE   IP            NODE                 NOMINATED NODE   READINESS GATES
+client                   1/1     Running   0             78s   10.244.2.22   aurora-lab-worker2   <none>           <none>
+cpu-throttled            0/1     Running   0             78s   10.244.2.21   aurora-lab-worker2   <none>           <none>
+cpu-unthrottled          1/1     Running   0             78s   10.244.1.13   aurora-lab-worker    <none>           <none>
+exec-slow                0/1     Running   0             78s   10.244.1.11   aurora-lab-worker    <none>           <none>
+grpc-silent              0/1     Running   0             78s   10.244.2.20   aurora-lab-worker2   <none>           <none>
+http-dropped-host        0/1     Running   0             78s   10.244.2.18   aurora-lab-worker2   <none>           <none>
+http-hung-timeout10      0/1     Running   0             78s   10.244.1.10   aurora-lab-worker    <none>           <none>
+http-slow-1s5            0/1     Running   0             78s   10.244.2.17   aurora-lab-worker2   <none>           <none>
+http-slow-1s5-timeout3   1/1     Running   0             78s   10.244.1.9    aurora-lab-worker    <none>           <none>
+liveness-slow            1/1     Running   1 (38s ago)   78s   10.244.1.12   aurora-lab-worker    <none>           <none>
+tcp-dropped-host         0/1     Running   0             78s   10.244.2.19   aurora-lab-worker2   <none>           <none>
+[exit 0]
+
+$ kubectl -n deadline get events --field-selector reason=Unhealthy
+LAST SEEN   TYPE      REASON      OBJECT                       MESSAGE
+46s         Warning   Unhealthy   pod/cpu-throttled            Readiness probe failed: Get "http://10.244.2.21:8080/cpu": dial tcp 10.244.2.21:8080: connect: connection refused
+0s          Warning   Unhealthy   pod/cpu-throttled            Readiness probe failed: Get "http://10.244.2.21:8080/cpu": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+5s          Warning   Unhealthy   pod/exec-slow                Readiness probe failed: command timed out: "sleep 5" timed out after 1s
+6s          Warning   Unhealthy   pod/grpc-silent              Readiness probe failed: timeout: failed to connect service "10.244.2.20:9000" within 1s: context deadline exceeded
+6s          Warning   Unhealthy   pod/http-dropped-host        Readiness probe failed: Get "http://192.0.2.10:8080/": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+77s         Warning   Unhealthy   pod/http-hung-timeout10      Readiness probe failed: Get "http://10.244.1.10:8080/sleep/600": dial tcp 10.244.1.10:8080: connect: connection refused
+7s          Warning   Unhealthy   pod/http-hung-timeout10      Readiness probe failed: Get "http://10.244.1.10:8080/sleep/600": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+77s         Warning   Unhealthy   pod/http-slow-1s5-timeout3   Readiness probe failed: Get "http://10.244.1.9:8080/sleep/1.5": dial tcp 10.244.1.9:8080: connect: connection refused
+77s         Warning   Unhealthy   pod/http-slow-1s5            Readiness probe failed: Get "http://10.244.2.17:8080/sleep/1.5": dial tcp 10.244.2.17:8080: connect: connection refused
+7s          Warning   Unhealthy   pod/http-slow-1s5            Readiness probe failed: Get "http://10.244.2.17:8080/sleep/1.5": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+29s         Warning   Unhealthy   pod/liveness-slow            Liveness probe failed: Get "http://10.244.1.12:8080/sleep/1.5": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+6s          Warning   Unhealthy   pod/tcp-dropped-host         Readiness probe failed: dial tcp 192.0.2.10:8080: i/o timeout
+[exit 0]
+
+$ kubectl -n deadline get events --field-selector reason=Killing
+LAST SEEN   TYPE     REASON    OBJECT              MESSAGE
+29s         Normal   Killing   pod/liveness-slow   Container app failed liveness probe, will be restarted
+[exit 0]
+
+$ kubectl -n deadline describe pod http-slow-1s5
+Name:             http-slow-1s5
+Namespace:        deadline
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-worker2/172.18.0.4
+Start Time:       Thu, 05 Nov 2026 21:53:10 +0000
+Labels:           t=probe
+Annotations:      <none>
+Status:           Running
+IP:               10.244.2.17
+IPs:
+  IP:  10.244.2.17
+Containers:
+  app:
+    Container ID:  containerd://49eab80979d5cb43371fabc3b4eae78f85135b8761db1a2ed90f6c695426f0a2
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      python
+      /c/srv.py
+    State:          Running
+      Started:      Thu, 05 Nov 2026 21:53:11 +0000
+    Ready:          False
+    Restart Count:  0
+    Readiness:      http-get http://:8080/sleep/1.5 delay=0s timeout=1s period=3s successThreshold=1 failureThreshold=3
+    Environment:    <none>
+    Mounts:
+      /c from c (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-qlfwl (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  c:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      srv
+    Optional:  false
+  kube-api-access-qlfwl:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  78s                default-scheduler  Successfully assigned deadline/http-slow-1s5 to aurora-lab-worker2
+  Normal   Pulled     78s                kubelet            spec.containers{app}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    78s                kubelet            spec.containers{app}: Container created
+  Normal   Started    77s                kubelet            spec.containers{app}: Container started
+  Warning  Unhealthy  77s (x2 over 77s)  kubelet            spec.containers{app}: Readiness probe failed: Get "http://10.244.2.17:8080/sleep/1.5": dial tcp 10.244.2.17:8080: connect: connection refused
+  Warning  Unhealthy  7s (x23 over 73s)  kubelet            spec.containers{app}: Readiness probe failed: Get "http://10.244.2.17:8080/sleep/1.5": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+[exit 0]
+
+$ kubectl -n deadline exec client -- curl -s -o /dev/null -w http=%{http_code} connect=%{time_connect} ttfb=%{time_starttransfer} total=%{time_total}\n http://10.244.2.17:8080/sleep/1.5
+http=200 connect=0.000267 ttfb=1.500994 total=1.501032
+[exit 0]
+
+$ kubectl -n deadline exec client -- curl -s -m 20 -o /dev/null -w http=%{http_code} connect=%{time_connect} ttfb=%{time_starttransfer} total=%{time_total}\n http://10.244.1.10:8080/sleep/600
+http=000 connect=0.000205 ttfb=0.000000 total=20.001734
+command terminated with exit code 28
+[exit 28]
+
+$ kubectl -n deadline exec client -- curl -s -m 5 -o /dev/null -w http=%{http_code} connect=%{time_connect} ttfb=%{time_starttransfer} total=%{time_total}\n http://192.0.2.10:8080/
+http=000 connect=0.000000 ttfb=0.000000 total=5.002215
+command terminated with exit code 28
+[exit 28]
+
+$ ten requests to cpu-throttled /cpu
+200 8.190285
+200 8.557745
+200 9.043869
+200 9.652140
+200 8.746147
+200 8.965277
+200 8.140391
+200 8.153714
+200 9.017273
+200 8.648490
+
+$ kubectl -n deadline exec cpu-throttled -- cat /sys/fs/cgroup/cpu.stat
+usage_usec 3760429
+user_usec 2287005
+system_usec 1473423
+nice_usec 0
+core_sched.force_idle_usec 0
+nr_periods 1908
+nr_throttled 1765
+throttled_usec 186009447
+nr_bursts 0
+burst_usec 0
+[exit 0]
+
+$ kubectl -n deadline exec cpu-throttled -- cat /sys/fs/cgroup/cpu.max
+2000 100000
+[exit 0]
+
+$ ten requests to cpu-unthrottled /cpu
+200 0.213431
+200 0.235475
+200 0.249412
+200 0.293397
+200 0.267773
+200 0.354046
+200 0.249271
+200 0.249421
+200 0.250403
+200 0.247946
+
+$ kubectl -n deadline exec cpu-unthrottled -- cat /sys/fs/cgroup/cpu.stat
+usage_usec 11890701
+user_usec 7305156
+system_usec 4585544
+nice_usec 0
+core_sched.force_idle_usec 0
+nr_periods 398
+nr_throttled 167
+throttled_usec 7690288
+nr_bursts 0
+burst_usec 0
+[exit 0]
+
+$ kubectl -n deadline exec cpu-unthrottled -- cat /sys/fs/cgroup/cpu.max
+50000 100000
+[exit 0]
+
+$ kubectl top pod -n deadline --containers
+POD                      NAME   CPU(cores)   MEMORY(bytes)   
+client                   app    2m           1Mi             
+cpu-throttled            app    20m          13Mi            
+cpu-unthrottled          app    46m          11Mi            
+exec-slow                app    4m           0Mi             
+grpc-silent              app    1m           14Mi            
+http-dropped-host        app    0m           0Mi             
+http-hung-timeout10      app    1m           12Mi            
+http-slow-1s5            app    1m           13Mi            
+http-slow-1s5-timeout3   app    1m           11Mi            
+liveness-slow            app    1m           13Mi            
+tcp-dropped-host         app    0m           0Mi             
+[exit 0]
+
+$ kubectl -n deadline get pod -o custom-columns=NAME:.metadata.name,READY:.status.containerStatuses[0].ready,RESTARTS:.status.containerStatuses[0].restartCount
+NAME                     READY   RESTARTS
+client                   true    0
+cpu-throttled            false   0
+cpu-unthrottled          true    0
+exec-slow                false   0
+grpc-silent              false   0
+http-dropped-host        false   0
+http-hung-timeout10      false   0
+http-slow-1s5            false   0
+http-slow-1s5-timeout3   true    0
+liveness-slow            false   4
+tcp-dropped-host         false   0
+[exit 0]
+
+$ docker exec aurora-lab-worker2 sh -c journalctl -u kubelet --no-pager | grep -E 'Probe failed|prober' | grep deadline | tail -5
+[exit 0]
+
+$ docker exec aurora-lab-worker2 sh -c grep -E 'runtimeRequestTimeout|imagePull|serializeImagePulls' /var/lib/kubelet/config.yaml; cat /var/lib/kubelet/config.yaml | head -60
+runtimeRequestTimeout: 0s
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    cacheTTL: 0s
+    enabled: true
+  x509:
+    clientCAFile: /etc/kubernetes/pki/ca.crt
+authorization:
+  mode: Webhook
+  webhook:
+    cacheAuthorizedTTL: 0s
+    cacheUnauthorizedTTL: 0s
+cgroupDriver: systemd
+cgroupRoot: /kubelet
+clusterDNS:
+- 10.96.0.10
+clusterDomain: cluster.local
+containerRuntimeEndpoint: unix:///run/containerd/containerd.sock
+cpuManagerReconcilePeriod: 0s
+crashLoopBackOff: {}
+evictionHard:
+  imagefs.available: 0%
+  nodefs.available: 0%
+  nodefs.inodesFree: 0%
+evictionPressureTransitionPeriod: 0s
+failSwapOn: false
+fileCheckFrequency: 0s
+healthzBindAddress: 127.0.0.1
+healthzPort: 10248
+httpCheckFrequency: 0s
+imageGCHighThresholdPercent: 100
+imageMaximumGCAge: 0s
+imageMinimumGCAge: 0s
+kind: KubeletConfiguration
+logging:
+  flushFrequency: 0
+  options:
+    json:
+      infoBufferSize: "0"
+    text:
+      infoBufferSize: "0"
+  verbosity: 0
+memorySwap: {}
+nodeStatusReportFrequency: 0s
+nodeStatusUpdateFrequency: 0s
+rotateCertificates: true
+runtimeRequestTimeout: 0s
+shutdownGracePeriod: 0s
+shutdownGracePeriodCriticalPods: 0s
+staticPodPath: /etc/kubernetes/manifests
+streamingConnectionIdleTimeout: 0s
+syncFrequency: 0s
+volumeStatsAggPeriod: 0s
+[exit 0]
+namespace "deadline" deleted

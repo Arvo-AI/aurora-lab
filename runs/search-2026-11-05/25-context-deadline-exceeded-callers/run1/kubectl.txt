@@ -1,0 +1,27 @@
+# 2026-11-05T21:57:41Z
+
+$ kubectl get pods -n shop --request-timeout=1ms
+Unable to connect to the server: context deadline exceeded
+[exit 1, elapsed 0.10s]
+
+$ env KUBECONFIG=/tmp/tmp.GgfpX56LCY kubectl get pods --request-timeout=3s
+E1105 21:57:45.158851   24716 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)"
+E1105 21:57:48.159460   24716 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)"
+E1105 21:57:51.161169   24716 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": context deadline exceeded"
+E1105 21:57:54.163205   24716 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": context deadline exceeded"
+E1105 21:57:57.164528   24716 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": context deadline exceeded"
+Unable to connect to the server: context deadline exceeded
+[exit 1, elapsed 15.10s]
+
+$ env KUBECONFIG=/tmp/tmp.GgfpX56LCY kubectl get pods --request-timeout=0 --v=0 --insecure-skip-tls-verify=false
+E1105 21:58:27.260304   24827 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 21:58:57.261505   24827 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 21:59:27.262432   24827 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 21:59:57.262977   24827 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 22:00:27.263786   24827 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+Unable to connect to the server: dial tcp 192.0.2.10:6443: i/o timeout
+[exit 1, elapsed 150.09s]
+
+$ kubectl -n shop wait --for=condition=Available deploy/api --timeout=3s
+deployment.apps/api condition met
+[exit 0, elapsed 0.20s]

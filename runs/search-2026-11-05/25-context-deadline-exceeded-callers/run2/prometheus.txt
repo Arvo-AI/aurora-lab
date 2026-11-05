@@ -1,0 +1,38 @@
+# 2026-11-05T22:27:24Z
+
+$ docker exec dl-prom prometheus --version
+prometheus, version 3.5.0 (branch: HEAD, revision: 8be3a9560fbdd18a94dedec4b747c35178177202)
+  build user:       root@4451b64cb451
+  build date:       20250714-16:15:23
+  go version:       go1.24.5
+  platform:         linux/amd64
+  tags:             netgo,builtinassets
+[exit 0]
+
+$ curl -s localhost:19090/api/v1/targets | jq ...
+dropped	down	2.000759949	2s	Get "http://192.0.2.10:9100/metrics": context deadline exceeded
+fast	up	0.201809423	2s	
+hung	down	4.000250611	4s	Get "http://dl-tgt:9100/s/600/metrics": context deadline exceeded
+over	down	2.001052134	2s	Get "http://dl-tgt:9100/s/3/metrics": context deadline exceeded
+over-raised	up	3.001650459	4s	
+
+$ curl -s localhost:19090/api/v1/query --data-urlencode query=scrape_duration_seconds
+fast	0.201809423
+dropped	2.000759949
+over-raised	3.001650459
+over	2.001052134
+hung	4.000250611
+
+$ curl -s localhost:19090/api/v1/query --data-urlencode query=up
+fast	1
+dropped	0
+over-raised	1
+over	0
+hung	0
+
+$ query: scrape_duration_seconds / scrape_timeout_seconds
+fast	0.1009047115
+dropped	1.0003799745
+over-raised	0.75041261475
+over	1.000526067
+hung	1.00006265275

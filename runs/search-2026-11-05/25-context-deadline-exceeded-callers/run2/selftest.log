@@ -1,0 +1,2 @@
+broken 25-context-deadline-exceeded-callers after 10s
+selftest: 1 passed, 0 failed, evidence in runs/selftest-20261105T221405Z-aurora-lab

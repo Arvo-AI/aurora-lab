@@ -1,0 +1,22 @@
+# 2026-11-05T22:28:48Z
+
+$ go version
+go version go1.24.13 linux/amd64
+[exit 0]
+
+$ go run .
+context.DeadlineExceeded.Error()   "context deadline exceeded"
+Client.Timeout, no headers         Get "http://127.0.0.1:37773": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+                                   errors.Is(DeadlineExceeded)=true net.Error.Timeout=true
+Client.Timeout, body stalls        context deadline exceeded (Client.Timeout or context cancellation while reading body)
+                                   errors.Is(DeadlineExceeded)=true net.Error.Timeout=true
+context.WithTimeout, no headers    Get "http://127.0.0.1:37773": context deadline exceeded
+                                   errors.Is(DeadlineExceeded)=true net.Error.Timeout=true
+net.Dialer.Timeout, dropped SYN    dial tcp 192.0.2.10:80: i/o timeout
+                                   errors.Is(DeadlineExceeded)=true net.Error.Timeout=true
+Client.Timeout, dropped SYN        Get "http://192.0.2.10/": context deadline exceeded (Client.Timeout exceeded while awaiting headers)
+                                   errors.Is(DeadlineExceeded)=true net.Error.Timeout=true
+gRPC call, context expires         rpc error: code = DeadlineExceeded desc = context deadline exceeded
+                                   errors.Is(DeadlineExceeded)=false net.Error.Timeout=false
+[exit 0]
+require google.golang.org/grpc v1.68.0

@@ -1,0 +1,23 @@
+# 2026-11-05T22:24:30Z
+
+$ kubectl get pods -n shop --request-timeout=1ms
+Unable to connect to the server: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+[exit 1, elapsed 0.09s]
+
+$ env KUBECONFIG=/tmp/tmp.33myyU0Sjn kubectl get pods --request-timeout=3s
+E1105 22:24:34.048843   25897 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)"
+E1105 22:24:37.049534   25897 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)"
+E1105 22:24:40.051855   25897 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": context deadline exceeded"
+E1105 22:24:43.053803   25897 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)"
+E1105 22:24:46.054424   25897 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=3s\": context deadline exceeded"
+Unable to connect to the server: context deadline exceeded
+[exit 1, elapsed 15.12s]
+
+$ env KUBECONFIG=/tmp/tmp.33myyU0Sjn kubectl get pods --request-timeout=0 --v=0 --insecure-skip-tls-verify=false
+E1105 22:25:16.156362   26412 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 22:25:46.157809   26412 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 22:26:16.158492   26412 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 22:26:46.159339   26412 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+E1105 22:27:16.160557   26412 memcache.go:381] "Couldn't get current server API group list" err="Get \"https://192.0.2.10:6443/api?timeout=32s\": dial tcp 192.0.2.10:6443: i/o timeout"
+Unable to connect to the server: dial tcp 192.0.2.10:6443: i/o timeout
+[exit 1, elapsed 150.10s]

@@ -1,0 +1,31 @@
+# 2026-11-05T22:28:25Z
+
+$ helm version --short
+v3.22.1+gd6c1a0e
+[exit 0]
+namespace/helmlab created
+
+$ helm upgrade --install lab /tmp/tmp.gqUPLS2eaQ/c -n helmlab --wait --timeout 20s
+Release "lab" does not exist. Installing it now.
+Error: context deadline exceeded
+[exit 1, elapsed 20.63s]
+
+$ kubectl -n helmlab get pods
+NAME                   READY   STATUS    RESTARTS   AGE
+lab-6b6859bcdb-ql954   0/1     Running   0          20s
+[exit 0]
+
+$ helm status lab -n helmlab
+NAME: lab
+LAST DEPLOYED: Thu Nov  5 22:28:28 2026
+NAMESPACE: helmlab
+STATUS: failed
+REVISION: 1
+TEST SUITE: None
+[exit 0]
+
+$ helm install --help | grep -- --timeout
+      --timeout duration                           time to wait for any individual Kubernetes operation (like Jobs for hooks) (default 5m0s)
+      --wait                                       if set, will wait until all Pods, PVCs, Services, and minimum number of Pods of a Deployment, StatefulSet, or ReplicaSet are in a ready state before marking the release as successful. It will wait for as long as --timeout
+      --wait-for-jobs                              if set and --wait enabled, will wait until all Jobs have been completed before marking the release as successful. It will wait for as long as --timeout
+namespace "helmlab" deleted

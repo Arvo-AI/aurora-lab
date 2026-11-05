@@ -1,0 +1,116 @@
+# 2026-11-05T21:53:08Z
+
+$ kubectl -n shop get pods -l app=api
+NAME                  READY   STATUS    RESTARTS   AGE
+api-f64486c4c-9qkvt   1/1     Running   0          7s
+api-f64486c4c-pzq7z   1/1     Running   0          7s
+[exit 0]
+
+$ kubectl -n shop rollout status deploy/api --timeout=5s
+deployment "api" successfully rolled out
+[exit 0]
+
+$ kubectl -n shop get events --field-selector reason=Unhealthy
+LAST SEEN   TYPE      REASON      OBJECT                          MESSAGE
+6s          Warning   Unhealthy   pod/api-f64486c4c-9qkvt         Readiness probe failed: Get "http://10.244.1.7:8080/healthz": dial tcp 10.244.1.7:8080: connect: connection refused
+6s          Warning   Unhealthy   pod/api-f64486c4c-pzq7z         Readiness probe failed: Get "http://10.244.2.13:8080/healthz": dial tcp 10.244.2.13:8080: connect: connection refused
+6s          Warning   Unhealthy   pod/frontend-76d98597b9-q2758   Readiness probe failed: Get "http://10.244.1.8:80/healthz": dial tcp 10.244.1.8:80: connect: connection refused
+6s          Warning   Unhealthy   pod/frontend-76d98597b9-wzkcn   Readiness probe failed: Get "http://10.244.2.15:80/healthz": dial tcp 10.244.2.15:80: connect: connection refused
+[exit 0]
+
+$ kubectl -n shop describe pod/api-f64486c4c-pzq7z
+Name:             api-f64486c4c-pzq7z
+Namespace:        shop
+Priority:         0
+Service Account:  default
+Node:             aurora-lab-worker2/172.18.0.4
+Start Time:       Thu, 05 Nov 2026 21:53:01 +0000
+Labels:           app=api
+                  pod-template-hash=f64486c4c
+Annotations:      <none>
+Status:           Running
+IP:               10.244.2.13
+IPs:
+  IP:           10.244.2.13
+Controlled By:  ReplicaSet/api-f64486c4c
+Containers:
+  api:
+    Container ID:  containerd://c57a5e3a61feee1bbd470b677dc3193514d508b81f1b612c1b73efb1fa6b86c4
+    Image:         python:3.12-alpine
+    Image ID:      docker.io/library/python@sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Command:
+      python
+      -u
+      /code/api.py
+    State:          Running
+      Started:      Thu, 05 Nov 2026 21:53:02 +0000
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      memory:  128Mi
+    Requests:
+      cpu:      50m
+      memory:   32Mi
+    Liveness:   http-get http://:8080/healthz delay=15s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Readiness:  http-get http://:8080/healthz delay=0s timeout=1s period=5s successThreshold=1 failureThreshold=3
+    Environment:
+      REDIS_HOST:  redis
+    Mounts:
+      /code from code (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9n9qg (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  code:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-code
+    Optional:  false
+  kube-api-access-9n9qg:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age              From               Message
+  ----     ------     ----             ----               -------
+  Normal   Scheduled  8s               default-scheduler  Successfully assigned shop/api-f64486c4c-pzq7z to aurora-lab-worker2
+  Normal   Pulled     7s               kubelet            spec.containers{api}: Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+  Normal   Created    7s               kubelet            spec.containers{api}: Container created
+  Normal   Started    7s               kubelet            spec.containers{api}: Container started
+  Warning  Unhealthy  7s (x2 over 7s)  kubelet            spec.containers{api}: Readiness probe failed: Get "http://10.244.2.13:8080/healthz": dial tcp 10.244.2.13:8080: connect: connection refused
+[exit 0]
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c wget -q -O - -T 5 http://frontend/api/items; echo
+{"items": ["kettle", "mug", "teapot"]}
+[exit 0]
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c time wget -q -O - -T 20 http://10.244.2.13:8080/healthz; echo
+{"status": "ok"}real	0m 0.00s
+user	0m 0.00s
+sys	0m 0.00s
+
+[exit 0]
+
+$ kubectl -n shop exec deploy/loadgen -- sh -c time wget -q -O - -T 5 http://10.244.2.13:8080/items; echo
+{"items": ["kettle", "mug", "teapot"]}real	0m 0.00s
+user	0m 0.00s
+sys	0m 0.00s
+
+[exit 0]
+
+$ kubectl -n shop get deploy api -o jsonpath={.spec.template.spec.containers[0].livenessProbe}{"\n"}{.spec.template.spec.containers[0].readinessProbe}{"\n"}
+{"failureThreshold":3,"httpGet":{"path":"/healthz","port":8080,"scheme":"HTTP"},"initialDelaySeconds":15,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}
+{"failureThreshold":3,"httpGet":{"path":"/healthz","port":8080,"scheme":"HTTP"},"periodSeconds":5,"successThreshold":1,"timeoutSeconds":1}
+[exit 0]

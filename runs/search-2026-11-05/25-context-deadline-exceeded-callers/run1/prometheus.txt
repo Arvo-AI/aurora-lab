@@ -1,0 +1,102 @@
+# 2026-11-05T22:00:35Z
+Unable to find image 'python:3.12-alpine' locally
+3.12-alpine: Pulling from library/python
+7b229517ed22: Pulling fs layer
+44f1f4ea9467: Pulling fs layer
+c03751883ae5: Pulling fs layer
+8dc6b13ab3d0: Pulling fs layer
+8dc6b13ab3d0: Waiting
+44f1f4ea9467: Verifying Checksum
+44f1f4ea9467: Download complete
+7b229517ed22: Verifying Checksum
+7b229517ed22: Download complete
+c03751883ae5: Verifying Checksum
+c03751883ae5: Download complete
+7b229517ed22: Pull complete
+8dc6b13ab3d0: Verifying Checksum
+8dc6b13ab3d0: Download complete
+44f1f4ea9467: Pull complete
+c03751883ae5: Pull complete
+8dc6b13ab3d0: Pull complete
+Digest: sha256:2f83d24758cf1ad4a38975d83bf48e5d10b121499bffec99daf7a07a437207b9
+Status: Downloaded newer image for python:3.12-alpine
+Unable to find image 'prom/prometheus:v3.5.0' locally
+v3.5.0: Pulling from prom/prometheus
+9fa9226be034: Pulling fs layer
+1617e25568b2: Pulling fs layer
+097a69c6efe6: Pulling fs layer
+2ee6cb77bebd: Pulling fs layer
+a4e782810d03: Pulling fs layer
+76619c1908eb: Pulling fs layer
+2dfc70ad9941: Pulling fs layer
+fd1d3a5a5f79: Pulling fs layer
+5e4c02bc6754: Pulling fs layer
+208063e2dcbb: Pulling fs layer
+2dfc70ad9941: Waiting
+fd1d3a5a5f79: Waiting
+5e4c02bc6754: Waiting
+208063e2dcbb: Waiting
+2ee6cb77bebd: Waiting
+a4e782810d03: Waiting
+76619c1908eb: Waiting
+1617e25568b2: Verifying Checksum
+1617e25568b2: Download complete
+9fa9226be034: Verifying Checksum
+9fa9226be034: Download complete
+9fa9226be034: Pull complete
+a4e782810d03: Verifying Checksum
+a4e782810d03: Download complete
+097a69c6efe6: Download complete
+76619c1908eb: Verifying Checksum
+76619c1908eb: Download complete
+2ee6cb77bebd: Verifying Checksum
+2ee6cb77bebd: Download complete
+2dfc70ad9941: Verifying Checksum
+2dfc70ad9941: Download complete
+1617e25568b2: Pull complete
+5e4c02bc6754: Verifying Checksum
+5e4c02bc6754: Download complete
+208063e2dcbb: Verifying Checksum
+208063e2dcbb: Download complete
+fd1d3a5a5f79: Verifying Checksum
+fd1d3a5a5f79: Download complete
+097a69c6efe6: Pull complete
+2ee6cb77bebd: Pull complete
+a4e782810d03: Pull complete
+76619c1908eb: Pull complete
+2dfc70ad9941: Pull complete
+fd1d3a5a5f79: Pull complete
+5e4c02bc6754: Pull complete
+208063e2dcbb: Pull complete
+Digest: sha256:63805ebb8d2b3920190daf1cb14a60871b16fd38bed42b857a3182bc621f4996
+Status: Downloaded newer image for prom/prometheus:v3.5.0
+
+$ docker exec dl-prom prometheus --version
+prometheus, version 3.5.0 (branch: HEAD, revision: 8be3a9560fbdd18a94dedec4b747c35178177202)
+  build user:       root@4451b64cb451
+  build date:       20250714-16:15:23
+  go version:       go1.24.5
+  platform:         linux/amd64
+  tags:             netgo,builtinassets
+[exit 0]
+
+$ curl -s localhost:19090/api/v1/targets | jq ...
+dropped	down	2.001051588	2s	Get "http://192.0.2.10:9100/metrics": context deadline exceeded
+fast	down	0.202314366	2s	non-compliant scrape target sending blank Content-Type and no fallback_scrape_protocol specified for target
+hung	down	4.001066234	4s	Get "http://dl-tgt:9100/s/600/metrics": context deadline exceeded
+over	down	2.001241723	2s	Get "http://dl-tgt:9100/s/3/metrics": context deadline exceeded
+over-raised	down	3.001827645	4s	non-compliant scrape target sending blank Content-Type and no fallback_scrape_protocol specified for target
+
+$ curl -s localhost:19090/api/v1/query --data-urlencode query=scrape_duration_seconds
+fast	0.202314366
+dropped	2.001051588
+over	2.001241723
+over-raised	3.001827645
+hung	4.001066234
+
+$ curl -s localhost:19090/api/v1/query --data-urlencode query=up
+fast	0
+dropped	0
+over	0
+over-raised	0
+hung	0

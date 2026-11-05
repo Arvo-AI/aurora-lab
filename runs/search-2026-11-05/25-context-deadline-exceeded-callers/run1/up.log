@@ -1,0 +1,29 @@
+No kind clusters found.
+Creating cluster "aurora-lab" ...
+ • Ensuring node image (kindest/node:v1.37.0) 🖼️  ...
+ ✓ Ensuring node image (kindest/node:v1.37.0) 🖼️
+ • Preparing nodes 📦 📦 📦   ...
+ ✓ Preparing nodes 📦 📦 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+ • Joining worker nodes 🚜  ...
+ ✓ Joining worker nodes 🚜
+ • Waiting ≤ 3m0s for control-plane = Ready ⏳  ...
+ ✓ Waiting ≤ 3m0s for control-plane = Ready ⏳
+ • Ready after 7s 💚
+Set kubectl context to "kind-aurora-lab"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-aurora-lab --kubeconfig /home/runner/work/aurora-lab/aurora-lab/.kubeconfig
+
+Thanks for using kind! 😊
+NAME                       STATUS   ROLES           AGE   VERSION
+aurora-lab-control-plane   Ready    control-plane   50s   v1.37.0
+aurora-lab-worker          Ready    <none>          35s   v1.37.0
+aurora-lab-worker2         Ready    <none>          35s   v1.37.0

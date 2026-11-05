@@ -1,0 +1,30 @@
+# 2026-11-05T22:00:27Z
+
+$ kubectl -n kube-system exec pod/etcd-aurora-lab-control-plane -- etcdctl version
+etcdctl version: 3.7.0
+API version: 3.7
+[exit 0]
+
+$ kubectl -n kube-system exec pod/etcd-aurora-lab-control-plane -- etcdctl --endpoints=https://127.0.0.1:2379 --command-timeout=2s endpoint health
+{"level":"warn","ts":"2026-11-05T22:00:29.925912Z","logger":"client","caller":"v3/retry_interceptor.go:68","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0x22548e0d5800/127.0.0.1:2379","peer":"Peer{Addr: <nil>, LocalAddr: <nil>, AuthInfo: <nil>}","method":"/etcdserverpb.KV/Range","attempt":0,"error":"rpc error: code = DeadlineExceeded desc = latest balancer error: connection error: desc = \"transport: authentication handshake failed: tls: failed to verify certificate: x509: certificate signed by unknown authority\""}
+https://127.0.0.1:2379 is unhealthy: failed to commit proposal: context deadline exceeded
+Error: unhealthy cluster
+command terminated with exit code 1
+[exit 1, elapsed 2.17s]
+
+$ kubectl -n kube-system exec pod/etcd-aurora-lab-control-plane -- etcdctl --endpoints=https://127.0.0.1:2379 --dial-timeout=2s --command-timeout=2s get /x
+{"level":"warn","ts":"2026-11-05T22:00:32.110184Z","logger":"etcd-client","caller":"v3/retry_interceptor.go:68","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0x7a40b53a00/127.0.0.1:2379","peer":"Peer{Addr: <nil>, LocalAddr: <nil>, AuthInfo: <nil>}","method":"/etcdserverpb.KV/Range","attempt":0,"error":"rpc error: code = DeadlineExceeded desc = latest balancer error: connection error: desc = \"transport: authentication handshake failed: tls: failed to verify certificate: x509: certificate signed by unknown authority\""}
+Error: context deadline exceeded
+command terminated with exit code 1
+[exit 1, elapsed 2.18s]
+
+$ kubectl -n kube-system exec pod/etcd-aurora-lab-control-plane -- etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key endpoint health
+https://127.0.0.1:2379 is healthy: successfully committed proposal: took = 7.566344ms
+[exit 0, elapsed 0.18s]
+
+$ kubectl -n kube-system exec pod/etcd-aurora-lab-control-plane -- etcdctl --endpoints=https://192.0.2.10:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key --dial-timeout=2s --command-timeout=3s endpoint health
+{"level":"warn","ts":"2026-11-05T22:00:35.468234Z","logger":"client","caller":"v3/retry_interceptor.go:68","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0x3c03f1ca7a00/192.0.2.10:2379","peer":"Peer{Addr: <nil>, LocalAddr: <nil>, AuthInfo: <nil>}","method":"/etcdserverpb.KV/Range","attempt":0,"error":"rpc error: code = DeadlineExceeded desc = context deadline exceeded while waiting for connections to become ready"}
+https://192.0.2.10:2379 is unhealthy: failed to commit proposal: context deadline exceeded
+Error: unhealthy cluster
+command terminated with exit code 1
+[exit 1, elapsed 3.17s]

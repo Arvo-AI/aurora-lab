@@ -1,0 +1,10 @@
+# 2026-11-05T22:28:10Z
+docker 28.0.4
+
+$ timeout 120 docker pull 192.0.2.10:5000/lab/app:1
+Error response from daemon: Get "https://192.0.2.10:5000/v2/": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+[exit 1, elapsed 15.02s]
+
+$ timeout 120 docker pull 10.1.0.88:15000/lab/app:1
+Error response from daemon: Get "https://10.1.0.88:15000/v2/": dial tcp 10.1.0.88:15000: connect: connection refused
+[exit 1, elapsed 0.02s]

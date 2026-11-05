@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "<string>", line 12, in <module>
+AssertionError
+error: no objects passed to apply

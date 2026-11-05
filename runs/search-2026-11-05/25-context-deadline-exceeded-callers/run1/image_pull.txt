@@ -1,0 +1,92 @@
+# 2026-11-05T22:02:36Z
+
+$ docker exec aurora-lab-worker sh -c containerd --version; grep -nE 'config_path|image_pull_progress_timeout|runtime_request' /etc/containerd/config.toml; containerd config dump | grep -E 'image_pull_progress_timeout|config_path'
+containerd github.com/containerd/containerd/v2 v2.3.4 db8809540e1a7a9da5d518876894933ff55692ab
+time="2026-11-05T22:02:37Z" level=warning msg="Configuration migrated from version 2, use `containerd config migrate` to avoid migration" t="16.15µs"
+time="2026-11-05T22:02:37Z" level=warning msg="Ignoring unknown key in TOML for plugin" error="strict mode: fields in the document are missing in the target struct" key=tolerate_missing_hugepages_controller plugin=io.containerd.cri.v1.runtime
+    image_pull_progress_timeout = '5m0s'
+      config_path = ''
+    plugin_config_path = '/etc/nri/conf.d'
+    config_path = ''
+[exit 0]
+namespace/img created
+pod/pull-dropped created
+pod/pull-silent created
+pod/pull-stalled-blob created
+Thu Nov  5 22:02:37 UTC 2026
+
+$ kubectl -n img get pods -o wide
+NAME                READY   STATUS             RESTARTS   AGE   IP            NODE                NOMINATED NODE   READINESS GATES
+pull-dropped        0/1     ImagePullBackOff   0          3m    10.244.1.14   aurora-lab-worker   <none>           <none>
+pull-silent         0/1     ImagePullBackOff   0          3m    10.244.1.15   aurora-lab-worker   <none>           <none>
+pull-stalled-blob   0/1     ImagePullBackOff   0          3m    10.244.1.16   aurora-lab-worker   <none>           <none>
+[exit 0]
+
+$ kubectl -n img get events --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON    OBJECT                  MESSAGE
+90s         Warning   Failed    pod/pull-silent         Error: ImagePullBackOff
+90s         Normal    BackOff   pod/pull-silent         Back-off pulling image "172.18.0.5:5000/lab/app:1"
+90s         Warning   Failed    pod/pull-silent         Failed to pull image "172.18.0.5:5000/lab/app:1": rpc error: code = DeadlineExceeded desc = failed to pull and unpack image "172.18.0.5:5000/lab/app:1": failed to resolve reference "172.18.0.5:5000/lab/app:1": failed to do request: Head "http://172.18.0.5:5000/v2/lab/app/manifests/1": net/http: timeout awaiting response headers
+90s         Warning   Failed    pod/pull-silent         Error: ErrImagePull
+74s         Normal    Pulling   pod/pull-silent         Pulling image "172.18.0.5:5000/lab/app:1"
+60s         Warning   Failed    pod/pull-stalled-blob   Failed to pull image "172.18.0.5:5001/lab/app:1": failed to pull and unpack image "172.18.0.5:5001/lab/app:1": failed to resolve reference "172.18.0.5:5001/lab/app:1": failed to do request: Head "http://172.18.0.5:5001/v2/lab/app/manifests/1": dial tcp 172.18.0.5:5001: connect: connection refused
+60s         Warning   Failed    pod/pull-dropped        Error: ErrImagePull
+60s         Warning   Failed    pod/pull-dropped        Failed to pull image "192.0.2.10:5000/lab/app:1": rpc error: code = DeadlineExceeded desc = failed to pull and unpack image "192.0.2.10:5000/lab/app:1": failed to resolve reference "192.0.2.10:5000/lab/app:1": failed to do request: Head "https://192.0.2.10:5000/v2/lab/app/manifests/1": dial tcp 192.0.2.10:5000: i/o timeout
+60s         Warning   Failed    pod/pull-stalled-blob   Error: ErrImagePull
+48s         Warning   Failed    pod/pull-stalled-blob   Error: ImagePullBackOff
+48s         Normal    BackOff   pod/pull-stalled-blob   Back-off pulling image "172.18.0.5:5001/lab/app:1"
+44s         Warning   Failed    pod/pull-dropped        Error: ImagePullBackOff
+44s         Normal    BackOff   pod/pull-dropped        Back-off pulling image "192.0.2.10:5000/lab/app:1"
+37s         Normal    Pulling   pod/pull-stalled-blob   Pulling image "172.18.0.5:5001/lab/app:1"
+32s         Normal    Pulling   pod/pull-dropped        Pulling image "192.0.2.10:5000/lab/app:1"
+[exit 0]
+Thu Nov  5 22:05:37 UTC 2026
+Thu Nov  5 22:09:37 UTC 2026
+
+$ kubectl -n img get pods -o wide
+NAME                READY   STATUS             RESTARTS   AGE   IP            NODE                NOMINATED NODE   READINESS GATES
+pull-dropped        0/1     ImagePullBackOff   0          7m    10.244.1.14   aurora-lab-worker   <none>           <none>
+pull-silent         0/1     ImagePullBackOff   0          7m    10.244.1.15   aurora-lab-worker   <none>           <none>
+pull-stalled-blob   0/1     ImagePullBackOff   0          7m    10.244.1.16   aurora-lab-worker   <none>           <none>
+[exit 0]
+
+$ kubectl -n img get events --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON    OBJECT                  MESSAGE
+2m          Warning   Failed    pod/pull-dropped        Failed to pull image "192.0.2.10:5000/lab/app:1": rpc error: code = DeadlineExceeded desc = failed to pull and unpack image "192.0.2.10:5000/lab/app:1": failed to resolve reference "192.0.2.10:5000/lab/app:1": failed to do request: Head "https://192.0.2.10:5000/v2/lab/app/manifests/1": dial tcp 192.0.2.10:5000: i/o timeout
+2m          Warning   Failed    pod/pull-dropped        Error: ErrImagePull
+96s         Normal    Pulling   pod/pull-silent         Pulling image "172.18.0.5:5000/lab/app:1"
+67s         Normal    Pulling   pod/pull-stalled-blob   Pulling image "172.18.0.5:5001/lab/app:1"
+40s         Normal    BackOff   pod/pull-dropped        Back-off pulling image "192.0.2.10:5000/lab/app:1"
+40s         Warning   Failed    pod/pull-dropped        Error: ImagePullBackOff
+36s         Warning   Failed    pod/pull-silent         Failed to pull image "172.18.0.5:5000/lab/app:1": rpc error: code = DeadlineExceeded desc = failed to pull and unpack image "172.18.0.5:5000/lab/app:1": failed to resolve reference "172.18.0.5:5000/lab/app:1": failed to do request: Head "http://172.18.0.5:5000/v2/lab/app/manifests/1": net/http: timeout awaiting response headers
+36s         Warning   Failed    pod/pull-silent         Error: ErrImagePull
+36s         Warning   Failed    pod/pull-stalled-blob   Failed to pull image "172.18.0.5:5001/lab/app:1": failed to pull and unpack image "172.18.0.5:5001/lab/app:1": failed to resolve reference "172.18.0.5:5001/lab/app:1": failed to do request: Head "http://172.18.0.5:5001/v2/lab/app/manifests/1": dial tcp 172.18.0.5:5001: connect: connection refused
+36s         Warning   Failed    pod/pull-stalled-blob   Error: ErrImagePull
+25s         Normal    Pulling   pod/pull-dropped        Pulling image "192.0.2.10:5000/lab/app:1"
+12s         Normal    BackOff   pod/pull-stalled-blob   Back-off pulling image "172.18.0.5:5001/lab/app:1"
+12s         Warning   Failed    pod/pull-stalled-blob   Error: ImagePullBackOff
+9s          Normal    BackOff   pod/pull-silent         Back-off pulling image "172.18.0.5:5000/lab/app:1"
+9s          Warning   Failed    pod/pull-silent         Error: ImagePullBackOff
+[exit 0]
+
+$ docker exec aurora-lab-worker sh -c journalctl -u containerd --no-pager | grep -iE 'lab/app' | grep -iE 'cancel|deadline|timeout|fail' | tail -10
+Nov 05 22:07:07 aurora-lab-worker containerd[137]: time="2026-11-05T22:07:07.834822710Z" level=info msg="fetch failed" error="failed to do request: Head \"http://172.18.0.5:5001/v2/lab/app/manifests/1\": dial tcp 172.18.0.5:5001: connect: connection refused" host="172.18.0.5:5001" method=HEAD url="http://172.18.0.5:5001/v2/lab/app/manifests/1"
+Nov 05 22:07:07 aurora-lab-worker containerd[137]: time="2026-11-05T22:07:07.835417265Z" level=error msg="PullImage \"172.18.0.5:5001/lab/app:1\" failed" error="rpc error: code = Unknown desc = failed to pull and unpack image \"172.18.0.5:5001/lab/app:1\": failed to resolve reference \"172.18.0.5:5001/lab/app:1\": failed to do request: Head \"http://172.18.0.5:5001/v2/lab/app/manifests/1\": dial tcp 172.18.0.5:5001: connect: connection refused"
+Nov 05 22:07:37 aurora-lab-worker containerd[137]: time="2026-11-05T22:07:37.836743476Z" level=info msg="fetch failed" error="failed to do request: Head \"https://192.0.2.10:5000/v2/lab/app/manifests/1\": dial tcp 192.0.2.10:5000: i/o timeout" host="192.0.2.10:5000" method=HEAD url="https://192.0.2.10:5000/v2/lab/app/manifests/1"
+Nov 05 22:07:37 aurora-lab-worker containerd[137]: time="2026-11-05T22:07:37.837274710Z" level=error msg="PullImage \"192.0.2.10:5000/lab/app:1\" failed" error="rpc error: code = DeadlineExceeded desc = failed to pull and unpack image \"192.0.2.10:5000/lab/app:1\": failed to resolve reference \"192.0.2.10:5000/lab/app:1\": failed to do request: Head \"https://192.0.2.10:5000/v2/lab/app/manifests/1\": dial tcp 192.0.2.10:5000: i/o timeout"
+Nov 05 22:08:31 aurora-lab-worker containerd[137]: time="2026-11-05T22:08:31.008178210Z" level=info msg="trying next host" error="failed to do request: Head \"http://172.18.0.5:5000/v2/lab/app/manifests/1\": net/http: timeout awaiting response headers" host="172.18.0.5:5000" method=HEAD url="http://172.18.0.5:5000/v2/lab/app/manifests/1"
+Nov 05 22:09:01 aurora-lab-worker containerd[137]: time="2026-11-05T22:09:01.009603402Z" level=info msg="fetch failed" error="failed to do request: Head \"http://172.18.0.5:5000/v2/lab/app/manifests/1\": net/http: timeout awaiting response headers" host="172.18.0.5:5000" method=HEAD url="http://172.18.0.5:5000/v2/lab/app/manifests/1"
+Nov 05 22:09:01 aurora-lab-worker containerd[137]: time="2026-11-05T22:09:01.010121101Z" level=error msg="PullImage \"172.18.0.5:5000/lab/app:1\" failed" error="rpc error: code = DeadlineExceeded desc = failed to pull and unpack image \"172.18.0.5:5000/lab/app:1\": failed to resolve reference \"172.18.0.5:5000/lab/app:1\": failed to do request: Head \"http://172.18.0.5:5000/v2/lab/app/manifests/1\": net/http: timeout awaiting response headers"
+Nov 05 22:09:01 aurora-lab-worker containerd[137]: time="2026-11-05T22:09:01.011727928Z" level=info msg="trying next host" error="failed to do request: Head \"http://172.18.0.5:5001/v2/lab/app/manifests/1\": dial tcp 172.18.0.5:5001: connect: connection refused" host="172.18.0.5:5001" method=HEAD url="http://172.18.0.5:5001/v2/lab/app/manifests/1"
+Nov 05 22:09:01 aurora-lab-worker containerd[137]: time="2026-11-05T22:09:01.012011098Z" level=info msg="fetch failed" error="failed to do request: Head \"http://172.18.0.5:5001/v2/lab/app/manifests/1\": dial tcp 172.18.0.5:5001: connect: connection refused" host="172.18.0.5:5001" method=HEAD url="http://172.18.0.5:5001/v2/lab/app/manifests/1"
+Nov 05 22:09:01 aurora-lab-worker containerd[137]: time="2026-11-05T22:09:01.012437744Z" level=error msg="PullImage \"172.18.0.5:5001/lab/app:1\" failed" error="rpc error: code = Unknown desc = failed to pull and unpack image \"172.18.0.5:5001/lab/app:1\": failed to resolve reference \"172.18.0.5:5001/lab/app:1\": failed to do request: Head \"http://172.18.0.5:5001/v2/lab/app/manifests/1\": dial tcp 172.18.0.5:5001: connect: connection refused"
+[exit 0]
+
+$ docker logs --tail 20 dl-reg2
+[exit 0]
+
+$ docker exec aurora-lab-worker crictl --timeout 5s pull 172.18.0.5:5000/lab/app:2
+E1105 22:10:37.930401    6625 remote_image.go:250] "PullImage from image service failed" err="rpc error: code = DeadlineExceeded desc = failed to pull and unpack image \"172.18.0.5:5000/lab/app:2\": failed to resolve reference \"172.18.0.5:5000/lab/app:2\": failed to do request: Head \"http://172.18.0.5:5000/v2/lab/app/manifests/2\": net/http: timeout awaiting response headers" image="172.18.0.5:5000/lab/app:2"
+time="2026-11-05T22:10:37Z" level=fatal msg="pulling image: rpc error: code = DeadlineExceeded desc = failed to pull and unpack image \"172.18.0.5:5000/lab/app:2\": failed to resolve reference \"172.18.0.5:5000/lab/app:2\": failed to do request: Head \"http://172.18.0.5:5000/v2/lab/app/manifests/2\": net/http: timeout awaiting response headers"
+[exit 1, elapsed 60.06s]
+namespace "img" deleted

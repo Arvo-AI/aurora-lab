@@ -1,0 +1,16 @@
+# 2026-11-05T22:01:47Z
+
+$ helm version --short
+v3.22.1+gd6c1a0e
+[exit 0]
+namespace/helmlab created
+
+$ helm upgrade --install lab /tmp/tmp.12mPMxKmXd/c -n helmlab --wait --timeout 20s
+Release "lab" does not exist. Installing it now.
+Error: context deadline exceeded
+[exit 1, elapsed 20.48s]
+
+$ helm install lab2 /tmp/tmp.12mPMxKmXd/c -n helmlab --wait --timeout 20s --set x=1
+Error: INSTALLATION FAILED: Unable to continue with install: Deployment "lab" in namespace "helmlab" exists and cannot be imported into the current release: invalid ownership metadata; annotation validation error: key "meta.helm.sh/release-name" must equal "lab2": current value is "lab"
+[exit 1, elapsed 0.09s]
+namespace "helmlab" deleted
