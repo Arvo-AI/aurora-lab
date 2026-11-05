@@ -11,7 +11,15 @@ route:
   group_wait: 1s
   group_interval: 5s
   repeat_interval: 1h
+  routes:
+    - matchers: [ 'alertname = "PagerDutyShape"' ]
+      receiver: pdshape
 receivers:
+  - name: pdshape
+    pagerduty_configs:
+      - routing_key: PLACEHOLDER_ROUTING_KEY
+        url: $SINK_URL/capturepd
+        send_resolved: true
   - name: capture
     webhook_configs:
       - url: $SINK_URL/capture
@@ -51,5 +59,16 @@ for r in rows:
     if not os.path.exists(f"{out}/{name}"):
         open(f"{out}/{name}", "w").write(r["body"])
         print(name, len(r["body"]), "bytes", "alerts:", len(body["alerts"]), "groupKey:", body["groupKey"])
+PY
+# Same Alertmanager, pagerduty_configs receiver with url pointed at the sink: the
+# PagerDuty Events v2 body that a tool claiming PagerDuty compatibility must accept.
+curl -s -XPOST -H 'Content-Type: application/json' localhost:9093/api/v2/alerts -d '[{"labels":{"alertname":"PagerDutyShape","service":"checkout","severity":"critical"},"annotations":{"summary":"checkout returns 5xx above 5%"}}]'; echo
+for i in $(seq 1 20); do grep -q '"/capturepd' "$OUT/sink.jsonl" && break; sleep 1; done
+python3 - <<'PY'
+import json, os
+out = os.environ["OUT"]
+rows = [json.loads(l) for l in open(out + "/sink.jsonl")]
+rows = [r for r in rows if r["path"].startswith("/capturepd")]
+if rows: open(out + "/payload-pagerduty-events-v2.json", "w").write(rows[0]["body"]); print("pagerduty body", rows[0]["path"], rows[0]["body"][:300])
 PY
 docker rm -f lab27-am >/dev/null

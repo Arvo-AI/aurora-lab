@@ -36,6 +36,11 @@ class Regen(Tool):
         for u in ("alice", "bob"):
             self.http("POST", B + "/api/v1/settings/users", {"email": f"{u}@example.com", "name": u, "role": "member", "password": "lab-password-1"})
         c, j, t = self.http("GET", B + "/api/v1/settings/users/limit")
+        self.log("user limit probe: add users until refused")
+        for i in range(3, 10):
+            c, j, t = self.http("POST", B + "/api/v1/settings/users", {"email": f"user{i}@example.com", "name": f"user{i}", "role": "member", "password": "lab-password-1"}, trim=300)
+            if c >= 400:
+                self.note(f"user {i + 1} refused: HTTP {c} {t[:220]}"); break
         c, s, t = self.http("POST", B + "/api/v1/schedules", {"name": "primary", "timezone": "UTC"})
         c, l, t = self.http("POST", f"{B}/api/v1/schedules/{s['id']}/layers", {"name": "l1", "order_index": 0, "rotation_type": "daily", "rotation_start": iso(hours=-1), "participants": [{"user_name": "alice", "order_index": 0}, {"user_name": "bob", "order_index": 1}]})
         self.http("GET", f"{B}/api/v1/schedules/{s['id']}/oncall")

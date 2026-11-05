@@ -4,6 +4,8 @@ import datetime, http.cookiejar, json, os, re, subprocess, sys, time, urllib.err
 OUT = os.environ["OUT"]; SINK = os.environ["SINK_URL"]; HERE = os.environ["HERE"]
 FIRING = open(f"{OUT}/payload-firing.json", "rb").read()
 RESOLVED = open(f"{OUT}/payload-resolved.json", "rb").read()
+try: PD = open(f"{OUT}/payload-pagerduty-events-v2.json", "rb").read()
+except OSError: PD = b"{}"
 
 class Tool:
     name = "tool"

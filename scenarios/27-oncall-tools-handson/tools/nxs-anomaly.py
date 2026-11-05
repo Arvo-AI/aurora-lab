@@ -47,6 +47,11 @@ class Nxs(Tool):
         self.dc("logs worker --tail=30")
         self.http("GET", B + "/api/v1/notifications")
         self.snap("during_escalation"); self.post(RESOLVED); self.snap("after_final_resolve", wait=6)
+        self.log("--- E. PagerDuty Events v2 body, as Alertmanager's pagerduty_configs sends it")
+        c, j, t = self.http("POST", B + "/api/v1/integrations", {"name": "pd", "type": "pagerduty"})
+        if j and j.get("key"):
+            c, _, t = self.http("POST", f"{B}/integrations/v1/pagerduty/{j['key']}", PD.replace(b"PLACEHOLDER_ROUTING_KEY", j["key"].encode()))
+            self.r["pagerduty_events_v2_http"] = c; self.snap("after_pagerduty_event")
     def after(self):
         self.sh("docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'")
 Nxs().run()
