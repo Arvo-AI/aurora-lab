@@ -64,7 +64,9 @@ EOF
     dt 'python, no handler' $PY python -c 'import time; time.sleep(600)'
     dt 'python, no handler, docker --init' --init $PY python -c 'import time; time.sleep(600)'
     dt 'node, no handler' node:22-alpine node -e 'setInterval(()=>{},1000)'
+    dt 'node, no handler, docker --init' --init node:22-alpine node -e 'setInterval(()=>{},1000)'
     dt 'go, no handler' -v "$w:/w:ro" alpine:3.20 /w/gosleep
+    dt 'go, no handler, docker --init' --init -v "$w:/w:ro" alpine:3.20 /w/gosleep
     WAIT=8 dt 'java, no handler' -v "$w:/w:ro" -e MODE=nohook $JDK java /w/Server.java
     WAIT=8 dt 'java, shutdown hook' -v "$w:/w:ro" -e MODE=hook $JDK java /w/Server.java
     dt 'nginx' nginx:1.27-alpine
@@ -93,6 +95,8 @@ EOF
   docker run --rm node:22-alpine node -v >> "$OUT/02-images.txt" 2>&1
   docker run --rm golang:1.24-alpine go version >> "$OUT/02-images.txt" 2>&1
   docker run --rm $PY python -V >> "$OUT/02-images.txt" 2>&1
+  docker run --rm $PY sh -c 'ls -l /bin/sh; busybox --help | head -1' >> "$OUT/02-images.txt" 2>&1
+  docker run --rm python:3.12-slim sh -c 'ls -l /bin/sh; dpkg-query -W dash' >> "$OUT/02-images.txt" 2>&1
 }
 
 part_compose() {
@@ -113,8 +117,16 @@ EOF
       say 'docker compose up --abort-on-container-exit'
       docker compose -p x143 up --abort-on-container-exit --no-color 2>&1 | grep -v -E 'Pulling|Pulled|Waiting|Downloading|Extracting|Verifying'
       echo "(exit status of docker compose: ${PIPESTATUS[0]})"
-      say 'docker compose ps -a --format "table {{.Service}}\t{{.ExitCode}}\t{{.Status}}"'
-      docker compose -p x143 ps -a --format 'table {{.Service}}\t{{.ExitCode}}\t{{.Status}}' 2>&1
+      say 'docker compose ps -a --format "table {{.Service}}\t{{.Status}}"'
+      docker compose -p x143 ps -a --format 'table {{.Service}}\t{{.Status}}' 2>&1
+      docker compose -p x143 down 2>&1 | tail -0
+      say 'docker compose up web, and from a second shell: docker compose stop web'
+      docker compose -p x143 up --no-color web > "$w/up.log" 2>&1 &
+      local up=$!
+      sleep 12
+      docker compose -p x143 stop web 2>&1
+      wait $up
+      grep -E 'web-1' "$w/up.log"
       docker compose -p x143 down 2>&1 | tail -0
     } > "$o" 2>&1 )
 }
@@ -131,7 +143,26 @@ part_scenario() {
     kubectl -n shop get pod "$p" -o jsonpath='{.status.containerStatuses[0].lastState.terminated}'; echo
     say "kubectl -n shop logs $p --previous --tail=8"
     kubectl -n shop logs "$p" --previous --tail=8
+    say "kubectl -n shop get pods -o custom-columns=POD:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount,LAST_EXIT:.status.containerStatuses[0].lastState.terminated.exitCode,LAST_REASON:.status.containerStatuses[0].lastState.terminated.reason"
+    kubectl -n shop get pods -o 'custom-columns=POD:.metadata.name,RESTARTS:.status.containerStatuses[0].restartCount,LAST_EXIT:.status.containerStatuses[0].lastState.terminated.exitCode,LAST_REASON:.status.containerStatuses[0].lastState.terminated.reason'
+    say 'kubectl get events -A --field-selector reason=Killing --sort-by=.lastTimestamp'
+    kubectl get events -A --field-selector reason=Killing --sort-by=.lastTimestamp
   } > "$o" 2>&1
+  {
+    say 'revert: remove the time.sleep(2) from /healthz in the api-code ConfigMap, then restart'
+    kubectl -n shop get cm api-code -o json | python3 -c '
+import json, sys
+cm = json.load(sys.stdin)
+cm["data"]["api.py"] = cm["data"]["api.py"].replace("                time.sleep(2)  # stock service check\n", "")
+for k in ("resourceVersion", "uid", "creationTimestamp", "managedFields"):
+    cm["metadata"].pop(k, None)
+print(json.dumps(cm))' | kubectl apply -f -
+    run kubectl -n shop rollout restart deploy/api
+    run kubectl -n shop rollout status deploy/api --timeout=180s
+    sleep 60
+    say 'after 60 s: kubectl -n shop get pods -l app=api'; kubectl -n shop get pods -l app=api
+    say 'kubectl -n shop exec deploy/loadgen -- wget -qO- http://frontend/api/items'; kubectl -n shop exec deploy/loadgen -- wget -qO- http://frontend/api/items; echo
+  } > "$OUT/04-scenario-fix.txt" 2>&1
 }
 
 # ---- kubernetes helpers ----------------------------------------------------
@@ -309,13 +340,16 @@ one_variant() { # name
     k exec client -- python -u /code/client.py "$n" 12 > "$OUT/.c" 2>&1 &
     local cp=$!
     sleep 5
+    local t0 t1
+    t0=$(date +%s)
     k rollout restart "deploy/$n" >/dev/null
     k rollout status "deploy/$n" --timeout=240s >/dev/null
-    sleep 5
+    t1=$(date +%s)
+    sleep 12
     k exec client -- touch /tmp/stop
     wait $cp
     watch_stop
-    echo "$n rollout $i: $(cat "$OUT/.c")"
+    echo "$n rollout $i (${t0:+$((t1 - t0))s}): $(cat "$OUT/.c")"
     sleep 3
   done
   echo "$n exit codes seen: $(term_summary "$raw" | awk '{print $2, $3}' | sort | uniq -c | tr '\n' ';')"
@@ -379,8 +413,6 @@ EOF
     echo "# 12 client threads, one 1-second request per connection, no retries, across three rollout restarts of 2 replicas"
     for n in nohook hook handler prestop pid1; do one_variant "$n"; done
   } > "$OUT/10-inflight.txt" 2>&1
-  k logs -l app=handler --tail=4 --prefix > "$OUT/10-handler-logs.txt" 2>&1
-  k logs -l app=hook --tail=4 --prefix > "$OUT/10-hook-logs.txt" 2>&1
   kubectl delete ns "$NS" --wait=true >/dev/null 2>&1
 }
 
@@ -541,12 +573,22 @@ EOF
       say "kubectl drain $node --ignore-daemonsets --force --delete-emptydir-data"
       kubectl drain "$node" --ignore-daemonsets --force --delete-emptydir-data --timeout=120s 2>&1 | tail -1
       sleep 3
+      kubectl uncordon "$node" >/dev/null
+      deploy live 1 nohook 2 '"'"'        livenessProbe:
+          httpGet: {path: /healthz, port: 8080}
+          periodSeconds: 3
+          failureThreshold: 2'"'"'
+      local lp; lp=$(pod_of live)
+      say "kubectl -n t143 exec $lp -- wget -qO- localhost:8080/break"; k exec "$lp" -- wget -qO- localhost:8080/break
+      sleep 15
+      say "kubectl -n t143 get pod $lp"; k get pod "$lp"
       say 'on the control plane: jq over /var/log/kubernetes/audit.log'
       docker exec audit143-control-plane cat /var/log/kubernetes/audit.log |
-        jq -r 'select(.objectRef.namespace=="t143" and .objectRef.resource=="pods" and (.verb=="delete" or .objectRef.subresource=="eviction"))
+        jq -r 'select(.stage=="ResponseComplete" and .objectRef.namespace=="t143" and .objectRef.resource=="pods" and (.verb=="delete" or .objectRef.subresource=="eviction"))
                | [.stageTimestamp, .verb, (.objectRef.resource + (if .objectRef.subresource then "/"+.objectRef.subresource else "" end)), .objectRef.name, .user.username, (.userAgent|split(" ")[0]), .responseStatus.code] | @tsv' |
         grep -v '^$' | sort -u
       say 'kubectl -n t143 get events | grep Killing | head -3'; k get events --sort-by=.lastTimestamp | grep Killing | head -3
+      say "audit entries for the liveness-killed pod $lp"; docker exec audit143-control-plane cat /var/log/kubernetes/audit.log | jq -r --arg p "$lp" 'select(.objectRef.name==$p and .verb=="delete")' | wc -l
     } > "$o" 2>&1
   )
   kind delete cluster --name audit143 >/dev/null 2>&1

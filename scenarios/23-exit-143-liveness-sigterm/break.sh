@@ -8,8 +8,10 @@ cm = json.load(sys.stdin)
 code = cm["data"]["api.py"]
 old_import = "import json, os, socket, sys, time\n"
 new_import = old_import + "import signal\nsignal.signal(signal.SIGTERM, lambda *_: sys.exit(143))\n"
-old = """                return self._send(200, {"status": "ok"})"""
-new = """                time.sleep(2)  # stock service check
+old = """            if self.path == "/healthz":
+                return self._send(200, {"status": "ok"})"""
+new = """            if self.path == "/healthz":
+                time.sleep(2)  # stock service check
                 return self._send(200, {"status": "ok"})"""
 assert old_import in code and old in code
 cm["data"]["api.py"] = code.replace(old_import, new_import).replace(old, new)
