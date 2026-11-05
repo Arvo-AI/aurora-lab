@@ -24,6 +24,27 @@ section_scenario() { # the injected fault
   run kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -O - -T 20 http://$ip:8080/healthz; echo"
   run kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -O - -T 5 http://$ip:8080/items; echo"
   run kubectl -n shop get deploy api -o jsonpath='{.spec.template.spec.containers[0].livenessProbe}{"\n"}{.spec.template.spec.containers[0].readinessProbe}{"\n"}'
+  run kubectl -n shop wait --for=condition=Ready pod -l app=api --timeout=3s
+  # The tempting fix: raise timeoutSeconds to 10 on both probes.
+  run kubectl -n shop patch deploy api --type=json -p '[{"op":"add","path":"/spec/template/spec/containers/0/readinessProbe/timeoutSeconds","value":10},{"op":"add","path":"/spec/template/spec/containers/0/livenessProbe/timeoutSeconds","value":10}]'
+  sleep 90
+  run kubectl -n shop get pods -l app=api
+  run kubectl -n shop rollout status deploy/api --timeout=5s
+  log "kubectl -n shop get events --field-selector reason=Unhealthy | tail -4"
+  kubectl -n shop get events --field-selector reason=Unhealthy --sort-by=.lastTimestamp | tail -4
+  # The real fix: take the dependency out of /healthz (restore code), keep the original timeouts.
+  run kubectl -n shop patch deploy api --type=json -p '[{"op":"replace","path":"/spec/template/spec/containers/0/readinessProbe/timeoutSeconds","value":1},{"op":"replace","path":"/spec/template/spec/containers/0/livenessProbe/timeoutSeconds","value":1}]'
+  kubectl -n shop get cm api-code -o json | python3 -c '
+import json, sys
+cm = json.load(sys.stdin)
+cm["data"]["api.py"] = cm["data"]["api.py"].replace("            urllib.request.urlopen(\"http://192.0.2.10:8080/stock\")\n", "")
+print(json.dumps(cm))' | kubectl apply -f -
+  run kubectl -n shop rollout restart deploy/api
+  run kubectl -n shop rollout status deploy/api --timeout=120s
+  run kubectl -n shop get pods -l app=api
+  np=$(kubectl -n shop get pods -l app=api --sort-by=.metadata.creationTimestamp -o name | tail -1)
+  nip=$(kubectl -n shop get "$np" -o jsonpath='{.status.podIP}')
+  run kubectl -n shop exec deploy/loadgen -- sh -c "time wget -q -O - -T 5 http://$nip:8080/healthz; echo"
 }
 
 section_probes() {
@@ -154,7 +175,6 @@ EOF
   run kubectl -n $ns get events --field-selector reason=Killing
   run kubectl -n $ns describe pod http-slow-1s5
   ip=$(kubectl -n $ns get pod http-slow-1s5 -o jsonpath='{.status.podIP}')
-  fast=$(kubectl -n $ns get pod http-slow-1s5 -o jsonpath='{.status.podIP}')
   run kubectl -n $ns exec client -- curl -s -o /dev/null -w 'http=%{http_code} connect=%{time_connect} ttfb=%{time_starttransfer} total=%{time_total}\n' "http://$ip:8080/sleep/1.5"
   ip=$(kubectl -n $ns get pod http-hung-timeout10 -o jsonpath='{.status.podIP}')
   run kubectl -n $ns exec client -- curl -s -m 20 -o /dev/null -w 'http=%{http_code} connect=%{time_connect} ttfb=%{time_starttransfer} total=%{time_total}\n' "http://$ip:8080/sleep/600"
@@ -171,8 +191,8 @@ EOF
   run kubectl -n $ns get pod -o custom-columns=NAME:.metadata.name,READY:.status.containerStatuses[0].ready,RESTARTS:.status.containerStatuses[0].restartCount
   # What the kubelet logs for the same failure, one node.
   node=$(kubectl -n $ns get pod http-slow-1s5 -o jsonpath='{.spec.nodeName}')
-  run docker exec "$node" sh -c "journalctl -u kubelet --no-pager | grep -E 'Probe failed|prober' | grep deadline | tail -5"
-  run docker exec "$node" sh -c "grep -E 'runtimeRequestTimeout|imagePull|serializeImagePulls' /var/lib/kubelet/config.yaml; cat /var/lib/kubelet/config.yaml | head -60"
+  log "kubectl get --raw /api/v1/nodes/$node/proxy/configz | jq (timeouts)"
+  kubectl get --raw "/api/v1/nodes/$node/proxy/configz" | jq '.kubeletconfig | {runtimeRequestTimeout, serializeImagePulls, maxParallelImagePulls}'
   kubectl delete ns $ns --wait=false
 }
 
@@ -315,7 +335,9 @@ EOF
   kubectl get --raw /metrics | grep -E '^apiserver_admission_webhook_admission_duration_seconds_(sum|count)' | sort
   cp=$(kubectl get pods -n kube-system -l component=kube-apiserver -o name | head -1)
   log "kubectl -n kube-system logs $cp | grep -i webhook | tail -12"
-  kubectl -n kube-system logs "$cp" | grep -iE 'webhook' | tail -12
+  kubectl -n kube-system logs "$cp" | grep -iE 'webhook' | tail -2
+  log "kubectl -n kube-system logs $cp | grep 'failing open'"
+  kubectl -n kube-system logs "$cp" | grep 'failing open' | tail -2
   # Clean up: a hanging webhook must not outlive this section.
   kubectl delete validatingwebhookconfiguration hung hung-ignore noendpoints slow np podhook dropped
   kubectl delete ns wh-hang wh-dead wh-slow5 wh-ignore wh-netpol wh-pods wh-okfast webhook --wait=false
@@ -330,7 +352,6 @@ section_kubectl() {
   timed env KUBECONFIG=$cfg kubectl get pods --request-timeout=3s
   timed env KUBECONFIG=$cfg kubectl get pods --request-timeout=0 --v=0 --insecure-skip-tls-verify=false
   rm -f "$cfg"
-  timed kubectl -n shop wait --for=condition=Available deploy/api --timeout=3s
 }
 
 section_etcd() {
@@ -347,6 +368,7 @@ section_etcd() {
 
 section_prometheus() {
   docker network create dl >/dev/null
+  docker pull -q python:3.12-alpine >/dev/null; docker pull -q prom/prometheus:v3.5.0 >/dev/null
   docker run -d --name dl-tgt --network dl python:3.12-alpine python -c '
 import re,time
 from http.server import BaseHTTPRequestHandler as B, ThreadingHTTPServer as S
@@ -354,7 +376,7 @@ class H(B):
     def do_GET(self):
         m=re.match(r"/s/([0-9.]+)/metrics",self.path)
         if m: time.sleep(float(m.group(1)))
-        b=b"lab_up 1\n"; self.send_response(200); self.send_header("Content-Length",str(len(b))); self.end_headers(); self.wfile.write(b)
+        b=b"lab_up 1\n"; self.send_response(200); self.send_header("Content-Type","text/plain; version=0.0.4"); self.send_header("Content-Length",str(len(b))); self.end_headers(); self.wfile.write(b)
     def log_message(self,*a): pass
 S(("",9100),H).serve_forever()' >/dev/null
   mkdir -p /tmp/dlprom; cat > /tmp/dlprom/prometheus.yml <<'EOF'
@@ -366,7 +388,7 @@ scrape_configs:
 - {job_name: hung, metrics_path: /s/600/metrics, scrape_timeout: 4s, static_configs: [{targets: ["dl-tgt:9100"]}]}
 - {job_name: dropped, static_configs: [{targets: ["192.0.2.10:9100"]}]}
 EOF
-  docker run -d --name dl-prom --network dl -p 19090:9090 -v /tmp/dlprom:/etc/prometheus prom/prometheus:v3.5.0 >/dev/null
+  docker run -d --name dl-prom --network dl -p 19090:9090 -v /tmp/dlprom:/etc/prometheus prom/prometheus:v3.5.0 --config.file=/etc/prometheus/prometheus.yml --enable-feature=extra-scrape-metrics >/dev/null
   sleep 40
   run docker exec dl-prom prometheus --version
   log 'curl -s localhost:19090/api/v1/targets | jq ...'
@@ -375,6 +397,8 @@ EOF
   curl -s localhost:19090/api/v1/query --data-urlencode 'query=scrape_duration_seconds' | jq -r '.data.result[] | [.metric.job, .value[1]] | @tsv'
   log 'curl -s localhost:19090/api/v1/query --data-urlencode query=up'
   curl -s localhost:19090/api/v1/query --data-urlencode 'query=up' | jq -r '.data.result[] | [.metric.job, .value[1]] | @tsv'
+  log 'query: scrape_duration_seconds / scrape_timeout_seconds'
+  curl -s localhost:19090/api/v1/query --data-urlencode 'query=scrape_duration_seconds / scrape_timeout_seconds' | jq -r '.data.result[] | [.metric.job, .value[1]] | @tsv'
   docker rm -f dl-prom dl-tgt >/dev/null; docker network rm dl >/dev/null
 }
 
@@ -398,12 +422,14 @@ section_image_pull() {
   # Stalls in the blob: answers /v2/ and the manifest, then hangs. Port 5001.
   docker rm -f dl-reg2 >/dev/null 2>&1
   docker run -d --name dl-reg2 --network kind -v "$HERE":/h:ro python:3.12-alpine python /h/stall_registry.py 5001 >/dev/null
+  reg2=$(docker inspect dl-reg2 -f '{{(index .NetworkSettings.Networks "kind").IPAddress}}')
   for n in $(kind get nodes --name aurora-lab); do
-    for port in 5000 5001; do
-      docker exec "$n" sh -c "mkdir -p /etc/containerd/certs.d/$reg:$port; printf 'server = \"http://$reg:$port\"\n[host.\"http://$reg:$port\"]\n  capabilities = [\"pull\",\"resolve\"]\n' > /etc/containerd/certs.d/$reg:$port/hosts.toml"
+    for h in "$reg:5000" "$reg2:5001"; do
+      docker exec "$n" sh -c "mkdir -p /etc/containerd/certs.d/$h; printf 'server = \"http://$h\"\n[host.\"http://$h\"]\n  capabilities = [\"pull\",\"resolve\"]\n' > /etc/containerd/certs.d/$h/hosts.toml"
     done
   done
-  n=$(kind get nodes --name aurora-lab | grep worker | head -1)
+  n=$(kind get nodes --name aurora-lab | grep -E 'worker$' | head -1)
+  n2=$(kind get nodes --name aurora-lab | grep -E 'worker2$' | head -1)
   run docker exec "$n" sh -c "containerd --version; grep -nE 'config_path|image_pull_progress_timeout|runtime_request' /etc/containerd/config.toml; containerd config dump | grep -E 'image_pull_progress_timeout|config_path'"
   kubectl create ns img
   kubectl -n img apply -f - <<EOF
@@ -425,21 +451,23 @@ apiVersion: v1
 kind: Pod
 metadata: {name: pull-stalled-blob}
 spec:
-  nodeName: $n
-  containers: [{name: a, image: "$reg:5001/lab/app:1"}]
+  nodeName: $n2
+  containers: [{name: a, image: "$reg2:5001/lab/app:1"}]
 EOF
   date -u
   sleep 180
   run kubectl -n img get pods -o wide
   run kubectl -n img get events --sort-by=.lastTimestamp
   date -u
-  sleep 240
+  sleep 300
   date -u
   run kubectl -n img get pods -o wide
   run kubectl -n img get events --sort-by=.lastTimestamp
-  run docker exec "$n" sh -c "journalctl -u containerd --no-pager | grep -iE 'lab/app' | grep -iE 'cancel|deadline|timeout|fail' | tail -10"
-  run docker logs --tail 20 dl-reg2
-  timed docker exec "$n" crictl --timeout 5s pull "$reg:5000/lab/app:2"
+  run docker exec "$n" sh -c "journalctl -u containerd --no-pager | grep -iE 'lab/app' | grep -iE 'cancel|deadline|timeout|fail' | tail -8"
+  run docker exec "$n2" sh -c "journalctl -u containerd --no-pager | grep -iE 'lab/app|no progress' | grep -iE 'cancel|deadline|timeout|fail|progress' | tail -8"
+  run docker logs --tail 12 dl-reg2
+  timed docker exec "$n" crictl pull "$reg:5000/lab/app:2"
+  timed docker exec "$n" crictl pull 192.0.2.10:5000/lab/app:2
   kubectl delete ns img --wait=false
   docker rm -f dl-reg dl-reg2 >/dev/null
 }
@@ -462,7 +490,10 @@ spec:
 EOF
   kubectl create ns helmlab
   timed helm upgrade --install lab "$d/c" -n helmlab --wait --timeout 20s
-  timed helm install lab2 "$d/c" -n helmlab --wait --timeout 20s --set x=1
+  run kubectl -n helmlab get pods
+  run helm status lab -n helmlab
+  log "helm install --help | grep -- --timeout"
+  helm install --help | grep -- '--timeout'
   kubectl delete ns helmlab --wait=false
 }
 

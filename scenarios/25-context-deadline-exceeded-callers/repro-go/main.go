@@ -65,16 +65,12 @@ func main() {
 	_, err = c.Get("http://192.0.2.10/")
 	report("Client.Timeout, dropped SYN", err)
 
-	// 6. gRPC call whose context expires; the listener accepts and says nothing.
+	// 6. gRPC call whose context expires; the handler outlives it.
 	l, _ := net.Listen("tcp", "127.0.0.1:0")
-	defer l.Close()
-	go func() {
-		for {
-			if _, e := l.Accept(); e != nil {
-				return
-			}
-		}
-	}()
+	s := grpc.NewServer()
+	grpc_health_v1.RegisterHealthServer(s, slowHealth{})
+	go s.Serve(l)
+	defer s.Stop()
 	cc, e := grpc.NewClient(l.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if e != nil {
 		fmt.Println(e)
@@ -83,6 +79,15 @@ func main() {
 	defer cc.Close()
 	gctx, gcancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
 	defer gcancel()
-	_, err = grpc_health_v1.NewHealthClient(cc).Check(gctx, &grpc_health_v1.HealthCheckRequest{}, grpc.WaitForReady(true))
+	_, err = grpc_health_v1.NewHealthClient(cc).Check(gctx, &grpc_health_v1.HealthCheckRequest{})
 	report("gRPC call, context expires", err)
+}
+
+type slowHealth struct {
+	grpc_health_v1.UnimplementedHealthServer
+}
+
+func (slowHealth) Check(ctx context.Context, _ *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
+	time.Sleep(time.Second)
+	return &grpc_health_v1.HealthCheckResponse{}, nil
 }
