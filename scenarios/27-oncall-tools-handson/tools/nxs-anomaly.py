@@ -31,13 +31,13 @@ class Nxs(Tool):
     def oncall(self):
         u = {}
         for n in ("alice", "bob"):
-            c, j, t = self.http("POST", B + "/api/v1/users", {"name": n, "username": n, "email": n + "@example.com", "notification_targets": ["webhook"], "webhook_url": f"{SINK}/nxs/{n}"})
+            c, j, t = self.http("POST", B + "/api/v1/users", {"name": n, "username": n, "email": n + "@example.com", "notification_targets": [{"type": "webhook", "target": f"{SINK}/nxs/{n}"}]})
             u[n] = j["id"]
         c, tm, t = self.http("POST", B + "/api/v1/teams", {"name": "platform", "member_ids": list(u.values())})
         c, s, t = self.http("POST", B + "/api/v1/schedules", {"name": "primary", "team_id": tm["id"], "timezone": "UTC", "enabled": True, "rotation": {"enabled": True, "start_at": iso(hours=-1), "handoff_interval": 1, "handoff_unit": "days", "participant_ids": [u["alice"], u["bob"]]}})
         self.http("GET", f"{B}/api/v1/schedules/{s['id']}/on-call")
-        c, ch, t = self.http("POST", B + "/api/v1/escalation-chains", {"name": "checkout", "team_id": tm["id"], "steps": [{"kind": "NOTIFY_SCHEDULE", "schedule_id": s["id"]}, {"kind": "WAIT", "delay_minutes": 1}, {"kind": "NOTIFY_USER", "user_id": u["bob"]}]})
-        self.http("PUT", f"{B}/api/v1/integrations/{self.intg['id']}", dict(self.intg, default_chain_id=ch["id"]))
+        c, ch, t = self.http("POST", B + "/api/v1/escalation-chains", {"name": "checkout", "team_id": tm["id"], "steps": [{"kind": "NOTIFY_SCHEDULE", "schedule_id": s["id"]}, {"kind": "WAIT", "delay_minutes": 1}, {"kind": "NOTIFY_USER", "user_ids": [u["bob"]]}]})
+        self.http("PUT", f"{B}/api/v1/integrations/{self.intg['id']}", {"name": "prometheus", "type": "alertmanager", "team_id": tm["id"], "default_chain_id": ch["id"]})
         self.http("GET", B + "/api/v1/readiness")
         t0 = time.time(); self.post(FIRING)
         a = self.wait_sink("/nxs/alice", 1, 60); t1 = time.time()

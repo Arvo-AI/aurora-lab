@@ -18,7 +18,8 @@ class Regen(Tool):
         self.sh("cp .env.example .env", cwd=self.work + "/src")
         self.step("docker compose up -d (we pointed the app service at the published image ghcr.io/fluidifyai/regen:1.2.4 instead of building)")
         self.sh("docker compose -f docker-compose.yml -f override.yml up -d --wait", cwd=self.work + "/src", timeout=400)
-        self.r["boot_seconds"] = round(self.wait_http(B + "/health"), 1)
+        self.sh("docker compose -f docker-compose.yml -f override.yml ps -a; docker compose -f docker-compose.yml -f override.yml logs app --tail=60", cwd=self.work + "/src", trim=6000)
+        self.r["boot_seconds"] = round(self.wait_http(B + "/health", timeout=60), 1)
     def minimal(self):
         self.step("create the first admin account (first-run page or POST /api/v1/auth/bootstrap)")
         c, j, t = self.http("POST", B + "/api/v1/auth/bootstrap", {"email": "admin@example.com", "name": "admin", "password": "lab-password-1"})

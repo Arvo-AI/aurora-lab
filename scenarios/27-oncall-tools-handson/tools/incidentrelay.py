@@ -16,7 +16,10 @@ class IR(Tool):
         self.dc("up -d --wait", timeout=400)
         self.r["boot_seconds"] = round(self.wait_http(B + "/login"), 1)
         self.step("manage.py create-admin inside the container")
-        self.dc("exec -T --user 10001:10001 incidentrelay python manage.py create-admin --username admin --password lab-password-1 --email admin@example.com", check=True)
+        c, o = self.dc("exec -T --user 10001:10001 incidentrelay python manage.py create-admin --username admin --password lab-password-1 --email admin@example.com", trim=700)
+        if c:
+            self.note("the documented create-admin command exits 1 with: insecure IncidentRelay secret configuration, because exec does not get the runtime config the entrypoint generates. It works with -e INCIDENTRELAY_CONFIG_FILE=/var/lib/incidentrelay/incidentrelay.conf")
+            self.dc("exec -T --user 10001:10001 -e INCIDENTRELAY_CONFIG_FILE=/var/lib/incidentrelay/incidentrelay.conf incidentrelay python manage.py create-admin --username admin --password lab-password-1 --email admin@example.com", check=True)
     def minimal(self):
         c, j, t = self.http("POST", B + "/api/auth/login", {"username": "admin", "password": "lab-password-1"}, trim=200)
         self.hdr = {"Authorization": "Bearer " + (j.get("token") or j.get("access_token"))}
