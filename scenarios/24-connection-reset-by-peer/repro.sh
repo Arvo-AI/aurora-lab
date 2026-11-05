@@ -23,7 +23,18 @@ EMPTY=$(kubectl -n rst get svc empty -o jsonpath='{.spec.clusterIP}')
 CLIENT_IP=$(kubectl -n rst get pod client -o jsonpath='{.status.podIP}')
 srvpod() { kubectl -n rst get pods -l app=srv --field-selector=status.phase=Running -o name | head -1; }
 srvip() { kubectl -n rst get pods -l app=srv --field-selector=status.phase=Running -o jsonpath='{.items[0].status.podIP}'; }
-ready() { sleep 2; kubectl -n rst rollout status deploy/srv --timeout=120s >/dev/null; kubectl -n rst wait --for=condition=Ready pod -l app=srv --timeout=120s >/dev/null; sleep 2; }
+# all replicas Ready, no terminating pod left, up to 3 min (crash loops back off)
+ready() {
+  sleep 2
+  for _ in $(seq 1 180); do
+    want=$(kubectl -n rst get deploy srv -o jsonpath='{.spec.replicas}')
+    have=$(kubectl -n rst get deploy srv -o jsonpath='{.status.readyReplicas}')
+    pods=$(kubectl -n rst get pods -l app=srv --no-headers 2>/dev/null | wc -l)
+    [ "$have" = "$want" ] && [ "$pods" -eq "$want" ] && break
+    sleep 1
+  done
+  sleep 2
+}
 
 { date -u; kubectl version; kubectl get nodes -o wide
   sh_c 'cat /etc/alpine-release; uname -r; curl --version | head -1; python3 -V; python3 -c "import requests,urllib3;print(\"requests\",requests.__version__,\"urllib3\",urllib3.__version__)"; cat /app/goversion; node -v; tcpdump --version 2>&1 | head -2; ssh -V 2>&1'
@@ -85,7 +96,7 @@ rollcount() {
   sh_c "(/app/rstclient load -d 70s -c 8 'http://$SVC:8080/slow?ms=200' > /tmp/l.new 2>&1) & (/app/rstclient load -d 70s -c 8 -keepalive 'http://$SVC:8080/slow?ms=200' > /tmp/l.keep 2>&1) & sleep 0" </dev/null >/dev/null 2>&1 &
   sleep 3
   for i in 1 2 3; do kubectl -n rst rollout restart deploy/srv >/dev/null; kubectl -n rst rollout status deploy/srv --timeout=120s >/dev/null; sleep 1; done
-  echo "rollouts done at $(date -u +%T)"; sh_c 'while pgrep rstclient >/dev/null; do sleep 1; done'
+  echo "rollouts done at $(date -u +%T)"; sh_c 'while pgrep -x rstclient >/dev/null; do sleep 1; done'
   echo "--- new connection per request"; sh_c 'cat /tmp/l.new'
   echo "--- keepalive"; sh_c 'cat /tmp/l.keep'
 }

@@ -5,25 +5,25 @@ kubectl -n shop get cm api-code -o json | python3 -c '
 import json, sys
 cm = json.load(sys.stdin)
 code = cm["data"]["api.py"]
-old = """    class H(BaseHTTPRequestHandler):
-        def do_GET(self):"""
-new = """    class H(BaseHTTPRequestHandler):
-        def do_POST(self):
-            left = int(self.headers.get("Content-Length", "0"))
-            while left > 0:
-                chunk = self.rfile.read(min(left, 65536))
-                if not chunk:
-                    return
-                left -= len(chunk)
-                time.sleep(0.1)
-            self._send(200, {"imported": True})
+old = """class H(BaseHTTPRequestHandler):
+    def do_GET(self):"""
+new = """class H(BaseHTTPRequestHandler):
+    def do_POST(self):
+        left = int(self.headers.get("Content-Length", "0"))
+        while left > 0:
+            chunk = self.rfile.read(min(left, 65536))
+            if not chunk:
+                return
+            left -= len(chunk)
+            time.sleep(0.1)
+        self._send(200, {"imported": True})
 
-        def do_GET(self):"""
+    def do_GET(self):"""
 assert old in code
 code = code.replace(old, new)
-old = """    print(f"api listening on :{PORT}", flush=True)"""
-new = """    signal.signal(signal.SIGTERM, lambda *_: os._exit(0))
-    print(f"api listening on :{PORT}", flush=True)"""
+old = """print(f"api listening on :{PORT}", flush=True)"""
+new = """signal.signal(signal.SIGTERM, lambda *_: os._exit(0))
+print(f"api listening on :{PORT}", flush=True)"""
 assert old in code
 code = code.replace(old, new).replace("import json, os, socket, sys, time", "import json, os, signal, socket, sys, time")
 cm["data"]["api.py"] = code
