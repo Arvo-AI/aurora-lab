@@ -30,9 +30,12 @@ class OnCall(Tool):
         self.http("GET", G + "/api/plugins/grafana-oncall-app/settings", headers=AUTH, trim=500)
         self.step("provision the plugin: POST .../settings then POST .../resources/plugin/install")
         self.http("POST", G + "/api/plugins/grafana-oncall-app/settings", {"enabled": True, "jsonData": {"stackId": 5, "orgId": 100, "onCallApiUrl": "http://engine:8080", "grafanaUrl": "http://grafana:3000"}}, headers=AUTH)
-        c, j, t = self.http("POST", G + "/api/plugins/grafana-oncall-app/resources/plugin/install", headers=AUTH)
-        self.r["plugin_install_http"] = c
-        time.sleep(3); self.http("GET", G + "/api/plugins/grafana-oncall-app/resources/plugin/status", headers=AUTH, trim=800)
+        for i in range(20):
+            c, j, t = self.http("POST", G + "/api/plugins/grafana-oncall-app/resources/plugin/install", headers=AUTH, trim=300)
+            time.sleep(3); c, st, t = self.http("GET", G + "/api/plugins/grafana-oncall-app/resources/plugin/status", headers=AUTH, trim=500)
+            if st and all(v.get("ok") for v in st["pluginConnection"].values()):
+                self.r["plugin_install_attempts"] = i + 1; break
+            time.sleep(3)
     def override(self):
         return "services:\n" + MAILPIT + self.env_block()
     def env_block(self):
@@ -64,12 +67,14 @@ class OnCall(Tool):
         return [(m["To"][0]["Address"], m["Subject"], m["Created"]) for m in (j or {}).get("messages", [])]
     def oncall(self):
         for n in ("alice", "bob"):
-            self.http("POST", G + "/api/admin/users", {"name": n, "email": n + "@example.com", "login": n, "password": "lab-password-1"}, headers=AUTH)
-            c, j, t = self.http("GET", f"{G}/api/org/users/lookup?loginOrEmail={n}", headers=AUTH, quiet=True)
-            self.http("PATCH", f"{G}/api/org/users/{j[0]['userId']}", {"role": "Editor"}, headers=AUTH)
-        self.http("POST", G + "/api/plugins/grafana-oncall-app/resources/plugin/sync", headers=AUTH, trim=200); time.sleep(8)
-        c, j, t = self.http("GET", E_ + "/api/v1/users/")
-        ids = {u["username"]: u["id"] for u in j["results"]}
+            c, j, t = self.http("POST", G + "/api/admin/users", {"name": n, "email": n + "@example.com", "login": n, "password": "lab-password-1"}, headers=AUTH)
+            self.http("PATCH", f"{G}/api/org/users/{j['id']}", {"role": "Editor"}, headers=AUTH)
+        ids = {}
+        for i in range(40):
+            self.http("POST", G + "/api/plugins/grafana-oncall-app/resources/plugin/sync", headers=AUTH, trim=100); time.sleep(8)
+            c, j, t = self.http("GET", E_ + "/api/v1/users/", trim=200)
+            ids = {u["username"]: u["id"] for u in j["results"]}
+            if "alice" in ids and "bob" in ids: self.r["user_sync_seconds"] = (i + 1) * 8; break
         for n in ("alice", "bob"):
             self.http("POST", E_ + "/api/v1/personal_notification_rules/", {"user_id": ids[n], "type": "notify_by_email", "position": 0})
         c, sh, t = self.http("POST", E_ + "/api/v1/on_call_shifts/", {"name": "primary", "type": "rolling_users", "start": iso(hours=-1)[:-1], "duration": 86400, "frequency": "daily", "rolling_users": [[ids["alice"]], [ids["bob"]]], "start_rotation_from_user_index": 0, "time_zone": "UTC"})

@@ -57,6 +57,10 @@ class OU(Tool):
         c, j, t = self.api("POST", "/api/incident/get-list?skip=0&limit=50", {"query": {"projectId": self.pid}, "select": {"title": True, "incidentNumber": True, "currentIncidentState": {"name": True}, "isResolved": True}, "sort": {}}, quiet=True)
         return [{"n": x.get("incidentNumber"), "title": x.get("title"), "state": (x.get("currentIncidentState") or {}).get("name")} for x in (j or {}).get("data", [])]
     def oncall(self):
+        self.api("POST", "/api/incident/get-list?skip=0&limit=50", {"query": {"projectId": self.pid}, "select": {"title": True}, "sort": {}})
+        self.api("POST", f"/api/monitor/{self.mon['_id']}/get-item", {"select": {"currentMonitorStatus": {"name": True}, "incomingRequestReceivedAt": True, "incomingMonitorRequest": True}}, trim=1500)
+        self.api("POST", "/api/monitor-log/get-list?skip=0&limit=10", {"query": {"projectId": self.pid}, "select": {"logBody": True}, "sort": {}}, trim=1500)
+        self.sh("docker logs oneuptime-app-1 --tail=60 2>&1 | grep -iE 'error|incoming|heartbeat|monitor' | tail -25", trim=5000)
         self.untested("oncall: pending")
     def after(self):
         self.sh("docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'")
