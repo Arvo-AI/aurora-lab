@@ -1,0 +1,118 @@
+# Cases where the container is restarted in place, so lastState keeps the evidence.
+apiVersion: v1
+kind: Pod
+metadata: {name: oom-limit, namespace: exit137}
+spec:
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  containers:
+  - name: app
+    image: python:3.12-alpine
+    # Waits 20 s so the replacement container can be exec'd into before its own kill.
+    command: ["python", "-u", "-c", "import time; print('up'); time.sleep(20); b = b'\\x01' * (150 << 20); print('allocated'); time.sleep(3600)"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: probe-trap, namespace: exit137}
+spec:
+  terminationGracePeriodSeconds: 10
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  containers:
+  - name: app
+    image: busybox:1.37
+    command: ["sh", "-c", "trap 'echo got SIGTERM, ignoring it' TERM; while true; do sleep 1; done"]
+    livenessProbe:
+      exec: {command: ["cat", "/tmp/healthy"]}
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 2
+    resources:
+      requests: {memory: 32Mi, cpu: 10m}
+      limits: {memory: 64Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: probe-no-handler, namespace: exit137}
+spec:
+  terminationGracePeriodSeconds: 10
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  volumes: [{name: code, configMap: {name: code}}]
+  containers:
+  - name: app
+    image: python:3.12-alpine
+    command: ["python", "-u", "/code/nohandler.py"]
+    volumeMounts: [{name: code, mountPath: /code}]
+    livenessProbe:
+      exec: {command: ["cat", "/tmp/healthy"]}
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 2
+    resources:
+      requests: {memory: 32Mi, cpu: 10m}
+      limits: {memory: 64Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: probe-handled, namespace: exit137}
+spec:
+  terminationGracePeriodSeconds: 10
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  volumes: [{name: code, configMap: {name: code}}]
+  containers:
+  - name: app
+    image: python:3.12-alpine
+    command: ["python", "-u", "/code/handled.py"]
+    volumeMounts: [{name: code, mountPath: /code}]
+    livenessProbe:
+      exec: {command: ["cat", "/tmp/healthy"]}
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      failureThreshold: 2
+    resources:
+      requests: {memory: 32Mi, cpu: 10m}
+      limits: {memory: 64Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: plain-exit, namespace: exit137}
+spec:
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  containers:
+  - name: app
+    image: busybox:1.37
+    # No signal at all: the program just returns 137, as wrappers that pass on a child's status do.
+    command: ["sh", "-c", "echo up; sleep 5; exit 137"]
+    resources:
+      requests: {memory: 32Mi, cpu: 10m}
+      limits: {memory: 64Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: host-kill, namespace: exit137}
+spec:
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  volumes: [{name: code, configMap: {name: code}}]
+  containers:
+  - name: app
+    image: python:3.12-alpine
+    command: ["python", "-u", "/code/nohandler.py"]
+    volumeMounts: [{name: code, mountPath: /code}]
+    resources:
+      requests: {memory: 32Mi, cpu: 10m}
+      limits: {memory: 64Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: plain-delete, namespace: exit137}
+spec:
+  terminationGracePeriodSeconds: 10
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  containers:
+  - name: app
+    image: busybox:1.37
+    command: ["sh", "-c", "trap 'echo got SIGTERM, ignoring it' TERM; while true; do sleep 1; done"]
+    resources:
+      requests: {memory: 32Mi, cpu: 10m}
+      limits: {memory: 64Mi}

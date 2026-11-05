@@ -1,0 +1,22 @@
+id: 22-exit-137-not-oom
+title: Worker restarts with exit code 137 and reason Error; memory is fine, a liveness probe fails and the process cannot stop on SIGTERM
+alert: "KubePodCrashLooping: pod worker in namespace shop is restarting repeatedly. Last exit code 137."
+change: >
+  The worker Deployment gained a liveness probe on /tmp/worker-heartbeat, a file
+  the worker never writes, and terminationGracePeriodSeconds was set to 10.
+root_cause: >
+  The liveness probe can never pass. The kubelet sends SIGTERM, but the worker
+  is a Python process running as PID 1 with no SIGTERM handler, so the kernel
+  drops the signal. When the 10 second grace period ends the runtime sends
+  SIGKILL, and the container is recorded with exit code 137 and reason Error.
+  Memory is nowhere near the 192Mi limit and the cgroup records oom_kill 0.
+must_identify:
+  - The kill came from the kubelet after a failed liveness probe, not from the kernel OOM killer (reason Error, Killing event, oom_kill 0)
+  - The probe checks /tmp/worker-heartbeat, which nothing creates
+acceptable_fixes:
+  - Remove the probe or point it at a signal the worker really produces
+  - Have the worker write the heartbeat file, and handle SIGTERM so it exits within the grace period
+wrong_answers:
+  - OOM kill or memory limit as the cause
+  - Raising the memory limit as the fix
+  - Raising terminationGracePeriodSeconds as the fix

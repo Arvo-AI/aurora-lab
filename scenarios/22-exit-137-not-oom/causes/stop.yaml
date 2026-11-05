@@ -1,0 +1,47 @@
+# Each pod holds a finalizer so that its status survives deletion and the exit
+# code of the stop can be read. Without the finalizer the object is gone at once.
+apiVersion: v1
+kind: Namespace
+metadata: {name: exit137}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: code, namespace: exit137}
+data:
+  handled.py: |
+    import signal, sys, time
+    def stop(*_):
+        print("got SIGTERM, exiting", flush=True)
+        sys.exit(0)
+    signal.signal(signal.SIGTERM, stop)
+    print("up", flush=True)
+    while True:
+        time.sleep(1)
+  nohandler.py: |
+    import time
+    print("up", flush=True)
+    time.sleep(3600)
+---
+# trap-ignore
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "trap-ignore", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "containers": [{"name": "app", "image": "busybox:1.37", "command": ["sh", "-c", "trap 'echo got SIGTERM, ignoring it' TERM; while true; do sleep 1; done"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}]}]}}
+---
+# no-handler
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "no-handler", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "containers": [{"name": "app", "image": "python:3.12-alpine", "command": ["python", "-u", "/code/nohandler.py"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}]}]}}
+---
+# wrapper-handled
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "wrapper-handled", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "containers": [{"name": "app", "image": "python:3.12-alpine", "command": ["sh", "-c", "python -u /code/handled.py; echo done"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}]}]}}
+---
+# sh-single
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "sh-single", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "containers": [{"name": "app", "image": "python:3.12-alpine", "command": ["sh", "-c", "python -u /code/handled.py"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}]}]}}
+---
+# exec-handled
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "exec-handled", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "containers": [{"name": "app", "image": "python:3.12-alpine", "command": ["sh", "-c", "exec python -u /code/handled.py"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}]}]}}
+---
+# handled
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "handled", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "containers": [{"name": "app", "image": "python:3.12-alpine", "command": ["python", "-u", "/code/handled.py"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}]}]}}
+---
+# shared-pidns
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "shared-pidns", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "shareProcessNamespace": true, "containers": [{"name": "app", "image": "python:3.12-alpine", "command": ["python", "-u", "/code/nohandler.py"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}]}]}}
+---
+# prestop-long
+{"apiVersion": "v1", "kind": "Pod", "metadata": {"name": "prestop-long", "namespace": "exit137", "labels": {"group": "stop"}, "finalizers": ["lab.aurora/hold"]}, "spec": {"terminationGracePeriodSeconds": 10, "nodeSelector": {"kubernetes.io/hostname": "aurora-lab-worker"}, "volumes": [{"name": "code", "configMap": {"name": "code"}}], "containers": [{"name": "app", "image": "python:3.12-alpine", "command": ["python", "-u", "/code/handled.py"], "resources": {"requests": {"memory": "32Mi", "cpu": "10m"}, "limits": {"memory": "64Mi"}}, "volumeMounts": [{"name": "code", "mountPath": "/code"}], "lifecycle": {"preStop": {"exec": {"command": ["sleep", "60"]}}}}]}}

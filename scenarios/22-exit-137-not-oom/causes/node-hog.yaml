@@ -1,0 +1,11 @@
+# No memory limit at all. Runs on a node whose own cgroup was capped, so the kernel
+# has to kill something on the node without any container limit being reached.
+apiVersion: v1
+kind: Pod
+metadata: {name: node-hog, namespace: exit137}
+spec:
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker2}
+  containers:
+  - name: app
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "import time\nb = []\nwhile True:\n    b.append(b'\\x01' * (50 << 20))\n    print('held', len(b) * 50, 'MiB')\n    time.sleep(0.2)"]
