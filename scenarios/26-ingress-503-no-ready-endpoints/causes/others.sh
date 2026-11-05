@@ -91,9 +91,8 @@ echo "\$ 30 requests, 10 at a time, /limited/ok"; burst "$B/limited/ok"
 one "$B" /limited/ok
 sleep 2
 POD="$(kubectl -n envoy-gateway-system get pods -l gateway.envoyproxy.io/owning-gateway-name=eg -o name | head -1)"
-run "kubectl -n envoy-gateway-system logs $POD -c envoy --tail=300 | grep -E '\"(/app/fail503|/scaled|/missing)' | tail -5"
-run "kubectl -n envoy-gateway-system logs $POD -c envoy --tail=300 | grep -E 'x-envoy-origin-path\":\"/(app/fail503|scaled|missing|limited)' | tail -6"
-run "kubectl -n envoy-gateway-system logs $POD -c envoy --tail=8"
+run "kubectl -n envoy-gateway-system logs $POD -c envoy --tail=300 | grep -E '\"response_code\":(500|503)' | tail -4"
+run "kubectl -n envoy-gateway-system logs $POD -c envoy --tail=300 | grep -E '\"response_code\":429' | tail -1"
 kubectl -n envoy-gateway-system get "$POD" -o jsonpath='{.spec.containers[?(@.name=="envoy")].image}'; echo
 helm list -n envoy-gateway-system
 
@@ -141,7 +140,7 @@ kubectl -n r503 delete gateway ngf --ignore-not-found >/dev/null
 
 echo "# $(date -u +%FT%TZ) Traefik reading the same Ingress objects, with its ingress-nginx annotation provider"
 run 'helm repo add traefik https://traefik.github.io/charts >/dev/null && helm repo update >/dev/null && helm search repo traefik/traefik | head -2'
-run "helm install traefik traefik/traefik -n traefik --create-namespace --set providers.kubernetesIngress.enabled=false --set providers.kubernetesCRD.enabled=false --set providers.kubernetesIngressNGINX.enabled=true --set service.type=ClusterIP --set logs.access.enabled=true --set logs.general.level=INFO --wait --timeout 5m | head -6"
+run "helm install traefik traefik/traefik -n traefik --create-namespace --set providers.kubernetesIngress.enabled=false --set providers.kubernetesCRD.enabled=false --set providers.kubernetesIngressNGINX.enabled=true --set service.type=ClusterIP --set 'additionalArguments={--accesslog=true}' --wait --timeout 5m | head -6"
 sleep 20
 run 'kubectl -n traefik get pods,svc'
 B=http://traefik.traefik.svc
@@ -149,5 +148,48 @@ for p in /app/ok /app/fail503 /scaled /badselector /missing /notready; do one "$
 echo "\$ 30 requests, 10 at a time, /limited/ok (limit-rps 2 annotation, unchanged)"; burst "$B/limited/ok"
 one "$B" /limited/ok
 sleep 2
-run "kubectl -n traefik logs deploy/traefik --tail=60 | tail -20"
+run "kubectl -n traefik logs deploy/traefik --tail=80 | grep -v -E '/limited' | tail -12"
+run "kubectl -n traefik logs deploy/traefik --tail=80 | grep -E '/limited' | tail -2"
 kubectl -n traefik get deploy traefik -o jsonpath='{.spec.template.spec.containers[0].image}'; echo
+helm list -n traefik
+
+echo "# $(date -u +%FT%TZ) F5 NGINX Ingress Controller, a different project from ingress-nginx"
+run "helm install nic oci://ghcr.io/nginx/charts/nginx-ingress -n nic --create-namespace --set controller.service.type=ClusterIP --set controller.ingressClass.name=nic --wait --timeout 5m | head -6"
+kubectl apply -f - <<'Y'
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: nic-app, namespace: r503}
+spec:
+  ingressClassName: nic
+  rules:
+    - http:
+        paths:
+          - {path: /app, pathType: Prefix, backend: {service: {name: backend, port: {number: 8080}}}}
+          - {path: /scaled, pathType: Prefix, backend: {service: {name: scaled, port: {number: 8080}}}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nic-limited
+  namespace: r503
+  annotations:
+    nginx.org/limit-req-rate: "2r/s"
+spec:
+  ingressClassName: nic
+  rules:
+    - http:
+        paths:
+          - {path: /limited, pathType: Prefix, backend: {service: {name: backend, port: {number: 8080}}}}
+Y
+sleep 20
+run 'kubectl -n nic get pods,svc'
+run 'kubectl -n r503 describe ingress nic-limited | tail -6'
+SVC="$(kubectl -n nic get svc -o jsonpath='{.items[0].metadata.name}')"
+B="http://$SVC.nic.svc"
+for p in /app/ok /app/fail503 /scaled; do one "$B" "$p"; done
+echo "\$ 30 requests, 10 at a time, /limited/ok"; burst "$B/limited/ok"
+one "$B" /limited/ok
+sleep 2
+run "kubectl -n nic logs deploy/\$(kubectl -n nic get deploy -o jsonpath='{.items[0].metadata.name}') --tail=60 | grep -E '/scaled|limiting|/limited|fail503' | tail -8"
+kubectl -n nic get deploy -o jsonpath='{.items[0].spec.template.spec.containers[0].image}'; echo
+helm list -n nic

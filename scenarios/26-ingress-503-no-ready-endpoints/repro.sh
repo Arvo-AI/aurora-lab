@@ -19,10 +19,12 @@ run() { echo "\$ $*"; eval "$*" 2>&1; echo; }
   run 'kubectl -n r503 exec curl -- curl -s -o /dev/null -w "%{http_code} %{time_total}s\n" http://ingress-nginx-controller.ingress-nginx.svc/items'
   sleep 2
   run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=400 | grep -E 'GET /items' | tail -3"
-  run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=400 | grep 'active Endpoint' | tail -3"
+  run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=2000 | grep 'shop/api' | tail -2"
   run 'kubectl -n shop get pods -l app=api -o wide'
   run 'kubectl -n shop get endpointslices -l kubernetes.io/service-name=api'
   run 'kubectl -n shop get endpointslices -l kubernetes.io/service-name=api -o yaml | grep -E "ready|serving|terminating|addresses|- 10\."'
+  run "kubectl -n shop get endpointslices -l kubernetes.io/service-name=api -o jsonpath='{range .items[*].endpoints[*]}{.addresses[0]} ready={.conditions.ready}{\"\\n\"}{end}'"
+  run 'kubectl -n shop get endpoints api'
   run "kubectl -n shop describe pod -l app=api | grep -E 'Readiness|Warning' | sort | uniq -c | tail -6"
   run 'kubectl -n shop get events --field-selector reason=Unhealthy --sort-by=.lastTimestamp | tail -3'
   run 'kubectl -n shop logs deploy/loadgen --tail=4'
@@ -61,6 +63,7 @@ run() { echo "\$ $*"; eval "$*" 2>&1; echo; }
   run 'kubectl -n shop scale deploy/redis --replicas=1'
   run 'kubectl -n shop rollout status deploy/redis --timeout=120s'
   sleep 40
+  run "kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg backends get shop-api-8080 | grep -A4 '\"endpoints\"'"
   run 'kubectl -n shop logs deploy/loadgen --tail=5'
   run 'kubectl -n r503 exec curl -- sh -c "for i in 1 2 3 4 5 6 7 8 9 10; do curl -s -o /dev/null -w \"%{http_code}\n\" http://ingress-nginx-controller.ingress-nginx.svc/items; done | sort | uniq -c"'
 } > "$OUT/02-fix.txt" 2>&1
@@ -87,7 +90,16 @@ probe() {
   cat "$OUT/causes-apply.err"
   run 'kubectl -n r503 get svc,endpointslices,ingress'
   run 'kubectl -n r503 get pods -o wide'
-  for p in /app/ok /scaled /badselector /notready /missing /wrongport /svcup /dflt; do probe "$p"; done
+  for p in /app/ok /scaled /badselector /notready /missing /wrongport /denied /svcup /sharedplain /dflt; do probe "$p"; done
+  echo "\$ controller warnings for this namespace, timestamps removed, counted"
+  ctrl --tail=5000 | grep -E '^[WE][0-9]{4}' | grep 'r503/' | sed -E 's/^([WE])[0-9]{4} [0-9:.]+ +[0-9]+ /\1 /' | sort | uniq -c | sort -rn | head -24
+  echo
+  echo "\$ denied location in the rendered config"
+  kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg conf | grep -n -B1 -A1 'Location denied' | head -12
+  echo
+  echo "# HTTP/2 through the controller's TLS port: no reason phrase on the wire"
+  run 'kubectl -n r503 exec curl -- curl -sik --http2 https://ingress-nginx-controller.ingress-nginx.svc/scaled'
+  run 'kubectl -n r503 exec curl -- curl -sik --http2 https://ingress-nginx-controller.ingress-nginx.svc/app/fail503'
   run 'kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg backends list'
   run "kubectl -n ingress-nginx exec deploy/ingress-nginx-controller -- /dbg conf | grep -n -E 'server_tokens|more_clear_headers|limit_req_status|limit_conn_status|proxy_next_upstream ' | sort -t: -k2 -u | head -12"
 } > "$OUT/03-no-endpoint-variants.txt" 2>&1
@@ -108,7 +120,7 @@ burst() { # burst <url> [extra curl args]: 30 requests, 10 at a time; prints sta
   run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=300 | grep -E 'GET /limited/ok' | grep ' 503 ' | tail -3"
   run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=300 | grep -E 'GET /limited/ok' | grep ' 200 ' | tail -2"
   run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=300 | grep -c 'limiting requests'"
-  run "kubectl -n r503 logs -l app=backend --tail=500 | grep -c 'GET /limited'"
+  run "for p in \$(kubectl -n r503 get pods -l app=backend -o name); do kubectl -n r503 logs \$p | grep -c 'GET /limited'; done"
   sleep 12
   # one rejected body against one no-endpoint body
   cx sh -c "for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do curl -si $ING/limited/ok -o /tmp/l.\$i & done; wait; grep -l ' 503 ' /tmp/l.* | head -1 | xargs -I{} cp {} /tmp/limit.resp"
@@ -182,6 +194,12 @@ burst() { # burst <url> [extra curl args]: 30 requests, 10 at a time; prints sta
   run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=100 | grep 'GET /retry/x' | tail -4"
   echo "\$ retry access log lines with two upstream attempts"
   ctrl --tail=100 | grep 'GET /retry/x' | grep -c '503, 200'
+  echo
+  echo "# every 503 in the last 15 minutes, split by whether an upstream was contacted"
+  CMD="kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --since=15m | grep -E '\" 503 [0-9]+ ' | sed -E 's/.*\\] \\[([^]]*)\\] \\[[^]]*\\] (.*) [0-9a-f]{32}\$/\\1 \\2/' | awk '{print \$1, (\$2==\"-\" ? \"generated-by-nginx\" : \"sent-by-upstream\")}' | sort | uniq -c"
+  echo "\$ $CMD"; eval "$CMD"
+  echo
+  run "kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --since=15m | grep -oE 'limiting (requests|connections)' | sort | uniq -c"
 } > "$OUT/05-upstream-503.txt" 2>&1
 
 # ---------- 6. stock nginx matrix
