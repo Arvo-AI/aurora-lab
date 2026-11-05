@@ -1,0 +1,77 @@
+# Reproduction workload. srv on one node, client on another. The cap sidecar
+# shares the pod network namespace, so it keeps capturing while srv restarts.
+apiVersion: v1
+kind: Namespace
+metadata: {name: rst}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: srv, namespace: rst}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: srv}}
+  template:
+    metadata: {labels: {app: srv}}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm: {topologyKey: kubernetes.io/hostname, labelSelector: {matchLabels: {app: client}}}
+      containers:
+        - name: srv
+          image: resetlab:24
+          imagePullPolicy: Never
+          command: ["/app/rstserver"]
+          env: [{name: IDLE_MS, value: "2000"}]
+          ports: [{containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /healthz, port: 8080}, periodSeconds: 1}
+          resources: {limits: {memory: 128Mi}}
+        - name: py
+          image: resetlab:24
+          imagePullPolicy: Never
+          command: ["python3", "/app/single.py"]
+          ports: [{containerPort: 8081}]
+          readinessProbe: {tcpSocket: {port: 8081}, periodSeconds: 1}
+        - name: cap
+          image: resetlab:24
+          imagePullPolicy: Never
+          command: ["tcpdump", "-l", "-nn", "-p", "-i", "eth0", "-tttt", "-v", "tcp port 8080 or tcp port 8081"]
+          securityContext: {capabilities: {add: [NET_ADMIN, NET_RAW]}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: srv, namespace: rst}
+spec:
+  selector: {app: srv}
+  ports:
+    - {name: go, port: 8080, targetPort: 8080}
+    - {name: py, port: 8081, targetPort: 8081}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: empty, namespace: rst}
+spec:
+  selector: {app: nothing-has-this-label}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: client, namespace: rst, labels: {app: client}}
+spec:
+  containers:
+    - name: client
+      image: resetlab:24
+      imagePullPolicy: Never
+      command: ["sleep", "infinity"]
+      securityContext: {capabilities: {add: [NET_ADMIN, NET_RAW]}}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: sshbox, namespace: rst, labels: {app: sshbox}}
+spec:
+  containers:
+    - name: sshd
+      image: resetlab:24
+      imagePullPolicy: Never
+      command: ["sh", "-c", "ssh-keygen -A && exec /usr/sbin/sshd -D -e -p 2222 -o MaxStartups=1:100:1 -o LoginGraceTime=60"]

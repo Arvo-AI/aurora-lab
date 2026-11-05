@@ -1,0 +1,25 @@
+id: 24-connection-reset-by-peer
+title: an import client gets "Connection reset by peer" on every api rollout because the api exits on SIGTERM with uploads in flight; pods, Service and endpoints all healthy
+alert: "ImportFailures [warning] namespace=shop deployment=uploader: imports to the api failed with ConnectionResetError after a deploy. All pods are Running and Ready."
+change: >
+  The api-code ConfigMap was edited to add a streaming POST /import handler and
+  a SIGTERM handler that calls os._exit(0), and an uploader Deployment was
+  added. The api Deployment was then restarted.
+root_cause: >
+  On SIGTERM the api process exits at once, with no drain and no preStop, while
+  the uploader is still streaming a body to it. The kernel closes the socket
+  and answers the next segments from the client with a TCP RST (immediately if
+  bytes were unread in the receive buffer, otherwise after a FIN). The uploader
+  logs ConnectionResetError or BrokenPipeError. The new pods are Ready before the
+  old ones die, so the Deployment, Service and endpoints all look healthy.
+must_identify:
+  - The reset is sent by the kernel of the old api pod when the process exits on SIGTERM, not by the network or the Service
+  - The os._exit(0) SIGTERM handler added in the api-code change leaves in-flight requests undrained during a rollout
+acceptable_fixes:
+  - Handle SIGTERM by finishing in-flight requests, with a preStop delay so the endpoint is removed first and a grace period longer than the longest request
+  - Revert the api-code change
+wrong_answers:
+  - NetworkPolicy, DNS or conntrack as the cause
+  - A kube-proxy or CNI fault as the cause
+  - Retrying in the client as the only fix
+  - redis as the cause
