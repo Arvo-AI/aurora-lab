@@ -1,0 +1,8 @@
+id: 27-oncall-tools-handson
+title: same Alertmanager webhook sent to every self-hostable on-call tool; no Kubernetes, no fault
+alert: "Not a fault scenario. repro.sh installs each tool with docker compose and posts one Alertmanager webhook payload, captured from a real Alertmanager, to each."
+change: none
+root_cause: none
+must_identify: []
+acceptable_fixes: []
+wrong_answers: []
