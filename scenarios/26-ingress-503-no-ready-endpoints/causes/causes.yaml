@@ -1,0 +1,584 @@
+apiVersion: v1
+kind: Namespace
+metadata: {name: r503}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: curl, namespace: r503}
+spec:
+  containers:
+    - name: curl
+      image: curlimages/curl:8.12.1
+      command: ["sleep", "86400"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: backend, namespace: r503}
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: backend}
+  template:
+    metadata:
+      labels: {app: backend}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: backend, namespace: r503}
+spec:
+  selector: {app: backend}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: scaled, namespace: r503}
+spec:
+  replicas: 0
+  selector:
+    matchLabels: {app: scaled}
+  template:
+    metadata:
+      labels: {app: scaled}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: scaled, namespace: r503}
+spec:
+  selector: {app: scaled}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: badselector, namespace: r503}
+spec:
+  selector: {app: no-such-label}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: notready, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: notready}
+  template:
+    metadata:
+      labels: {app: notready}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /never, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: notready, namespace: r503}
+spec:
+  selector: {app: notready}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: errors, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: errors}
+  template:
+    metadata:
+      labels: {app: errors}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          env: [{name: MODE, value: errors}]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: errors, namespace: r503}
+spec:
+  selector: {app: errors}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: mixgood, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: mixgood}
+  template:
+    metadata:
+      labels: {app: mixgood, mix: 'yes'}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: mixbad, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: mixbad}
+  template:
+    metadata:
+      labels: {app: mixbad, mix: 'yes'}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          env: [{name: MODE, value: fail}]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: mixed, namespace: r503}
+spec:
+  selector: {mix: 'yes'}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: faila, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: faila}
+  template:
+    metadata:
+      labels: {app: faila}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          env: [{name: MODE, value: fail}]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: faila, namespace: r503}
+spec:
+  selector: {app: faila}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: failb, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: failb}
+  template:
+    metadata:
+      labels: {app: failb}
+    spec:
+      containers:
+        - name: app
+          image: python:3.12-alpine
+          command: ["python", "-u", "/code/backend.py"]
+          env: [{name: MODE, value: fail}]
+          ports: [{containerPort: 8080}]
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 2
+          volumeMounts: [{name: code, mountPath: /code}]
+      volumes:
+        - name: code
+          configMap: {name: backend-code}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: failb, namespace: r503}
+spec:
+  selector: {app: failb}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /app
+            pathType: Prefix
+            backend:
+              service: {name: backend, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: scaled
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /scaled
+            pathType: Prefix
+            backend:
+              service: {name: scaled, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: badselector
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /badselector
+            pathType: Prefix
+            backend:
+              service: {name: badselector, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: notready
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /notready
+            pathType: Prefix
+            backend:
+              service: {name: notready, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: missing
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /missing
+            pathType: Prefix
+            backend:
+              service: {name: no-such-service, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wrongport
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /wrongport
+            pathType: Prefix
+            backend:
+              service: {name: backend, port: {number: 9999}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: svcup
+  namespace: r503
+  annotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /svcup
+            pathType: Prefix
+            backend:
+              service: {name: scaled, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dflt
+  namespace: r503
+  annotations:
+    nginx.ingress.kubernetes.io/default-backend: "backend"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /dflt
+            pathType: Prefix
+            backend:
+              service: {name: scaled, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: limited
+  namespace: r503
+  annotations:
+    nginx.ingress.kubernetes.io/limit-rps: "2"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /limited
+            pathType: Prefix
+            backend:
+              service: {name: backend, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: connlim
+  namespace: r503
+  annotations:
+    nginx.ingress.kubernetes.io/limit-connections: "2"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /connlim
+            pathType: Prefix
+            backend:
+              service: {name: backend, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: masked
+  namespace: r503
+  annotations:
+    nginx.ingress.kubernetes.io/custom-http-errors: "503"
+    nginx.ingress.kubernetes.io/default-backend: "errors"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /masked
+            pathType: Prefix
+            backend:
+              service: {name: backend, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: noretry
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /noretry
+            pathType: Prefix
+            backend:
+              service: {name: mixed, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: retry
+  namespace: r503
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout http_503"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /retry
+            pathType: Prefix
+            backend:
+              service: {name: mixed, port: {number: 8080}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginxup
+  namespace: r503
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /nginxup
+            pathType: Prefix
+            backend:
+              service: {name: inner, port: {number: 8080}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: inner-conf, namespace: r503}
+data:
+  default.conf: |
+    server {
+        listen 8080;
+        server_tokens off;
+        location = /healthz { return 200 "ok\n"; }
+        location / { return 503; }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: inner, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: inner}
+  template:
+    metadata:
+      labels: {app: inner}
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports: [{containerPort: 8080}]
+          volumeMounts: [{name: conf, mountPath: /etc/nginx/conf.d}]
+      volumes:
+        - name: conf
+          configMap: {name: inner-conf}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: inner, namespace: r503}
+spec:
+  selector: {app: inner}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: stock-conf, namespace: r503}
+data:
+  default.conf: |
+    # Each location produces one candidate cause on stock nginx.
+    log_format lab '$remote_addr "$request" $status rt=$request_time us=$upstream_status ua=$upstream_addr lrs=$limit_req_status';
+    limit_req_zone $binary_remote_addr zone=one:1m rate=2r/s;
+    limit_req_zone $binary_remote_addr zone=dry:1m rate=2r/s;
+    limit_req_zone $binary_remote_addr zone=four29:1m rate=2r/s;
+    limit_conn_zone $binary_remote_addr zone=conn:1m;
+    upstream alldown { server backend:8080 down; }
+    upstream closed { server 127.0.0.1:9; }
+    upstream onlymaxconns { server backend:8080 max_conns=1; }
+    upstream pair { server faila:8080; server failb:8080; }
+    server {
+        listen 80;
+        access_log /dev/stdout lab;
+        location /ok { proxy_pass http://backend:8080/ok; }
+        location /refused { proxy_pass http://closed/; }
+        location /alldown { proxy_pass http://alldown/; }
+        location /maxconns { proxy_pass http://onlymaxconns/sleep/2; }
+        location /limit { limit_req zone=one; proxy_pass http://backend:8080/ok; }
+        location /dry { limit_req zone=dry; limit_req_dry_run on; proxy_pass http://backend:8080/ok; }
+        location /four29 { limit_req zone=four29; limit_req_status 429; proxy_pass http://backend:8080/ok; }
+        location /conn { limit_conn conn 1; proxy_pass http://backend:8080/sleep/2; }
+        location /maint { return 503; }
+        location /app503 { proxy_pass http://backend:8080/fail503; }
+        location /app503-server { proxy_pass http://backend:8080/fail503; proxy_pass_header Server; }
+        location /intercept {
+            proxy_pass http://backend:8080/fail503;
+            proxy_intercept_errors on;
+            error_page 503 /sorry;
+        }
+        location = /sorry { internal; return 503 "we will be back soon\n"; }
+        location /pair { proxy_pass http://pair/; proxy_next_upstream error timeout http_503; }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: stock, namespace: r503}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: stock}
+  template:
+    metadata:
+      labels: {app: stock}
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports: [{containerPort: 80}]
+          volumeMounts: [{name: conf, mountPath: /etc/nginx/conf.d}]
+      volumes:
+        - name: conf
+          configMap: {name: stock-conf}
