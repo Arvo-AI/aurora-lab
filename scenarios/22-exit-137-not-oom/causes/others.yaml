@@ -116,3 +116,17 @@ spec:
     resources:
       requests: {memory: 32Mi, cpu: 10m}
       limits: {memory: 64Mi}
+---
+apiVersion: v1
+kind: Pod
+metadata: {name: oom-child, namespace: exit137}
+spec:
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker}
+  containers:
+  - name: app
+    image: python:3.12-alpine
+    # A shell as PID 1 with the allocation in a child. Compare with the same thing in Docker.
+    command: ["sh", "-c", "sleep 3; python -c \"b = b'\\x01' * (150 << 20)\"; echo child exit $?; sleep 3600"]
+    resources:
+      requests: {memory: 128Mi, cpu: 10m}
+      limits: {memory: 128Mi}

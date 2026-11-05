@@ -41,9 +41,19 @@ section_shop() {
   say "kubectl -n shop get pods -l app=worker -o wide"
   say "kubectl -n shop describe pod $pod"
   say "kubectl -n shop get events --field-selector involvedObject.name=$pod --sort-by=.lastTimestamp"
+  for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+    pod=$(k -n shop get pods -l app=worker -o jsonpath='{.items[0].metadata.name}')
+    k -n shop top pod "$pod" --containers >/dev/null 2>&1 && break
+    sleep 5
+  done
   say "kubectl -n shop top pod $pod --containers"
   say "kubectl -n shop get pod $pod -o jsonpath='$LAST_FMT'"
   memevents "$node" "$pod" shop
+  echo "== roll back the probe"
+  say "time kubectl -n shop rollout undo deploy/worker"
+  say "kubectl -n shop rollout status deploy/worker --timeout=120s"
+  sleep 60
+  say "kubectl -n shop get pods -l app=worker"
 }
 
 section_oom() {
@@ -76,10 +86,14 @@ section_stop() {
   sleep 5
   local names p t0
   names=$(k -n $NS get pods -l group=stop -o jsonpath='{.items[*].metadata.name}')
+  mkdir -p "$OUT/stop-logs"
+  for p in $names; do k -n $NS logs -f "$p" > "$OUT/stop-logs/$p.log" 2>&1 & done
+  local nh_cid h_cid
+  nh_cid=$(k -n $NS get pod no-handler -o jsonpath='{.status.containerStatuses[0].containerID}'); nh_cid=${nh_cid#containerd://}
+  h_cid=$(k -n $NS get pod handled -o jsonpath='{.status.containerStatuses[0].containerID}'); h_cid=${h_cid#containerd://}
   t0=$(date +%s.%N)
   echo "delete issued at $(date -u +%H:%M:%S.%N)"
-  for p in $names; do k -n $NS delete pod "$p" --wait=false & done
-  wait
+  for p in $names; do k -n $NS delete pod "$p" --wait=false >/dev/null; done
   for i in $(seq 1 40); do
     done=0
     for p in $names; do
@@ -103,10 +117,11 @@ if f:
 print(p["metadata"]["name"], t.get("exitCode"), t.get("reason"), d, f, secs)' "$t0"
   done
   say "kubectl -n $NS get pod no-handler -o jsonpath='{.status.containerStatuses[0].state.terminated}'"
-  say "kubectl -n $NS logs no-handler"
-  say "kubectl -n $NS logs handled"
-  say "kubectl -n $NS logs trap-ignore"
-  say "kubectl -n $NS logs prestop-long"
+  for p in $names; do echo "--- log $p"; cat "$OUT/stop-logs/$p.log"; done
+  echo "== containerd log, no-handler (killed) then handled (exited on SIGTERM)"
+  docker exec $W journalctl -u containerd --no-pager | grep "$nh_cid" | cut -c1-240
+  echo ---
+  docker exec $W journalctl -u containerd --no-pager | grep "$h_cid" | cut -c1-240
   say "kubectl -n $NS get events --sort-by=.lastTimestamp --field-selector reason=Killing"
   say "kubectl -n $NS get events --sort-by=.lastTimestamp --field-selector reason=FailedPreStopHook"
   say "kubectl -n $NS describe pod no-handler"
@@ -115,8 +130,9 @@ print(p["metadata"]["name"], t.get("exitCode"), t.get("reason"), d, f, secs)' "$
 
 section_plain_delete() {
   k -n $NS wait pod plain-delete --for=condition=Ready --timeout=60s
-  k -n $NS get pod plain-delete -w --output-watch-events -o jsonpath='{.type} {.status.phase} {.metadata.deletionTimestamp} {.status.containerStatuses[0].state}{"\n"}' > "$OUT/05-plain-delete-watch.txt" 2>&1 &
-  local w=$!
+  k -n $NS get pod plain-delete -w --output-watch-events -o jsonpath='{.type} {.object.status.phase} del={.object.metadata.deletionTimestamp} {.object.status.containerStatuses[0].state}{"\n"}' > "$OUT/05-plain-delete-watch.txt" 2>&1 &
+  local w=$! cid
+  cid=$(k -n $NS get pod plain-delete -o jsonpath='{.status.containerStatuses[0].containerID}'); cid=${cid#containerd://}
   sleep 2
   echo '$ time kubectl -n exit137 delete pod plain-delete'
   time k -n $NS delete pod plain-delete
@@ -126,6 +142,8 @@ section_plain_delete() {
   say "kubectl -n $NS get events --field-selector involvedObject.name=plain-delete --sort-by=.lastTimestamp"
   echo "== kubelet log"
   docker exec $W journalctl -u kubelet --no-pager | grep plain-delete | tail -12 | cut -c1-260
+  echo "== containerd log"
+  docker exec $W journalctl -u containerd --no-pager | grep "$cid" | cut -c1-240
 }
 
 section_probe() {
@@ -160,6 +178,13 @@ section_nonsignal() {
   say "kubectl -n $NS get pod host-kill -o jsonpath='$LAST_FMT'"
   say "kubectl -n $NS get events --field-selector involvedObject.name=host-kill --sort-by=.lastTimestamp"
   memevents $W host-kill
+}
+
+section_oom_child() {
+  wait_restart oom-child 1
+  say "kubectl -n $NS get pod oom-child -o jsonpath='$LAST_FMT'"
+  say "kubectl -n $NS logs oom-child --previous"
+  memevents $W oom-child
 }
 
 section_tally() {
@@ -219,7 +244,26 @@ section_node_oom() {
   docker update --memory 0 --memory-swap 0 $W2 >/dev/null 2>&1 || docker update --memory 12g --memory-swap 12g $W2 >/dev/null 2>&1
 }
 
-dkr_events() { docker events --since "$1" --until "$(date +%s)" --filter "container=$2" --format '{{.Action}} signal={{index .Actor.Attributes "signal"}} exitCode={{index .Actor.Attributes "exitCode"}}'; }
+section_global_oom() {
+  say "sudo swapoff -a"
+  say "free -m"
+  k apply -f "$HERE/causes/node-hog-global.yaml" >/dev/null
+  for i in $(seq 1 90); do
+    [ -n "$(k -n $NS get pod node-hog-global -o jsonpath='{.status.containerStatuses[0].lastState.terminated.exitCode}{.status.reason}' 2>/dev/null)" ] && break
+    sleep 2
+  done
+  say "kubectl -n $NS get pod node-hog-global -o json | python3 -c 'import json,sys; p=json.load(sys.stdin); print(p[\"status\"].get(\"phase\"), p[\"status\"].get(\"qosClass\"), p[\"status\"].get(\"reason\"), p[\"status\"].get(\"message\")); print(json.dumps(p[\"status\"][\"containerStatuses\"][0]))'"
+  memevents $W2 node-hog-global
+  echo "== kernel log"
+  sudo dmesg | grep -E 'oom-kill:|Out of memory|Killed process' | tail -4 | cut -c1-420
+  say "kubectl get events -A --field-selector reason=SystemOOM"
+  say "kubectl get events -A --field-selector reason=Evicted"
+  say "kubectl -n $NS logs node-hog-global --previous --tail=1"
+  say "kubectl describe node $W2 | grep -E 'MemoryPressure'"
+  k -n $NS delete pod node-hog-global --grace-period=0 --force --wait=false >/dev/null 2>&1
+}
+
+dkr_events() { sleep 2; docker events --since "$1" --until "$(date +%s)" --filter "container=$2" --format '{{.Action}} signal={{index .Actor.Attributes "signal"}} exitCode={{index .Actor.Attributes "exitCode"}}'; }
 state() { docker inspect "$1" --format 'OOMKilled={{.State.OOMKilled}} ExitCode={{.State.ExitCode}} Status={{.State.Status}}'; }
 section_docker() {
   local n t
@@ -263,7 +307,7 @@ section_docker() {
 
   echo "=== f: OOM kills a child, the shell (PID 1) survives and exits 0"
   n=x137-child; t=$(date +%s)
-  say "docker run --name $n --memory 128m --memory-swap 128m $P sh -c 'python -c \"b = b\\\"\\\\x01\\\" * (200 << 20)\"; echo child exit \$?; exit 0'"
+  say "docker run --name $n --memory 128m --memory-swap 128m $P sh -c 'cat /sys/fs/cgroup/memory.oom.group; python -c \"b = b\\\"\\\\x01\\\" * (200 << 20)\"; echo child exit \$?; exit 0'"
   state $n
   dkr_events $t $n
 
@@ -292,7 +336,7 @@ section_shell() {
   say "sudo systemd-run --wait --pipe --collect --unit=x137-demo -p MemoryMax=128M -p MemorySwapMax=0 python3 -c 'b = b\"\\x01\" * (300 << 20); print(\"allocated\")'"
   say "journalctl -u x137-demo --no-pager | tail -5"
   echo "=== c: same, in a shell"
-  say "sudo systemd-run --scope -q -p MemoryMax=128M -p MemorySwapMax=0 bash -c 'python3 -c \"b = b\\\"\\\\x01\\\" * (300 << 20)\"; echo python status \$?'"
+  say "sudo systemd-run --scope -q -p MemoryMax=128M -p MemorySwapMax=0 -p OOMPolicy=continue bash -c 'python3 -c \"b = b\\\"\\\\x01\\\" * (300 << 20)\"; echo python status \$?'"
   say "sudo dmesg | grep -E 'Killed process' | tail -2 | cut -c1-200"
   echo "=== d: docker build"
   mkdir -p /tmp/x137b && cat > /tmp/x137b/Dockerfile <<'Y'
@@ -302,6 +346,8 @@ Y
   say "docker buildx create --name x137 --driver docker-container --driver-opt memory=256m --driver-opt memory-swap=256m --bootstrap >/dev/null 2>&1"
   say "docker buildx build --builder x137 --no-cache --progress=plain /tmp/x137b 2>&1 | tail -14"
   docker buildx rm x137 >/dev/null 2>&1
+  echo "=== e: docker build, legacy builder"
+  say "DOCKER_BUILDKIT=0 docker build --no-cache --memory 256m --memory-swap 256m /tmp/x137b 2>&1 | tail -8"
 }
 
 { uname -a; docker exec $W sh -c 'containerd --version; crictl --version; cat /etc/os-release | head -2; stat -fc %T /sys/fs/cgroup'; grep -i cgroupDriver /dev/null; docker exec $W grep -i cgroupDriver /var/lib/kubelet/config.yaml; free -m; docker inspect python:3.12-alpine busybox:1.37 --format '{{.RepoDigests}}' 2>/dev/null; docker exec $W crictl images | grep -E 'python|busybox'; } > "$OUT/env.txt" 2>&1
@@ -312,9 +358,11 @@ section_probe       > "$OUT/03-liveness.txt" 2>&1
 section_stop        > "$OUT/04-stop.txt" 2>&1
 section_plain_delete > "$OUT/05-plain-delete.txt" 2>&1
 section_nonsignal   > "$OUT/06-not-oom-other.txt" 2>&1
-k -n $NS delete pod oom-limit probe-trap probe-no-handler probe-handled plain-exit host-kill --wait=false >/dev/null 2>&1
+section_oom_child   > "$OUT/06b-oom-child.txt" 2>&1
+k -n $NS delete pod oom-limit probe-trap probe-no-handler probe-handled plain-exit host-kill oom-child --wait=false >/dev/null 2>&1
 section_tally       > "$OUT/07-tally.txt" 2>&1
 section_node_oom    > "$OUT/08-node-oom.txt" 2>&1
 section_docker      > "$OUT/09-docker.txt" 2>&1
 section_shell       > "$OUT/10-shell-and-build.txt" 2>&1
+section_global_oom  > "$OUT/11-global-oom.txt" 2>&1
 exit 0

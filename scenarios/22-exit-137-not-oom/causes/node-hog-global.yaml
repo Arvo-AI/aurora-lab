@@ -1,0 +1,11 @@
+# No limit, on a node with nothing capped. Allocates fast enough to beat the
+# kubelet's eviction loop, so the kernel's global OOM killer has to act.
+apiVersion: v1
+kind: Pod
+metadata: {name: node-hog-global, namespace: exit137}
+spec:
+  nodeSelector: {kubernetes.io/hostname: aurora-lab-worker2}
+  containers:
+  - name: app
+    image: python:3.12-alpine
+    command: ["python", "-u", "-c", "b = []\nwhile True:\n    b.append(b'\\x01' * (200 << 20))\n    print('held', len(b) * 200, 'MiB')"]
