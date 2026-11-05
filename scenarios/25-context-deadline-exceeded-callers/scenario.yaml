@@ -1,0 +1,27 @@
+id: 25-context-deadline-exceeded-callers
+title: api rollout stalls because its health endpoint waits on a dead dependency and the kubelet's 1 second probe deadline fires; the message names only the timeout
+alert: "KubeDeploymentRolloutStuck [warning] namespace=shop deployment=api: rollout has not progressed for 5 minutes. New pods report context deadline exceeded."
+change: >
+  The api-code ConfigMap was edited so that the /healthz handler calls a stock
+  service at http://192.0.2.10:8080/stock with urllib and no timeout, and the
+  api Deployment was restarted. 192.0.2.10 drops packets (TEST-NET-1, RFC 5737,
+  standing in for a firewalled or retired dependency).
+root_cause: >
+  The kubelet's HTTP probe uses a client whose deadline is timeoutSeconds
+  (default 1). /healthz now blocks in connect() to 192.0.2.10 far longer than
+  that, so every readiness and liveness probe of a new pod fails with
+  context deadline exceeded (Client.Timeout exceeded while awaiting headers).
+  New pods never become Ready and are restarted by the liveness probe. The old
+  pods were started from the old code and keep serving, so the rollout stalls
+  with no outage.
+must_identify:
+  - The deadline that fired is the kubelet probe's timeoutSeconds, set by the probe spec, and it says nothing else about the cause
+  - /healthz was changed to depend on an unreachable address, so the app is blocked on a dependency and the timeout is not too low
+acceptable_fixes:
+  - Revert the api-code ConfigMap change and roll the api
+  - Remove the dependency call from /healthz, or time-box it, and roll the api
+wrong_answers:
+  - Raising timeoutSeconds as the fix
+  - Node, kubelet or CNI failure as the cause
+  - redis as the cause
+  - Restarting the pods without changing the code as the fix
