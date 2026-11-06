@@ -9,6 +9,9 @@ on:
       kind: { description: Bring up the kind cluster, type: boolean, default: true }
 permissions:
   contents: read
+defaults:
+  run:
+    shell: bash  # adds pipefail, so `| tee` cannot hide a failed selftest
 jobs:
   repro:
     runs-on: ubuntu-latest
