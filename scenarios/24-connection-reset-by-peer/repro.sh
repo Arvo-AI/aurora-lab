@@ -3,6 +3,8 @@
 # every cause on the runbook and writes each transcript to $OUT/rst/.
 set -uo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; C="$HERE/causes"; R="$OUT/rst"; mkdir -p "$R"
+# Dispatched with kind=false: only the plain Docker ssh cases.
+[ -f "$PWD/.kubeconfig" ] || exec "$C/ssh-docker.sh"
 export KUBECONFIG="${KUBECONFIG:-$PWD/.kubeconfig}"
 
 # scenario evidence from shop, before anything else
