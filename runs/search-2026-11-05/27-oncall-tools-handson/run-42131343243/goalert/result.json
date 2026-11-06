@@ -1,0 +1,77 @@
+{
+ "tool": "goalert",
+ "steps_to_first_alert": [
+  "write a compose file: Postgres plus goalert/goalert:v0.35.0 (no compose file ships in the docs, the docs show docker run)",
+  "docker compose up -d",
+  "goalert add-user --admin (first login needs a CLI step)",
+  "UI or GraphQL: create a service, an escalation policy and an integration key of type Prometheus Alertmanager"
+ ],
+ "not_tested": [
+  "SMS and voice: GoAlert sends these through Twilio, and no Twilio account was used. Delivery was tested with GoAlert's webhook contact method pointed at a local sink."
+ ],
+ "findings": [],
+ "version": "v0.35.0",
+ "boot_seconds": 2.0,
+ "install_seconds": 12.3,
+ "firing_http": 200,
+ "firing_body": "",
+ "seconds_to_first_alert": 12.6,
+ "after_first_firing": [
+  {
+   "alertID": 1,
+   "status": "StatusUnacknowledged",
+   "summary": "checkout returns 5xx above 5%"
+  }
+ ],
+ "repeat_http": 200,
+ "alert_states": {
+  "after_repeat": [
+   {
+    "alertID": 1,
+    "status": "StatusUnacknowledged",
+    "summary": "checkout returns 5xx above 5%"
+   }
+  ],
+  "after_resolved": [
+   {
+    "alertID": 1,
+    "status": "StatusClosed",
+    "summary": "checkout returns 5xx above 5%"
+   }
+  ],
+  "during_escalation": [
+   {
+    "alertID": 2,
+    "status": "StatusUnacknowledged",
+    "summary": "checkout returns 5xx above 5%"
+   },
+   {
+    "alertID": 1,
+    "status": "StatusClosed",
+    "summary": "checkout returns 5xx above 5%"
+   }
+  ],
+  "after_final_resolve": [
+   {
+    "alertID": 2,
+    "status": "StatusClosed",
+    "summary": "checkout returns 5xx above 5%"
+   },
+   {
+    "alertID": 1,
+    "status": "StatusClosed",
+    "summary": "checkout returns 5xx above 5%"
+   }
+  ]
+ },
+ "resolved_http": 200,
+ "resolved_body": "",
+ "escalation": {
+  "first_page_s": 3.0,
+  "second_page_s": 68.0,
+  "alice_posts": 1,
+  "bob_posts": 1,
+  "sample": "{\"AppName\":\"GoAlert\",\"Type\":\"Alert\",\"AlertID\":2,\"Summary\":\"checkout returns 5xx above 5%\",\"Details\":\"[Prometheus Alertmanager UI](http://ca4b3f2ca228:9093)\\n\\ncheckout returns 5xx above 5% [View](http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio)\\n\\ncheckout returns 5xx above 5% [View](http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio)\\n\\n## Payload\\n\\n```json\\n{\\n  \\\"receiver\\\": \\\"capture\\\",\\n  \\\"status\\\": \\\"firing\\\",\\n  \\\"alerts\\\": [\\n    {\\n      \\\"status\\\": \\\"firing\\\",\\n      \\\"l"
+ },
+ "total_seconds": 144.4
+}

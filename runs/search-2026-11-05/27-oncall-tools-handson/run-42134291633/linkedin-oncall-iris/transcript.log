@@ -1,0 +1,721 @@
+[00:11:44] STEP 1 git clone linkedin/iris and linkedin/oncall
+[00:11:44] $ git clone -q --depth 1 https://github.com/linkedin/iris.git; git clone -q --depth 1 https://github.com/linkedin/oncall.git
+[00:11:46] exit=0
+
+[00:11:46] $ git -C iris log -1 --format='iris %h %cs'; git -C oncall log -1 --format='oncall %h %cs'
+[00:11:46] exit=0
+iris aa814f0 2024-01-18
+oncall 9bc2b68 2025-08-20
+
+[00:11:46] STEP 2 docker compose up -d --build in each repo (no published images; each builds from its Dockerfile)
+[00:11:46] $ docker compose up -d --build
+[00:13:09] exit=0
+time="2026-11-06T00:11:46Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ iris-mysql Pulling 
+ 20e4dcae4c69 Pulling fs layer 
+ 1c56c3d4ce74 Pulling fs layer 
+ e9f03a1c24ce Pulling fs layer 
+ 68c3898c2015 Pulling fs layer 
+ 6b95a940e7b6 Pulling fs layer 
+ 90986bb8de6e Pulling fs layer 
+ ae71319cb779 Pulling fs layer 
+ ffc89e9dfd88 Pulling fs layer 
+ 43d05e938198 Pulling fs layer 
+ 064b2d298fba Pulling fs layer 
+ df9a4d85569b Pulling fs layer 
+ ae71319cb779 Waiting 
+ ffc89e9dfd88 Waiting 
+ 43d05e938198 Waiting 
+ 064b2d298fba Waiting 
+ df9a4d85569b Waiting 
+ 68c3898c2015 Waiting 
+ 6b95a940e7b6 Waiting 
+ 90986bb8de6e Waiting 
+ e9f03a1c24ce Downloading [>                                                  ]  15.74kB/983.5kB
+ 1c56c3d4ce74 Downloading [==================================================>]     869B/869B
+ 1c56c3d4ce74 Verifying Checksum 
+ 1c56c3d4ce74 Download complete 
+ e9f03a1c24ce Downloading [==================>                                ]  359.8kB/983.5kB
+ 20e4dcae4c69 Downloading [>                                                  ]  507.3kB/50.5MB
+ e9f03a1c24ce Verifying Checksum 
+
+...[trimmed]...
+assets-2.0 yarl-1.15.2 zipp-3.20.2
+#15 DONE 26.9s
+
+#16 [10/17] COPY ops/config/systemd /etc/systemd/system
+#16 DONE 0.0s
+
+#17 [11/17] COPY ops/daemons /home/iris/daemons
+#17 DONE 0.0s
+
+#18 [12/17] COPY ops/daemons/uwsgi-docker.yaml /home/iris/daemons/uwsgi.yaml
+#18 DONE 0.0s
+
+#19 [13/17] COPY db /home/iris/db
+#19 DONE 0.0s
+
+#20 [14/17] COPY configs /home/iris/config
+#20 DONE 0.0s
+
+#21 [15/17] COPY healthcheck /tmp/status
+#21 DONE 0.0s
+
+#22 [16/17] COPY ops/entrypoint.py /home/iris/entrypoint.py
+#22 DONE 0.0s
+
+#23 [17/17] RUN chown -R iris:iris /home/iris/
+#23 DONE 4.5s
+
+#24 exporting to image
+#24 exporting layers
+#24 exporting layers 4.8s done
+#24 writing image sha256:4e0a70c9ec465e913a657845c0f4cfd0700b6c5b365b3a4fccb764c6aab99d69 done
+#24 naming to docker.io/library/iris-iris-web done
+#24 DONE 4.8s
+
+#25 resolving provenance for metadata file
+#25 DONE 0.0s
+ iris-web  Built
+ Network iris_default  Creating
+ Network iris_default  Created
+ Container iris-iris-mysql-1  Creating
+ Container iris-iris-mysql-1  Created
+ Container iris-iris-web-1  Creating
+ Container iris-iris-web-1  Created
+ Container iris-iris-mysql-1  Starting
+ Container iris-iris-mysql-1  Started
+ Container iris-iris-web-1  Starting
+ Container iris-iris-web-1  Started
+
+[00:13:09] $ docker compose up -d --build
+[00:14:15] exit=0
+time="2026-11-06T00:13:09Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/oncall/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 390B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.59kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/ubuntu:20.04
+#3 DONE 0.3s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [ 1/16] FROM docker.io/library/ubuntu:20.04@sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214
+#5 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 2.15MB 0.1s done
+#6 DONE 0.1s
+
+#7 [ 2/16] RUN DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=--force-confold dist-upgrade     && DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=--force-confold install libffi-dev libsasl2-dev python3-dev         sudo libldap2-dev libssl-dev python3-pip python3-setuptools python3-venv         mysql-client uwsgi uwsgi-plugin-python3 nginx     && rm -rf /var/cache/apt/archives/*
+#7 0.404 Get:
+...[trimmed]...
+-1.4.54 tzdata-2026.6 ujson-5.10.0 urllib3-2.2.3 webassets-2.0 websocket-client-0.54.0 zope.event-5.0 zope.interface-7.2
+#15 DONE 23.4s
+
+#16 [11/16] COPY ops/config/systemd /etc/systemd/system
+#16 DONE 0.0s
+
+#17 [12/16] COPY ops/daemons /home/oncall/daemons
+#17 DONE 0.0s
+
+#18 [13/16] COPY ops/daemons/uwsgi-docker.yaml /home/oncall/daemons/uwsgi.yaml
+#18 DONE 0.0s
+
+#19 [14/16] COPY db /home/oncall/db
+#19 DONE 0.0s
+
+#20 [15/16] COPY configs /home/oncall/config
+#20 DONE 0.0s
+
+#21 [16/16] COPY ops/entrypoint.py /home/oncall/entrypoint.py
+#21 DONE 0.0s
+
+#22 exporting to image
+#22 exporting layers
+#22 exporting layers 3.9s done
+#22 writing image sha256:a898ccd5c3ff1d47adc581a17c91f65f162e3994f3bcfa084e0c1764f94777da done
+#22 naming to docker.io/library/oncall-oncall-web done
+#22 DONE 3.9s
+
+#23 resolving provenance for metadata file
+#23 DONE 0.0s
+ oncall-web  Built
+ Network iris  Creating
+ Network iris  Created
+ Container oncall-oncall-web-1  Creating
+ Container oncall-oncall-mysql-1  Creating
+ Container oncall-oncall-web-1  Created
+ Container oncall-oncall-mysql-1  Created
+ Container oncall-oncall-web-1  Starting
+ Container oncall-oncall-mysql-1  Starting
+ Container oncall-oncall-mysql-1  Started
+ Container oncall-oncall-web-1  Started
+
+[00:14:15] $ docker ps -a --format '{{.Names}} {{.Image}} {{.Status}}'
+[00:14:15] exit=0
+oncall-oncall-mysql-1 mysql:5.7 Up Less than a second
+oncall-oncall-web-1 oncall-oncall-web Up Less than a second
+iris-iris-web-1 iris-iris-web Up About a minute
+iris-iris-mysql-1 mysql:5.7 Up About a minute
+
+[00:14:15] STEP 3 find or create an Iris application and key, plus a plan
+[00:14:15] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select name,`key` from application limit 5'
+[00:14:15] exit=0
+time="2026-11-06T00:14:15Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Autoalerts	a7a9d7657ac8837cd7dfed0b93f4b8b864007724d7fa21422c24f4ff0adb2e49
+test-app	sdffdssdf
+iris	fooooo
+oncall	magic
+
+[00:14:15] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:15] exit=0
+time="2026-11-06T00:14:15Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:15] $ docker compose restart iris-web
+[00:14:25] exit=0
+time="2026-11-06T00:14:15Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container iris-iris-web-1  Restarting
+ Container iris-iris-web-1  Started
+
+[00:14:42] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -e 'select id,name,auth_only,allow_other_app_incidents from application'
+[00:14:42] exit=0
+time="2026-11-06T00:14:42Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+id	name	auth_only	allow_other_app_incidents
+8	Autoalerts	0	0
+10	test-app	0	0
+11	iris	1	1
+12	oncall	0	0
+
+[00:14:42] POST http://localhost:16649/v0/webhooks/alertmanager?application=Autoalerts&key=a7a9d7657ac8837cd7dfed0b93f4b8b864007724d7fa21422c24f4ff0adb2e49 body=<1483 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:14:42] app probe Autoalerts 401
+[00:14:42] POST http://localhost:16649/v0/webhooks/alertmanager?application=test-app&key=sdffdssdf body=<1483 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:14:42] app probe test-app 401
+[00:14:42] POST http://localhost:16649/v0/webhooks/alertmanager?application=iris&key=fooooo body=<1483 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:14:42] app probe iris 401
+[00:14:42] POST http://localhost:16649/v0/webhooks/alertmanager?application=oncall&key=magic body=<1483 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:14:42] app probe oncall 401
+[00:14:42] --- A. first firing
+[00:14:42] POST http://localhost:16649/v0/webhooks/alertmanager?application=oncall&key=magic body=<1483 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:14:42] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:43] exit=0
+time="2026-11-06T00:14:43Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:44] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:44] exit=0
+time="2026-11-06T00:14:44Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:45] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:45] exit=0
+time="2026-11-06T00:14:45Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:46] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:46] exit=0
+time="2026-11-06T00:14:46Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:47] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:47] exit=0
+time="2026-11-06T00:14:47Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:48] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:48] exit=0
+time="2026-11-06T00:14:48Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:49] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:49] exit=0
+time="2026-11-06T00:14:49Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:50] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:50] exit=0
+time="2026-11-06T00:14:50Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:51] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:51] exit=0
+time="2026-11-06T00:14:51Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:52] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:52] exit=0
+time="2026-11-06T00:14:52Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:53] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:54] exit=0
+time="2026-11-06T00:14:54Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:55] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:55] exit=0
+time="2026-11-06T00:14:55Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:56] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:56] exit=0
+time="2026-11-06T00:14:56Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:57] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:57] exit=0
+time="2026-11-06T00:14:57Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:58] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:58] exit=0
+time="2026-11-06T00:14:58Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:14:59] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:14:59] exit=0
+time="2026-11-06T00:14:59Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:00] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:00] exit=0
+time="2026-11-06T00:15:00Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:01] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:01] exit=0
+time="2026-11-06T00:15:01Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:02] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:02] exit=0
+time="2026-11-06T00:15:02Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:03] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:03] exit=0
+time="2026-11-06T00:15:03Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:04] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:05] exit=0
+time="2026-11-06T00:15:05Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:06] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:06] exit=0
+time="2026-11-06T00:15:06Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:07] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:07] exit=0
+time="2026-11-06T00:15:07Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:08] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:08] exit=0
+time="2026-11-06T00:15:08Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:09] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:09] exit=0
+time="2026-11-06T00:15:09Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:10] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:10] exit=0
+time="2026-11-06T00:15:10Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:11] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:11] exit=0
+time="2026-11-06T00:15:11Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:12] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:12] exit=0
+time="2026-11-06T00:15:12Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:13] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:13] exit=0
+time="2026-11-06T00:15:13Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:14] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:14] exit=0
+time="2026-11-06T00:15:14Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:15] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:16] exit=0
+time="2026-11-06T00:15:16Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:17] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:17] exit=0
+time="2026-11-06T00:15:17Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:18] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:18] exit=0
+time="2026-11-06T00:15:18Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:19] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:19] exit=0
+time="2026-11-06T00:15:19Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:20] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:20] exit=0
+time="2026-11-06T00:15:20Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:21] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:21] exit=0
+time="2026-11-06T00:15:21Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:22] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:22] exit=0
+time="2026-11-06T00:15:22Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:23] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:23] exit=0
+time="2026-11-06T00:15:23Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:24] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:24] exit=0
+time="2026-11-06T00:15:24Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:25] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:25] exit=0
+time="2026-11-06T00:15:25Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:26] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:27] exit=0
+time="2026-11-06T00:15:27Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:28] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:28] exit=0
+time="2026-11-06T00:15:28Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:29] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:29] exit=0
+time="2026-11-06T00:15:29Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:30] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:30] exit=0
+time="2026-11-06T00:15:30Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:31] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:31] exit=0
+time="2026-11-06T00:15:31Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:32] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:32] exit=0
+time="2026-11-06T00:15:32Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:33] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:33] exit=0
+time="2026-11-06T00:15:33Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:34] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:34] exit=0
+time="2026-11-06T00:15:34Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:35] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:35] exit=0
+time="2026-11-06T00:15:35Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:36] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:36] exit=0
+time="2026-11-06T00:15:36Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:37] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:38] exit=0
+time="2026-11-06T00:15:37Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:39] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:39] exit=0
+time="2026-11-06T00:15:39Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:40] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:40] exit=0
+time="2026-11-06T00:15:40Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:41] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:41] exit=0
+time="2026-11-06T00:15:41Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:42] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:42] exit=0
+time="2026-11-06T00:15:42Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:43] ALERTS after first firing []
+[00:15:43] --- B. repeat firing, same bytes
+[00:15:43] POST http://localhost:16649/v0/webhooks/alertmanager?application=oncall&key=magic body=<1483 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:15:47] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:47] exit=0
+time="2026-11-06T00:15:47Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:47] ALERTS after_repeat []
+[00:15:47] --- C. resolved
+[00:15:47] POST http://localhost:16649/v0/webhooks/alertmanager?application=oncall&key=magic body=<1502 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:15:55] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:55] exit=0
+time="2026-11-06T00:15:55Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:55] ALERTS after_resolved []
+[00:15:55] --- D. schedule and escalation
+[00:15:55] --- E. same payload with iris_plan added to groupLabels
+[00:15:55] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select name from plan limit 3'
+[00:15:55] exit=0
+time="2026-11-06T00:15:55Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+demo-test-foo
+demo-test-incident-post
+demo-test-incident-post
+
+[00:15:55] POST http://localhost:16649/v0/webhooks/alertmanager?application=oncall&key=magic body=<1599 bytes>
+-> 401 {"title":"Authentication failure","description":"Application not found"}
+[00:15:59] $ docker compose exec -T iris-mysql mysql -uroot -p1234 iris -N -e 'select count(*) from incident'
+[00:15:59] exit=0
+time="2026-11-06T00:15:59Z" level=warning msg="/tmp/lab27/linkedin-oncall-iris/iris/docker-compose.y
+...[trimmed]...
+ntial confusion"
+mysql: [Warning] Using a password on the command line interface can be insecure.
+3
+
+[00:15:59] ALERTS after_iris_plan []
+[00:15:59] NOT TESTED LinkedIn Oncall schedules and Iris plans: we stopped after the webhook test. Oncall is a calendar and Iris does the paging, and the two are connected by config we did not set up. Senders need your own Twilio or SMTP.
+[00:15:59] $ docker logs iris-iris-web-1 --tail=15 2>&1 | cut -c1-200
+[00:15:59] exit=0
+DB not up yet. Waiting a few seconds..
+DB not up yet. Waiting a few seconds..
+DB not up yet. Waiting a few seconds..
+Initializing Iris database
+Importing /home/iris/db/schema_0.sql...
+mysql: [Warning] Using a password on the command line interface can be insecure.
+DB successfully loaded /home/iris/db/schema_0.sql
+Importing /home/iris/db/dummy_data.sql...
+mysql: [Warning] Using a password on the command line interface can be insecure.
+DB successfully loaded /home/iris/db/dummy_data.sql
+Wrote /home/iris/db_initialized so we don't bootstrap db again
+[uWSGI] getting YAML configuration from /home/iris/daemons/uwsgi.yaml
+[uWSGI] getting YAML configuration from /home/iris/daemons/uwsgi.yaml
+Checking MySQL liveness on iris-mysql...
+[uWSGI] getting YAML configuration from /home/iris/daemons/uwsgi.yaml
+

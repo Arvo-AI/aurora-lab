@@ -1,0 +1,89 @@
+$ git clone -q --depth 1 -b v1.9.23 https://github.com/nixys/nxs-anomaly.git src
+exit=0
+warning: refs/tags/v1.9.23 9fa919e2fb745d11f18a01698a4aa0eda0dfe1e2 is not a commit!
+Note: switching to 'a0c6192bb8409e172c96e066cd15b845ead3e87e'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in th
+STEP 1 git clone at the release tag, cp .env.example .env and fill in the version, Postgres password and admin password
+$ grep -nE 'ports|127.0.0.1|8080' docker-compose.yml | head -20; tail -12 .env
+exit=0
+16:      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U nxs_anomaly -d nxs_anomaly"]
+42:    ports:
+43:      - "127.0.0.1:8080:8080"
+46:      test: ["CMD", "/usr/local/bin/nxs-anomaly", "healthcheck", "--url", "http://127.0.0.1:8080/health"]
+58:      NXS_ANOMALY_API_UPSTREAM: app:8080
+59:    
+STEP 2 docker compose up -d --wait
+$ docker compose -f docker-compose.yml -f override.yml up -d --wait --wait-timeout 180
+exit=0
+ frontend Pulling 
+ app Pulling 
+ worker Pulling 
+ postgres Pulling 
+ f18232174bc9 Pulling fs layer 
+ 61ca4f733c80 Pulling fs layer 
+ b464cfdf2a63 Pulling fs layer 
+ d7e507024086 Pulling fs layer 
+ 81bd8ed7ec67 Pulling fs layer 
+ 197eb75867ef Pulling fs layer 
+ 34a64644b756 Pulling fs layer 
+
+STEP 3 create an integration of type alertmanager in the UI or API
+POST http://localhost:18080/api/v1/integrations body={'name': 'prometheus', 'type': 'alertmanager'}
+-> 201 {"created_at":"2026-11-05T23:49:06+00:00","group_by":["alertname","service"],"heartbeat":{"grace_seconds":0,"interval_seconds":0},"id":"int_d9608e903289","kafka_topic":null,"key":"key_7b3a29a40
+--- A. first firing
+POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_cc9
+ALERTS after first firing [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 1, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 1, "id": "grp_c67e5e10bf38"}]
+--- B. repeat firing, same bytes
+POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_cc9
+ALERTS after_repeat [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_c67e5e10bf38"}]
+--- C. resolved
+POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1504 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"annotations":{"descripti
+ALERTS after_resolved [{"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c67e5e10bf38"}]
+--- D. schedule and escalation
+POST http://localhost:18080/api/v1/users body={'name': 'alice', 'username': 'alice', 'email': 'alice@example.com', 'notification_targets': [{'type': 'webhook', 'target': 'http://10.1.0.238:9099/nxs/alice'}]}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","email":"alice@example.com","id":"usr_116b1
+POST http://localhost:18080/api/v1/users body={'name': 'bob', 'username': 'bob', 'email': 'bob@example.com', 'notification_targets': [{'type': 'webhook', 'target': 'http://10.1.0.238:9099/nxs/bob'}]}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","email":"bob@example.com","id":"usr_29e4b452a174","
+POST http://localhost:18080/api/v1/teams body={'name': 'platform', 'member_ids': ['usr_116b16c4376c', 'usr_29e4b452a174']}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","id":"team_2f486111e568","member_ids":["usr_116b16c4376c","usr_29e4b452a174"],"name":"platform","updated_at":"2026-11-05T23:49:1
+POST http://localhost:18080/api/v1/schedules body={'name': 'primary', 'team_id': 'team_2f486111e568', 'timezone': 'UTC', 'enabled': True, 'rotation': {'enabled': True, 'start_at': '2026-11-05T22:49:18Z', 'handoff_interval': 1, 'handoff_unit': 'days', 'participant_ids': ['usr_116b16c4376c', 'usr_29e4
+GET http://localhost:18080/api/v1/schedules/sch_2000baf7ef09/on-call body=None
+-> 200 {"at":"2026-11-05T23:49:18+00:00","next":{"duration_seconds":86400,"end":"2026-11-07T22:49:18+00:00","source":"rotation","start":"2026-11-06T22:49:18+00:00","user_ids":["usr_29e4b452a174"]},"schedule_id":"sch_2000b
+POST http://localhost:18080/api/v1/escalation-chains body={'name': 'checkout', 'team_id': 'team_2f486111e568', 'steps': [{'kind': 'NOTIFY_SCHEDULE', 'schedule_id': 'sch_2000baf7ef09'}, {'kind': 'WAIT', 'delay_minutes': 1}, {'kind': 'NOTIFY_USER', 'user_ids': ['usr_29e4b452a174']}]}
+-> 201 {"created_
+PUT http://localhost:18080/api/v1/integrations/int_d9608e903289 body={'name': 'prometheus', 'type': 'alertmanager', 'team_id': 'team_2f486111e568', 'routes': [{'escalation_chain_id': 'esc_773e0048bb23', 'id': 'route_13f4a071f30b', 'is_default': True, 'labels': {}, 'match_type': 'all', 'name': 'defau
+GET http://localhost:18080/api/v1/readiness body=None
+-> 200 {"blocker_fingerprint":"9e9c7dbeb881a195a3b70c91ea801422a218329542ba587972eb834e517a7a8d","blockers":1,"checked_at":"2026-11-05T23:49:18+00:00","checks":[{"detail":"the database answered.","items":[],"key":"database","severity":"ok","title
+POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_b23
+POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_b23
+$ docker compose -f docker-compose.yml -f override.yml logs worker --tail=30
+exit=0
+worker-1  | time=2026-11-05T23:48:30.891Z level=INFO msg=listening addr=:8081
+worker-1  | time=2026-11-05T23:48:31.090Z level=WARN msg=ssrf_exemptions_without_guard key=NXS_ANOMALY_BLOCK_PRIVATE_WEBHOOKS_EXCEPT detail="NXS_ANOMALY_BLOCK_PRIVATE_WEBHOOKS is off, so every private destination is
+GET http://localhost:18080/api/v1/notifications body=None
+-> 200 {"items":[{"alert_group_id":"grp_b23925e57ae9","analytics_team_id":"team_2f486111e568","batch_id":null,"batch_key":null,"channel":"webhook","claimed_at":"2026-11-05T23:50:19+00:00","claimed_by":"wkr_338c3b06108a","created_at":"2026-11-
+ALERTS during_escalation [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_c4f0a942f72e"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_b23925e57ae9"}, {"title": "checkout returns 5xx above 5%", "status": "resolved
+POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1504 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"annotations":{"descripti
+ALERTS after_final_resolve [{"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c4f0a942f72e"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_b23925e57ae9"}, {"title": "checkout returns 5xx above 5%", "status":
+--- E. PagerDuty Events v2 body, as Alertmanager's pagerduty_configs sends it
+POST http://localhost:18080/api/v1/integrations body={'name': 'pd', 'type': 'pagerduty'}
+-> 201 {"created_at":"2026-11-05T23:50:50+00:00","group_by":["alertname","service"],"heartbeat":{"grace_seconds":0,"interval_seconds":0},"id":"int_e0a9ac186caa","kafka_topic":null,"key":"key_77dc6676e233","legac
+POST http://localhost:18080/integrations/v1/pagerduty/key_77dc6676e233 body=<706 bytes>
+-> 202 {"dedup_key":"a6155e6da321546b81ec701dd0ae11648d37e95e340b8216c7bb9fe1073bf5a6","message":"Event processed","status":"success"}
+ALERTS after_pagerduty_event [{"title": "[FIRING:1] PagerDutyShape checkout (critical)", "status": "open", "alert_count": 1, "id": "grp_b4a5b52379e9"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c4f0a942f72e"}, {"title": "checkout returns 5xx above 
+$ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+exit=0
+src-frontend-1 4.543MiB / 15.61GiB
+src-worker-1 6.969MiB / 15.61GiB
+src-app-1 7.133MiB / 15.61GiB
+src-postgres-1 45.66MiB / 15.61GiB
+
+exit 0

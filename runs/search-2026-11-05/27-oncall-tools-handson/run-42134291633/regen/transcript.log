@@ -1,0 +1,350 @@
+[00:06:18] README path: curl the compose file and run it, no clone
+[00:06:18] $ curl -fsSLO https://raw.githubusercontent.com/FluidifyAI/Regen/v1.2.4/docker-compose.yml && docker compose up -d
+[00:06:24] exit=1
+ redis Pulling 
+ db Pulling 
+ 881fc932939e Pulling fs layer 
+ 9e10f0364807 Pulling fs layer 
+ 705b53abb1f1 Pulling fs layer 
+ 9811ab1f28ec Pulling fs layer 
+ 06df7229da11 Pulling fs layer 
+ 3e433f8cf12a Pulling fs layer 
+ a6bb307d0c9d Pulling fs layer 
+ f7cba1195a43 Pulling fs layer 
+ 5792fedd3c23 Pulling fs layer 
+ f1d41b22a7fd Pulling fs layer 
+ 0d50bc038339 Pulling fs layer 
+ a6bb307d0c9d Waiting 
+ f7cba1195a43 Waiting 
+ 5792fedd3c23 Waiting 
+ 9811ab1f28ec Waiting 
+ f1d41b22a7fd Waiting 
+ 0d50bc038339 Waiting 
+ 06df7229da11 Waiting 
+ 3e433f8cf12a Waiting 
+ 871d48e9bf6b Pulling fs layer 
+ 322b6e6144f6 Pulling fs layer 
+ ed20a3352991 Pulling fs layer 
+ eced4433665e Pulling fs layer 
+ ee92a57da343 Pulling fs layer 
+ 4f4fb700ef54 Pulling fs layer 
+ 871d48e9bf6b Waiting 
+ 100397b92304 Pulling fs layer 
+ 322b6e6144f6 Waiting 
+ ee92a57da343 Waiting 
+ 4f4fb700ef54 Waiting 
+ ed20a3352991 Waiting 
+ 100397b92304 Waiting 
+ eced4433665e Waiting 
+ 9e10f0364807 Downloading [==================================================>]     970B/970B
+ 9e10f0364807 Verifying Checksum 
+ 9e10f0364807 Download complete 
+ 705b53abb1f1 Downloading [>                                                  ]  15.79kB/900kB
+ 881fc932939e Downloading [>                                                  ]  48.56kB/3.854MB
+ 705b53abb1f1 Downloading [===================>                               ]  343.5kB/900kB
+ 881fc932939e Downloading [========>                                          ]  687.5kB/3.854MB
+ 705b53abb1f1 Downloading [==================================================>]    900kB/900kB
+ 705b53abb1f1 Verifying Checksum 
+ 705b53abb1f1 Download complete 
+ 881fc932939e Download complete 
+ 881fc932939e Extracting [>                                                  ]  65.54kB/3.854MB
+ 9811ab1f28ec Downloading [==================================================>]     169B/169B
+ 9811ab1f28ec Verifying Checksum 
+ 9811ab1f28ec Download complete 
+ 881fc932939e Extracting [===========================
+...[trimmed]...
+==========================================>]     128B/128B
+ f7cba1195a43 Extracting [==================================================>]     128B/128B
+ f7cba1195a43 Pull complete 
+ 5792fedd3c23 Extracting [==================================================>]     170B/170B
+ 5792fedd3c23 Extracting [==================================================>]     170B/170B
+ 5792fedd3c23 Pull complete 
+ f1d41b22a7fd Extracting [==================================================>]  6.109kB/6.109kB
+ f1d41b22a7fd Extracting [==================================================>]  6.109kB/6.109kB
+ f1d41b22a7fd Pull complete 
+ 0d50bc038339 Extracting [==================================================>]     185B/185B
+ 0d50bc038339 Extracting [==================================================>]     185B/185B
+ 0d50bc038339 Pull complete 
+ db Pulled 
+ eced4433665e Extracting [=============================>                     ]  7.209MB/12.42MB
+ eced4433665e Extracting [==================================================>]  12.42MB/12.42MB
+ eced4433665e Pull complete 
+ ee92a57da343 Extracting [==================================================>]     100B/100B
+ ee92a57da343 Extracting [==================================================>]     100B/100B
+ ee92a57da343 Pull complete 
+ 4f4fb700ef54 Extracting [==================================================>]      32B/32B
+ 4f4fb700ef54 Extracting [==================================================>]      32B/32B
+ 4f4fb700ef54 Pull complete 
+ 100397b92304 Extracting [==================================================>]     602B/602B
+ 100397b92304 Extracting [==================================================>]     602B/602B
+ 100397b92304 Pull complete 
+ redis Pulled 
+#1 [internal] load local bake definitions
+#1 reading from stdin 339B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 2B done
+#2 DONE 0.0s
+failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+
+
+[00:06:24] $ docker compose down -v
+[00:06:24] exit=0
+
+[00:06:24] $ git clone -q --depth 1 -b v1.2.4 https://github.com/FluidifyAI/Regen.git src
+[00:06:25] exit=0
+Note: switching to '58923b9ada17ee4efa289853879f77c88bda409d'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+
+[00:06:25] STEP 1 git clone the repo and cp .env.example .env
+[00:06:25] $ cp .env.example .env
+[00:06:25] exit=0
+
+[00:06:25] first start with stock settings
+[00:06:25] $ docker compose -f docker-compose.yml -f override.yml up -d; sleep 12; docker compose -f docker-compose.yml -f override.yml ps -a --format '{{.Service}} {{.Status}}'; docker compose -f docker-compose.yml -f override.yml logs app --tail=200 | grep -m2 'SAML_BASE_URL must'; docker compose -f docker-compose.yml -f override.yml down -v
+[00:06:51] exit=0
+ app Pulling 
+ 17a39c0ba978 Pulling fs layer 
+ 448a103bbff9 Pulling fs layer 
+ cb893366035a Pulling fs layer 
+ 64bee7801c10 Pulling fs layer 
+ f5132b76a746 Pulling fs layer 
+ 5a82edff3e19 Pulling fs layer 
+ f5132b76a746 Waiting 
+ 64bee7801c10 Waiting 
+ 5a82edff3e19 Waiting 
+ 17a39c0ba978 Downloading [>                                                  ]  35.52kB/3.42MB
+ cb893366035a Downloading [==================================================>]  1.238kB/1.238kB
+ cb893366035a Verifying Checksum 
+ cb893366035a Download complete 
+ 17a39c0ba978 Downloading [===>                                               ]  229.4kB/3.42MB
+ 448a103bbff9 Downloading [>                                                  ]   6.89kB/614.1kB
+ 17a39c0ba978 Downloading [=============>                                     ]    954kB/3.42MB
+ 448a103bbff9 Downloading [=============>                                     ]  163.8kB/614.1kB
+ 64bee7801c10 Downloading [==================================================>]      93B/93B
+ 64bee7801c10 Verifying Checksum 
+ 64bee7801c10 Download complete 
+ 17a39c0ba978 Verifying Checksum 
+ 17a39c0ba978 Download complete 
+ 17a39c0ba978 Extracting [>                                                  ]  65.54kB/3.42MB
+ 448a10
+...[trimmed]...
+er fluidify-regen-redis  Waiting
+ Container fluidify-regen-redis  Healthy
+ Container fluidify-regen-db  Healthy
+ Container fluidify-regen  Starting
+ Container fluidify-regen  Started
+app Restarting (1) Less than a second ago
+db Up 22 seconds (healthy)
+redis Up 22 seconds (healthy)
+fluidify-regen  | Error: saml: saml: SAML_BASE_URL must use https:// in production (got "http://localhost:8080") — session cookies require Secure flag
+fluidify-regen  | saml: saml: SAML_BASE_URL must use https:// in production (got "http://localhost:8080") — session cookies require Secure flag
+ Container fluidify-regen  Stopping
+ Container fluidify-regen  Stopped
+ Container fluidify-regen  Removing
+ Container fluidify-regen  Removed
+ Container fluidify-regen-redis  Stopping
+ Container fluidify-regen-db  Stopping
+ Container fluidify-regen-db  Stopped
+ Container fluidify-regen-db  Removing
+ Container fluidify-regen-db  Removed
+ Container fluidify-regen-redis  Stopped
+ Container fluidify-regen-redis  Removing
+ Container fluidify-regen-redis  Removed
+ Volume src_redis_data  Removing
+ Volume src_postgres_data  Removing
+ Network src_fluidify-regen  Removing
+ Volume src_redis_data  Removed
+ Network src_fluidify-regen  Removed
+ Volume src_postgres_data  Removed
+
+[00:06:51] $ docker compose -f docker-compose.yml -f override.yml config | grep -E 'SAML_IDP_METADATA_URL|TEAMS_APP_ID|SLACK_BOT_TOKEN|OPENAI_API_KEY'
+[00:06:51] exit=0
+      OPENAI_API_KEY: '# sk-...'
+      SAML_IDP_METADATA_URL: '# https://your-idp/metadata'
+      SLACK_BOT_TOKEN: '# xoxb-... (Bot User OAuth Token)'
+      TEAMS_APP_ID: '# Azure App Registration → Application (client) ID'
+
+[00:06:51] $ sed -E -i 's/[[:space:]]+#.*$//' .env; docker compose -f docker-compose.yml -f override.yml config | grep -E 'SAML_IDP_METADATA_URL|TEAMS_APP_ID'
+[00:06:51] exit=0
+      SAML_IDP_METADATA_URL: ""
+      TEAMS_APP_ID: ""
+
+[00:06:51] STEP 2 strip the inline comments from .env: on empty keys they are read as values, so SAML and Teams switch on and the app exits in a loop
+[00:06:51] STEP 3 docker compose up -d with the app service pointed at the published image ghcr.io/fluidifyai/regen:1.2.4 instead of building
+[00:06:51] $ docker compose -f docker-compose.yml -f override.yml up -d --wait
+[00:07:08] exit=0
+ app Pulling 
+ app Pulled 
+ Network src_fluidify-regen  Creating
+ Network src_fluidify-regen  Created
+ Volume "src_redis_data"  Creating
+ Volume "src_redis_data"  Created
+ Volume "src_postgres_data"  Creating
+ Volume "src_postgres_data"  Created
+ Container fluidify-regen-redis  Creating
+ Container fluidify-regen-db  Creating
+ Container fluidify-regen-redis  Created
+ Container fluidify-regen-db  Created
+ Container fluidify-regen  Creating
+ Container fluidify-regen  Created
+ Container fluidify-regen-redis  Starting
+ Container fluidify-regen-db  Starting
+ Container fluidify-regen-redis  Started
+ Container fluidify-regen-db  Started
+ Container fluidify-regen-db  Waiting
+ Container fluidify-regen-redis  Waiting
+ Container fluidify-regen-redis  Healthy
+ Container fluidify-regen-db  Healthy
+ Container fluidify-regen  Starting
+ Container fluidify-regen  Started
+ Container fluidify-regen-db  Waiting
+ Container fluidify-regen-redis  Waiting
+ Container fluidify-regen  Waiting
+ Container fluidify-regen-db  Healthy
+ Container fluidify-regen-redis  Healthy
+ Container fluidify-regen  Healthy
+
+[00:07:08] $ docker compose -f docker-compose.yml -f override.yml ps -a; docker compose -f docker-compose.yml -f override.yml logs app --tail=60
+[00:07:08] exit=0
+NAME                   IMAGE                            COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+fluidify-regen         ghcr.io/fluidifyai/regen:1.2.4   "/app/regen serve"       app       16 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+fluidify-regen-db      postgres:15-alpine               "docker-entrypoint.s…"   db        16 seconds ago   Up 16 seconds (healthy)   5432/tcp
+fluidify-regen-redis   redis:7-alpine                   "docker-entrypoint.s…"   redis     16 seconds ago   Up 16 seconds (healthy)   6379/tcp
+fluidify-regen  | 2026/11/06 00:07:03 WARN no .env file found
+fluidify-regen  | {"time":"2026-11-06T00:07:03.548194365Z","level":"INFO","msg":"starting Fluidify Regen","version":"v1.2.4","environment":"production","port":"8080"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.554256739Z","level":"INFO","msg":"database connection established","max_open_conns":25,"max_idle_conns":5,"conn_max_life":"5m"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.55514914Z","level":"INFO","msg":"redis connection established","mode":"single","addr":"redis:6379","db":0}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.555174357Z","level":"INFO","msg":"running database migrations..."}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.565753956Z","level":"INFO","msg":"no migrations applied yet"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.921545832Z","level":"INFO","msg":"migrations applied successfully","version":45}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.92942897Z","level":"INFO","msg":"licence: no REGEN_LICENCE_KEY set — running in OSS mode"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.932079623Z","level":"INFO","msg":"seeded AI agent","name":"Post-Mortem Agent","email":"agent-postmortem@system.internal"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.932092592Z","level":"INFO","msg":"AI agents seeded"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.93337787Z","level":"WARN","msg":"Teams app_id not configured — Teams integration disabled"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.933411219Z","level":"WARN","msg":"SAML SSO disabled — set SAML_IDP_METADATA_URL to enable authentication"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.934913415Z","level":"INFO","msg":"grouping engine rules refreshed","rules_count":1}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.934927786Z","level":"INFO","msg":"grouping engine initialized"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.93620303Z","level":"INFO","msg":"routing engine rules refreshed","rules_count":1}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.936214987Z","level":"INFO","msg":"routing engine initialized"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.936219343Z","level":"INFO","msg":"schedule evaluator initialized"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.936224321Z","level":"INFO","msg":"escalation engine initialized"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.937291258Z","level":"WARN","msg":"AI service disabled — configure a provider via Settings → System or env vars"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.938144591Z","level":"WARN","msg":"SAML SSO disabled — set SAML_IDP_METADATA_URL to enable authentication"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.938386316Z","level":"INFO","msg":"serving embedded frontend"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.938407117Z","level":"INFO","msg":"background workers started"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.938418604Z","level":"INFO","msg":"shift notifier started","poll_interval":60000000000}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.938480394Z","level":"INFO","msg":"holiday worker started"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.938594602Z","level":"INFO","msg":"escalation worker started","poll_interval":30000000000}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.939387697Z","level":"INFO","msg":"AI coordinator started"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.939638125Z","level":"INFO","msg":"server starting","port":"8080"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.940975589Z","level":"INFO","msg":"AI coordinator started"}
+fluidify-regen  | {"time":"2026-11-06T00:07:03.94342718Z","level":"INFO","msg":"telemetry worker started","instance_id":"3c55abf4-2689-4687-90f6-544a66307e42","disabled":false}
+fluidify-regen  | {"time":"2026-11-06T00:07:08.333482231Z","level":"INFO","msg":"request completed","service":"regen","method":"GET","path":"/ready","status":200,"duration_ms":0,"client_ip":"::1","request_id":"7e8f43a3-f642-4b9a-8268-6da338dbf6fa","user_agent":"Wget"}
+
+[00:07:08] STEP 4 create the first admin account (first-run page or POST /api/v1/auth/bootstrap)
+[00:07:09] POST http://localhost:8080/api/v1/auth/bootstrap body={'email': 'admin@example.com', 'name': 'admin', 'password': 'lab-password-1'}
+-> 201 {"message":"Initial admin account created. Use the setup_token to log in.","setup_token":"cd37c02849525edb0b768a56f20aded95f72a24272d6ad9ee64faf6e8849bce9","user":{"id":"5d0af63a-7cca-4c94-a2e1-566f0256a15b","email":"admin@example.com","name":"admin","role":"admin","auth_source":"local","created_at":"2026-11-06T00:07:09.194646Z"}}
+[00:07:09] POST http://localhost:8080/api/v1/auth/login/setup-token body={'token': 'cd37c02849525edb0b768a56f20aded95f72a24272d6ad9ee64faf6e8849bce9'}
+-> 200 {"ok":true}
+[00:07:09] STEP 5 point Alertmanager at /api/v1/webhooks/prometheus (no token, no integration object)
+[00:07:09] --- A. first firing
+[00:07:09] POST http://localhost:8080/api/v1/webhooks/prometheus body=<1483 bytes>
+-> 200 {"incidents_created":1,"received":2}
+[00:07:09] ALERTS after first firing [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+[00:07:09] --- B. repeat firing, same bytes
+[00:07:09] POST http://localhost:8080/api/v1/webhooks/prometheus body=<1483 bytes>
+-> 200 {"incidents_created":0,"received":2}
+[00:07:13] ALERTS after_repeat [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+[00:07:13] --- C. resolved
+[00:07:13] POST http://localhost:8080/api/v1/webhooks/prometheus body=<1502 bytes>
+-> 200 {"incidents_created":0,"received":2}
+[00:07:21] ALERTS after_resolved [{"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+[00:07:21] --- D. schedule and escalation
+[00:07:21] POST http://localhost:8080/api/v1/settings/users body={'email': 'alice@example.com', 'name': 'alice', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"33bda8021cdd036f3f652903769f6d4cd6def5824614171a40e11e3ce4c24e7c","user":{"id":"b8ea6938-ff21-4599-a5b7-8064e3365886","email":"alice@example.com","name":"alice","role":"member","auth_source":"local","created_at":"2026-11-06T00:07:21.475517Z"}}
+[00:07:21] POST http://localhost:8080/api/v1/settings/users body={'email': 'bob@example.com', 'name': 'bob', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"3f269ed2aa69b810dddd70f63adf10173ff95599c8ca4fb5bfa5dd435d0ac791","user":{"id":"7525799f-7a63-4000-8da2-6b9d06dc5117","email":"bob@example.com","name":"bob","role":"member","auth_source":"local","created_at":"2026-11-06T00:07:21.713163Z"}}
+[00:07:21] GET http://localhost:8080/api/v1/settings/users/limit body=None
+-> 200 {"at_limit":false,"current":3,"limit":7,"near_limit":false}
+[00:07:21] user limit probe: add users until refused
+[00:07:21] POST http://localhost:8080/api/v1/settings/users body={'email': 'user3@example.com', 'name': 'user3', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"f70273b0b51506a127c7a9be2a5c13c2dabd70a864671c6ca1676c30e094c411","user":{"id":"2fc144a5-642d-4869-8d9d-a87288fe0b94","email":"user3@example.com","name":"user3","role":"member","auth_source":"local","created_at":"2026-11-06T00:07:21.952445Z"}}
+[00:07:22] POST http://localhost:8080/api/v1/settings/users body={'email': 'user4@example.com', 'name': 'user4', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"9381e28b8baf0bf7c87b06bb4a90b51d9b7e709e5ec7602cc2a4b6c4ccbfa49d","user":{"id":"c74ffaf6-7f3e-47e8-9901-5d47fc371de5","email":"user4@example.com","name":"user4","role":"member","auth_source":"local","created_at":"2026-11-06T00:07:22.190166Z"}}
+[00:07:22] POST http://localhost:8080/api/v1/settings/users body={'email': 'user5@example.com', 'name': 'user5', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"14918fcf049b63a821847086f0876050edea597315c3d710dfec9b9b1b483adb","user":{"id":"929098b1-7781-4e12-bda4-205069ba21a2","email":"user5@example.com","name":"user5","role":"member","auth_source":"local","created_at":"2026-11-06T00:07:22.427809Z"}}
+[00:07:22] POST http://localhost:8080/api/v1/settings/users body={'email': 'user6@example.com', 'name': 'user6', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"e41f6a95d97975a4255d27fa8b39a08b4c24b50614d494b369a8180810e95585","user":{"id":"0aedbff6-1a40-4181-a8d1-dcfccd9d9502","email":"user6@example.com","name":"user6","role":"member","auth_source":"local","created_at":"2026-11-06T00:07:22.666503Z"}}
+[00:07:22] POST http://localhost:8080/api/v1/settings/users body={'email': 'user7@example.com', 'name': 'user7', 'role': 'member', 'password': 'lab-password-1'}
+-> 403 {"error":{"code":"user_limit_reached","current":7,"limit":7,"message":"You've reached the community edition limit of 7 users. Upgrade to Fluidify Pro for unlimited users."}}
+[00:07:22] FINDING user 8 refused: HTTP 403 {"error":{"code":"user_limit_reached","current":7,"limit":7,"message":"You've reached the community edition limit of 7 users. Upgrade to Fluidify Pro for unlimited users."}}
+[00:07:22] POST http://localhost:8080/api/v1/schedules body={'name': 'primary', 'timezone': 'UTC'}
+-> 201 {"id":"99b47799-67cd-4cc9-b39c-7d4b698b7921","name":"primary","description":"","timezone":"UTC","notification_channel":"","holiday_countries":[],"created_at":"2026-11-06T00:07:22.671362Z","updated_at":"2026-11-06T00:07:22.671362Z"}
+[00:07:22] POST http://localhost:8080/api/v1/schedules/99b47799-67cd-4cc9-b39c-7d4b698b7921/layers body={'name': 'l1', 'order_index': 0, 'rotation_type': 'daily', 'rotation_start': '2026-11-05T23:07:22Z', 'participants': [{'user_name': 'alice', 'order_index': 0}, {'user_name': 'bob', 'order_index': 1}]}
+-> 201 {"id":"640a139a-8b10-4df5-80e0-541588cf8440","schedule_id":"99b47799-67cd-4cc9-b39c-7d4b698b7921","name":"l1","order_index":0,"rotation_type":"daily","rotation_start":"2026-11-05T23:07:22Z","shift_duration_seconds":86400,"created_at":"2026-11-06T00:07:22.674013Z","participants":[{"id":"1e832229-cab0-44e4-900f-2418c4d27661","layer_id":"640a139a-8b10-4df5-80e0-541588cf8440","user_name":"alice","order_index":0,"created_at":"2026-11-06T00:07:22.675667Z"},{"id":"0e3c2347-432f-4298-ae9e-120cf336e133","layer_id":"640a139a-8b10-4df5-80e0-541588cf8440","user_name":"bob","order_index":1,"created_at":"2026-11-06T00:07:22.675667Z"}]}
+[00:07:22] GET http://localhost:8080/api/v1/schedules/99b47799-67cd-4cc9-b39c-7d4b698b7921/oncall body=None
+-> 200 {"schedule_id":"99b47799-67cd-4cc9-b39c-7d4b698b7921","at":"2026-11-06T00:07:22.678137816Z","user_name":"alice","is_override":false}
+[00:07:22] POST http://localhost:8080/api/v1/escalation-policies body={'name': 'checkout-ep'}
+-> 201 {"id":"8f1f8851-e453-461f-845b-ee9700eecf4f","name":"checkout-ep","description":"","enabled":true,"tiers":[],"created_at":"2026-11-06T00:07:22.683062Z","updated_at":"2026-11-06T00:07:22.683062Z"}
+[00:07:22] POST http://localhost:8080/api/v1/escalation-policies/8f1f8851-e453-461f-845b-ee9700eecf4f/tiers body={'timeout_seconds': 60, 'target_type': 'schedule', 'schedule_id': '99b47799-67cd-4cc9-b39c-7d4b698b7921'}
+-> 201 {"id":"9d20d805-332c-4696-99d9-8ab02e848ae6","policy_id":"8f1f8851-e453-461f-845b-ee9700eecf4f","tier_index":0,"timeout_seconds":60,"target_type":"schedule","schedule_id":"99b47799-67cd-4cc9-b39c-7d4b698b7921","user_names":[],"created_at":"2026-11-06T00:07:22.686161Z"}
+[00:07:22] POST http://localhost:8080/api/v1/escalation-policies/8f1f8851-e453-461f-845b-ee9700eecf4f/tiers body={'timeout_seconds': 60, 'target_type': 'users', 'user_names': ['bob']}
+-> 201 {"id":"53f5d762-cf76-4a94-b58c-3603b85911d8","policy_id":"8f1f8851-e453-461f-845b-ee9700eecf4f","tier_index":1,"timeout_seconds":60,"target_type":"users","user_names":["bob"],"created_at":"2026-11-06T00:07:22.688687Z"}
+[00:07:22] POST http://localhost:8080/api/v1/routing-rules body={'name': 'all', 'priority': 1, 'match_criteria': {'source': ['prometheus']}, 'actions': {'create_incident': True, 'escalation_policy_id': '8f1f8851-e453-461f-845b-ee9700eecf4f'}}
+-> 201 {"id":"c587373f-d516-4e96-a223-92d6c32e2fdc","name":"all","description":"","enabled":true,"priority":1,"match_criteria":{"source":["prometheus"]},"actions":{"create_incident":true,"escalation_policy_id":"8f1f8851-e453-461f-845b-ee9700eecf4f"},"created_at":"2026-11-06T00:07:22.690926Z","updated_at":"2026-11-06T00:07:22.690926Z"}
+[00:07:22] the earlier incident stays open and a re-fire of the same fingerprints joins it, so this firing uses new fingerprints to open a new incident under the policy
+[00:07:22] POST http://localhost:8080/api/v1/webhooks/prometheus body=<1483 bytes>
+-> 200 {"incidents_created":0,"received":2}
+[00:11:22] $ docker compose -f docker-compose.yml -f override.yml exec -T db psql -U regen -d regen -c 'select status,current_tier_index,last_notified_at,created_at from escalation_states'
+[00:11:22] exit=0
+  status   | current_tier_index |       last_notified_at       |          created_at           
+-----------+--------------------+------------------------------+-------------------------------
+ completed |                  1 | 2026-11-06 00:09:03.95429+00 | 2026-11-06 00:07:22.694549+00
+ completed |                  1 | 2026-11-06 00:09:03.95553+00 | 2026-11-06 00:07:22.699329+00
+(2 rows)
+
+
+[00:11:22] $ docker compose -f docker-compose.yml -f override.yml logs app --tail=40 | grep -iE 'escalat|notif|dm' | tail -20
+[00:11:22] exit=0
+fluidify-regen  | {"time":"2026-11-06T00:07:22.683949202Z","level":"INFO","msg":"request completed","service":"regen","method":"POST","path":"/api/v1/escalation-policies","status":201,"duration_ms":1,"client_ip":"172.18.0.1","request_id":"de226f7d-e286-49c2-8f1e-e58e90b98d48","user_agent":"Python-urllib/3.12"}
+fluidify-regen  | {"time":"2026-11-06T00:07:22.687260435Z","level":"INFO","msg":"request completed","service":"regen","method":"POST","path":"/api/v1/escalation-policies/8f1f8851-e453-461f-845b-ee9700eecf4f/tiers","status":201,"duration_ms":2,"client_ip":"172.18.0.1","request_id":"3b2232fa-a573-4ff8-9493-892fb69e9fb9","user_agent":"Python-urllib/3.12"}
+fluidify-regen  | {"time":"2026-11-06T00:07:22.689209378Z","level":"INFO","msg":"request completed","service":"regen","method":"POST","path":"/api/v1/escalation-policies/8f1f8851-e453-461f-845b-ee9700eecf4f/tiers","status":201,"duration_ms":1,"client_ip":"172.18.0.1","request_id":"514f50e3-a493-4542-8e53-f485533c13bb","user_agent":"Python-urllib/3.12"}
+fluidify-regen  | {"time":"2026-11-06T00:07:22.69354138Z","level":"INFO","msg":"routing rule matched","alert_id":"1e31161b-d0ef-42af-afdc-1b1dd9af4fa8","rule_name":"all","rule_id":"c587373f-d516-4e96-a223-92d6c32e2fdc","suppress":false,"severity_override":"","channel_override":"","notify_email_label":""}
+fluidify-regen  | {"time":"2026-11-06T00:07:22.696038888Z","level":"INFO","msg":"escalation triggered","alert_id":"1e31161b-d0ef-42af-afdc-1b1dd9af4fa8","policy_id":"8f1f8851-e453-461f-845b-ee9700eecf4f"}
+fluidify-regen  | {"time":"2026-11-06T00:07:22.698410712Z","level":"INFO","msg":"routing rule matched","alert_id":"d14db534-917a-4bfa-b93d-96d3921332c2","rule_name":"all","rule_id":"c587373f-d516-4e96-a223-92d6c32e2fdc","suppress":false,"severity_override":"","channel_override":"","notify_email_label":""}
+fluidify-regen  | {"time":"2026-11-06T00:07:22.699980157Z","level":"INFO","msg":"escalation triggered","alert_id":"d14db534-917a-4bfa-b93d-96d3921332c2","policy_id":"8f1f8851-e453-461f-845b-ee9700eecf4f"}
+fluidify-regen  | {"time":"2026-11-06T00:07:33.955192302Z","level":"WARN","msg":"escalation worker: no chat service; skipping DM","user_id":"alice","alert_id":"1e31161b-d0ef-42af-afdc-1b1dd9af4fa8","tier":0}
+fluidify-regen  | {"time":"2026-11-06T00:07:33.957688037Z","level":"WARN","msg":"escalation worker: no chat service; skipping DM","user_id":"alice","alert_id":"d14db534-917a-4bfa-b93d-96d3921332c2","tier":0}
+fluidify-regen  | {"time":"2026-11-06T00:09:03.95426758Z","level":"WARN","msg":"escalation worker: no chat service; skipping DM","user_id":"bob","alert_id":"1e31161b-d0ef-42af-afdc-1b1dd9af4fa8","tier":1}
+fluidify-regen  | {"time":"2026-11-06T00:09:03.955518867Z","level":"WARN","msg":"escalation worker: no chat service; skipping DM","user_id":"bob","alert_id":"d14db534-917a-4bfa-b93d-96d3921332c2","tier":1}
+
+[00:11:23] ALERTS during_escalation [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "bbbb118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "aaaa5210e3203776"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+[00:11:23] POST http://localhost:8080/api/v1/webhooks/prometheus body=<1502 bytes>
+-> 200 {"incidents_created":0,"received":2}
+[00:11:23] POST http://localhost:8080/api/v1/webhooks/prometheus body=<1489 bytes>
+-> 200 {"incidents_created":0,"received":2}
+[00:11:29] ALERTS after_final_resolve [{"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "bbbb118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "aaaa5210e3203776"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+[00:11:29] NOT TESTED Delivery: Regen's escalation engine sends DMs through Slack, Teams or Telegram and has no outbound webhook, so no notification reached a person. We read the escalation state from its database, and it records tier and notification time only.
+[00:11:29] $ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+[00:11:32] exit=0
+fluidify-regen 13.76MiB / 15.61GiB
+fluidify-regen-db 44.89MiB / 15.61GiB
+fluidify-regen-redis 3.625MiB / 15.61GiB
+

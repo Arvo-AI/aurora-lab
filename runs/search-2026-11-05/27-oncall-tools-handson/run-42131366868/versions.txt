@@ -1,0 +1,13 @@
+Thu Nov  5 23:42:03 UTC 2026
+kind v0.33.0 go1.26.7 linux/amd64
+Client Version: v1.37.2
+Kustomize Version: v5.8.1
+28.0.4
+Linux runnervm7aw5e 7.0.0-1017-azure #17~24.04.1-Ubuntu SMP PREEMPT Thu Sep 24 18:46:57 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
+host_ip 10.1.0.150
+Docker Compose version v2.38.2
+Python 3.12.3
+4
+Mem:           15983         863       14398          44        1052       15120
+/dev/root       145G   59G   86G  41% /
+prom/alertmanager@sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b

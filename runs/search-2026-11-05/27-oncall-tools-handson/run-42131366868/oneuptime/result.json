@@ -1,0 +1,140 @@
+{
+ "tool": "oneuptime",
+ "steps_to_first_alert": [
+  "git clone --branch release the repo",
+  "cp config.example.env config.env",
+  "npm start (needs Node on the host, at least 8 GB of memory per the README)",
+  "register the first user and create a project in the web UI",
+  "create an Incoming Request monitor with two criteria: request body contains \"status\":\"firing\" opens an incident, \"status\":\"resolved\" brings it back; turn on grouping by requestBody.alerts[*].fingerprint"
+ ],
+ "not_tested": [
+  "Delivery: no SMTP or Twilio was configured on OneUptime, so we read its on-call execution log. Schedules were created but a rotation layer was not exercised."
+ ],
+ "findings": [],
+ "version": "14.0.103\nTue Nov 3 20:18:47 2026 +0000",
+ "install_seconds": 222.2,
+ "firing_http": 200,
+ "firing_body": "{}",
+ "seconds_to_first_alert": 223.8,
+ "after_first_firing": [
+  {
+   "n": 2,
+   "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d",
+   "state": "Identified"
+  },
+  {
+   "n": 1,
+   "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776",
+   "state": "Identified"
+  }
+ ],
+ "repeat_http": 200,
+ "alert_states": {
+  "after_repeat": [
+   {
+    "n": 2,
+    "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d",
+    "state": "Identified"
+   },
+   {
+    "n": 1,
+    "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776",
+    "state": "Identified"
+   }
+  ],
+  "after_resolved": [
+   {
+    "n": 2,
+    "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d",
+    "state": "Resolved"
+   },
+   {
+    "n": 1,
+    "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776",
+    "state": "Resolved"
+   }
+  ],
+  "during_escalation": [
+   {
+    "n": 4,
+    "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d",
+    "state": "Identified"
+   },
+   {
+    "n": 3,
+    "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776",
+    "state": "Identified"
+   },
+   {
+    "n": 2,
+    "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d",
+    "state": "Resolved"
+   },
+   {
+    "n": 1,
+    "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776",
+    "state": "Resolved"
+   }
+  ],
+  "after_final_resolve": [
+   {
+    "n": 4,
+    "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d",
+    "state": "Resolved"
+   },
+   {
+    "n": 3,
+    "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776",
+    "state": "Resolved"
+   },
+   {
+    "n": 2,
+    "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d",
+    "state": "Resolved"
+   },
+   {
+    "n": 1,
+    "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776",
+    "state": "Resolved"
+   }
+  ]
+ },
+ "resolved_http": 200,
+ "resolved_body": "{}",
+ "escalation": {
+  "execution_log": [
+   {
+    "_id": "e326fa0e-d169-4e29-9a0b-02480db44b8b",
+    "createdAt": {
+     "_type": "DateTime",
+     "value": "2026-11-06T00:03:35.260Z"
+    },
+    "status": "Executing",
+    "statusMessage": "First escalation rule executed...",
+    "lastExecutedEscalationRuleOrder": 2,
+    "lastEscalationRuleExecutedAt": {
+     "_type": "DateTime",
+     "value": "2026-11-06T00:05:00.570Z"
+    },
+    "executeNextEscalationRuleInMinutes": 1
+   },
+   {
+    "_id": "ffc96791-59e4-4c00-89d1-4b644878ca77",
+    "createdAt": {
+     "_type": "DateTime",
+     "value": "2026-11-06T00:03:35.193Z"
+    },
+    "status": "Executing",
+    "statusMessage": "First escalation rule executed...",
+    "lastExecutedEscalationRuleOrder": 2,
+    "lastEscalationRuleExecutedAt": {
+     "_type": "DateTime",
+     "value": "2026-11-06T00:05:00.571Z"
+    },
+    "executeNextEscalationRuleInMinutes": 1
+   }
+  ],
+  "raw_http": 200
+ },
+ "total_seconds": 359.5
+}

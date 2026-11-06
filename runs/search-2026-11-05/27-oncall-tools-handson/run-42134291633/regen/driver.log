@@ -1,0 +1,151 @@
+README path: curl the compose file and run it, no clone
+$ curl -fsSLO https://raw.githubusercontent.com/FluidifyAI/Regen/v1.2.4/docker-compose.yml && docker compose up -d
+exit=1
+ redis Pulling 
+ db Pulling 
+ 881fc932939e Pulling fs layer 
+ 9e10f0364807 Pulling fs layer 
+ 705b53abb1f1 Pulling fs layer 
+ 9811ab1f28ec Pulling fs layer 
+ 06df7229da11 Pulling fs layer 
+ 3e433f8cf12a Pulling fs layer 
+ a6bb307d0c9d Pulling fs layer 
+ f7cba1195a43 Pulling fs layer 
+ 5792fed
+$ docker compose down -v
+exit=0
+
+$ git clone -q --depth 1 -b v1.2.4 https://github.com/FluidifyAI/Regen.git src
+exit=0
+Note: switching to '58923b9ada17ee4efa289853879f77c88bda409d'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want t
+STEP 1 git clone the repo and cp .env.example .env
+$ cp .env.example .env
+exit=0
+
+first start with stock settings
+$ docker compose -f docker-compose.yml -f override.yml up -d; sleep 12; docker compose -f docker-compose.yml -f override.yml ps -a --format '{{.Service}} {{.Status}}'; docker compose -f docker-compose.yml -f override.yml logs app --tail=200 | grep -m2 'SAML_BASE_URL must'; docker compose -f docker-c
+exit=0
+ app Pulling 
+ 17a39c0ba978 Pulling fs layer 
+ 448a103bbff9 Pulling fs layer 
+ cb893366035a Pulling fs layer 
+ 64bee7801c10 Pulling fs layer 
+ f5132b76a746 Pulling fs layer 
+ 5a82edff3e19 Pulling fs layer 
+ f5132b76a746 Waiting 
+ 64bee7801c10 Waiting 
+ 5a82edff3e19 Waiting 
+ 17a39c0ba978 Down
+$ docker compose -f docker-compose.yml -f override.yml config | grep -E 'SAML_IDP_METADATA_URL|TEAMS_APP_ID|SLACK_BOT_TOKEN|OPENAI_API_KEY'
+exit=0
+      OPENAI_API_KEY: '# sk-...'
+      SAML_IDP_METADATA_URL: '# https://your-idp/metadata'
+      SLACK_BOT_TOKEN: '# xoxb-... (Bot User OAuth Token)'
+      TEAMS_APP_ID: '# Azure App Registration → Application (client) ID'
+
+$ sed -E -i 's/[[:space:]]+#.*$//' .env; docker compose -f docker-compose.yml -f override.yml config | grep -E 'SAML_IDP_METADATA_URL|TEAMS_APP_ID'
+exit=0
+      SAML_IDP_METADATA_URL: ""
+      TEAMS_APP_ID: ""
+
+STEP 2 strip the inline comments from .env: on empty keys they are read as values, so SAML and Teams switch on and the app exits in a loop
+STEP 3 docker compose up -d with the app service pointed at the published image ghcr.io/fluidifyai/regen:1.2.4 instead of building
+$ docker compose -f docker-compose.yml -f override.yml up -d --wait
+exit=0
+ app Pulling 
+ app Pulled 
+ Network src_fluidify-regen  Creating
+ Network src_fluidify-regen  Created
+ Volume "src_redis_data"  Creating
+ Volume "src_redis_data"  Created
+ Volume "src_postgres_data"  Creating
+ Volume "src_postgres_data"  Created
+ Container fluidify-regen-redis  Creating
+ Cont
+$ docker compose -f docker-compose.yml -f override.yml ps -a; docker compose -f docker-compose.yml -f override.yml logs app --tail=60
+exit=0
+NAME                   IMAGE                            COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+fluidify-regen         ghcr.io/fluidifyai/regen:1.2.4   "/app/regen serve"       app       16 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8080->8080/
+STEP 4 create the first admin account (first-run page or POST /api/v1/auth/bootstrap)
+POST http://localhost:8080/api/v1/auth/bootstrap body={'email': 'admin@example.com', 'name': 'admin', 'password': 'lab-password-1'}
+-> 201 {"message":"Initial admin account created. Use the setup_token to log in.","setup_token":"cd37c02849525edb0b768a56f20aded95f72a24272d6ad9ee64faf6e8849bce9","user
+POST http://localhost:8080/api/v1/auth/login/setup-token body={'token': 'cd37c02849525edb0b768a56f20aded95f72a24272d6ad9ee64faf6e8849bce9'}
+-> 200 {"ok":true}
+STEP 5 point Alertmanager at /api/v1/webhooks/prometheus (no token, no integration object)
+--- A. first firing
+POST http://localhost:8080/api/v1/webhooks/prometheus body=<1483 bytes>
+-> 200 {"incidents_created":1,"received":2}
+ALERTS after first firing [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+--- B. repeat firing, same bytes
+POST http://localhost:8080/api/v1/webhooks/prometheus body=<1483 bytes>
+-> 200 {"incidents_created":0,"received":2}
+ALERTS after_repeat [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+--- C. resolved
+POST http://localhost:8080/api/v1/webhooks/prometheus body=<1502 bytes>
+-> 200 {"incidents_created":0,"received":2}
+ALERTS after_resolved [{"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+--- D. schedule and escalation
+POST http://localhost:8080/api/v1/settings/users body={'email': 'alice@example.com', 'name': 'alice', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"33bda8021cdd036f3f652903769f6d4cd6def5824614171a40e11e3ce4c24e7c","user":{"id":"b8ea6938-ff21-4599-a5b7-8064e3365886","email":"
+POST http://localhost:8080/api/v1/settings/users body={'email': 'bob@example.com', 'name': 'bob', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"3f269ed2aa69b810dddd70f63adf10173ff95599c8ca4fb5bfa5dd435d0ac791","user":{"id":"7525799f-7a63-4000-8da2-6b9d06dc5117","email":"bob@
+GET http://localhost:8080/api/v1/settings/users/limit body=None
+-> 200 {"at_limit":false,"current":3,"limit":7,"near_limit":false}
+user limit probe: add users until refused
+POST http://localhost:8080/api/v1/settings/users body={'email': 'user3@example.com', 'name': 'user3', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"f70273b0b51506a127c7a9be2a5c13c2dabd70a864671c6ca1676c30e094c411","user":{"id":"2fc144a5-642d-4869-8d9d-a87288fe0b94","email":"
+POST http://localhost:8080/api/v1/settings/users body={'email': 'user4@example.com', 'name': 'user4', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"9381e28b8baf0bf7c87b06bb4a90b51d9b7e709e5ec7602cc2a4b6c4ccbfa49d","user":{"id":"c74ffaf6-7f3e-47e8-9901-5d47fc371de5","email":"
+POST http://localhost:8080/api/v1/settings/users body={'email': 'user5@example.com', 'name': 'user5', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"14918fcf049b63a821847086f0876050edea597315c3d710dfec9b9b1b483adb","user":{"id":"929098b1-7781-4e12-bda4-205069ba21a2","email":"
+POST http://localhost:8080/api/v1/settings/users body={'email': 'user6@example.com', 'name': 'user6', 'role': 'member', 'password': 'lab-password-1'}
+-> 201 {"setup_token":"e41f6a95d97975a4255d27fa8b39a08b4c24b50614d494b369a8180810e95585","user":{"id":"0aedbff6-1a40-4181-a8d1-dcfccd9d9502","email":"
+POST http://localhost:8080/api/v1/settings/users body={'email': 'user7@example.com', 'name': 'user7', 'role': 'member', 'password': 'lab-password-1'}
+-> 403 {"error":{"code":"user_limit_reached","current":7,"limit":7,"message":"You've reached the community edition limit of 7 users. Upgrade to Fluidi
+FINDING user 8 refused: HTTP 403 {"error":{"code":"user_limit_reached","current":7,"limit":7,"message":"You've reached the community edition limit of 7 users. Upgrade to Fluidify Pro for unlimited users."}}
+POST http://localhost:8080/api/v1/schedules body={'name': 'primary', 'timezone': 'UTC'}
+-> 201 {"id":"99b47799-67cd-4cc9-b39c-7d4b698b7921","name":"primary","description":"","timezone":"UTC","notification_channel":"","holiday_countries":[],"created_at":"2026-11-06T00:07:22.671362Z","updated_at":"202
+POST http://localhost:8080/api/v1/schedules/99b47799-67cd-4cc9-b39c-7d4b698b7921/layers body={'name': 'l1', 'order_index': 0, 'rotation_type': 'daily', 'rotation_start': '2026-11-05T23:07:22Z', 'participants': [{'user_name': 'alice', 'order_index': 0}, {'user_name': 'bob', 'order_index': 1}]}
+-> 201
+GET http://localhost:8080/api/v1/schedules/99b47799-67cd-4cc9-b39c-7d4b698b7921/oncall body=None
+-> 200 {"schedule_id":"99b47799-67cd-4cc9-b39c-7d4b698b7921","at":"2026-11-06T00:07:22.678137816Z","user_name":"alice","is_override":false}
+POST http://localhost:8080/api/v1/escalation-policies body={'name': 'checkout-ep'}
+-> 201 {"id":"8f1f8851-e453-461f-845b-ee9700eecf4f","name":"checkout-ep","description":"","enabled":true,"tiers":[],"created_at":"2026-11-06T00:07:22.683062Z","updated_at":"2026-11-06T00:07:22.683062Z"}
+POST http://localhost:8080/api/v1/escalation-policies/8f1f8851-e453-461f-845b-ee9700eecf4f/tiers body={'timeout_seconds': 60, 'target_type': 'schedule', 'schedule_id': '99b47799-67cd-4cc9-b39c-7d4b698b7921'}
+-> 201 {"id":"9d20d805-332c-4696-99d9-8ab02e848ae6","policy_id":"8f1f8851-e453-461f-845b-ee9
+POST http://localhost:8080/api/v1/escalation-policies/8f1f8851-e453-461f-845b-ee9700eecf4f/tiers body={'timeout_seconds': 60, 'target_type': 'users', 'user_names': ['bob']}
+-> 201 {"id":"53f5d762-cf76-4a94-b58c-3603b85911d8","policy_id":"8f1f8851-e453-461f-845b-ee9700eecf4f","tier_index":1,"timeout_
+POST http://localhost:8080/api/v1/routing-rules body={'name': 'all', 'priority': 1, 'match_criteria': {'source': ['prometheus']}, 'actions': {'create_incident': True, 'escalation_policy_id': '8f1f8851-e453-461f-845b-ee9700eecf4f'}}
+-> 201 {"id":"c587373f-d516-4e96-a223-92d6c32e2fdc","name":"all","de
+the earlier incident stays open and a re-fire of the same fingerprints joins it, so this firing uses new fingerprints to open a new incident under the policy
+POST http://localhost:8080/api/v1/webhooks/prometheus body=<1483 bytes>
+-> 200 {"incidents_created":0,"received":2}
+$ docker compose -f docker-compose.yml -f override.yml exec -T db psql -U regen -d regen -c 'select status,current_tier_index,last_notified_at,created_at from escalation_states'
+exit=0
+  status   | current_tier_index |       last_notified_at       |          created_at           
+-----------+--------------------+------------------------------+-------------------------------
+ completed |                  1 | 2026-11-06 00:09:03.95429+00 | 2026-11-06 00:07:22.694549+00
+ compl
+$ docker compose -f docker-compose.yml -f override.yml logs app --tail=40 | grep -iE 'escalat|notif|dm' | tail -20
+exit=0
+fluidify-regen  | {"time":"2026-11-06T00:07:22.683949202Z","level":"INFO","msg":"request completed","service":"regen","method":"POST","path":"/api/v1/escalation-policies","status":201,"duration_ms":1,"client_ip":"172.18.0.1","request_id":"de226f7d-e286-49c2-8f1e-e58e90b98d48","user_agent":"Py
+ALERTS during_escalation [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "bbbb118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "aaaa5210e3203776"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErr
+POST http://localhost:8080/api/v1/webhooks/prometheus body=<1502 bytes>
+-> 200 {"incidents_created":0,"received":2}
+POST http://localhost:8080/api/v1/webhooks/prometheus body=<1489 bytes>
+-> 200 {"incidents_created":0,"received":2}
+ALERTS after_final_resolve [{"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "bbbb118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "aaaa5210e3203776"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "5d3b118068113e9d"}, {"alert": "CheckoutH
+NOT TESTED Delivery: Regen's escalation engine sends DMs through Slack, Teams or Telegram and has no outbound webhook, so no notification reached a person. We read the escalation state from its database, and it records tier and notification time only.
+$ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+exit=0
+fluidify-regen 13.76MiB / 15.61GiB
+fluidify-regen-db 44.89MiB / 15.61GiB
+fluidify-regen-redis 3.625MiB / 15.61GiB
+
+exit 0

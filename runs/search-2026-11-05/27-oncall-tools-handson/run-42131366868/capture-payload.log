@@ -1,0 +1,42 @@
+Unable to find image 'prom/alertmanager:v0.34.2' locally
+v0.34.2: Pulling from prom/alertmanager
+72dcf69f72aa: Pulling fs layer
+456bdf926fcd: Pulling fs layer
+56050deba77b: Pulling fs layer
+fba81b676387: Pulling fs layer
+d0a7272f072d: Pulling fs layer
+8b3cf48719e4: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+d0a7272f072d: Waiting
+8b3cf48719e4: Waiting
+4f4fb700ef54: Waiting
+fba81b676387: Waiting
+456bdf926fcd: Verifying Checksum
+456bdf926fcd: Download complete
+72dcf69f72aa: Download complete
+56050deba77b: Verifying Checksum
+56050deba77b: Download complete
+72dcf69f72aa: Pull complete
+d0a7272f072d: Verifying Checksum
+d0a7272f072d: Download complete
+8b3cf48719e4: Verifying Checksum
+8b3cf48719e4: Download complete
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+fba81b676387: Verifying Checksum
+fba81b676387: Download complete
+456bdf926fcd: Pull complete
+56050deba77b: Pull complete
+fba81b676387: Pull complete
+d0a7272f072d: Pull complete
+8b3cf48719e4: Pull complete
+4f4fb700ef54: Pull complete
+Digest: sha256:39d8bb3966c694a124428a3a88fbcffd40bd069129ecd47c059f8a3f17c55f3b
+Status: Downloaded newer image for prom/alertmanager:v0.34.2
+time=2026-11-05T23:42:07.270Z level=INFO source=app.go:194 msg="Starting Alertmanager" version="(version=0.34.2, branch=HEAD, revision=e8349048265ccc0871c3d0d668b05eacc68baf50)"
+
+
+payload-firing.json 1483 bytes alerts: 2 groupKey: {}:{alertname="CheckoutHighErrorRate", service="checkout"}
+payload-resolved.json 1504 bytes alerts: 2 groupKey: {}:{alertname="CheckoutHighErrorRate", service="checkout"}
+
+pagerduty body /capturepd {"routing_key":"PLACEHOLDER_ROUTING_KEY","dedup_key":"a6155e6da321546b81ec701dd0ae11648d37e95e340b8216c7bb9fe1073bf5a6","event_action":"trigger","payload":{"summary":"[FIRING:1] PagerDutyShape checkout (critical)","source":"Alertmanager","severity":"error","custom_details":{"firing":[{"annotations":

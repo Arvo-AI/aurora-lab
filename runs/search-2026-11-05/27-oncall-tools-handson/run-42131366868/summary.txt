@@ -1,0 +1,49 @@
+## grafana-oncall-oss v1.16.11 error: None
+  install_seconds 69.4
+  seconds_to_first_alert 73.6
+  firing_http 200
+  repeat_http 200
+  resolved_http 200
+  steps: 5
+   - download docker-compose.yml
+   - write .env: DOMAIN, COMPOSE_PROFILES=with_grafana, SECRET_KEY
+   - docker compose pull && docker compose up -d
+   - provision the plugin: POST .../settings then POST .../resources/plugin/install
+   - create an integration of type alertmanager (UI or public API)
+  first: [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 1}]
+  states: {"after_repeat": [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}], "after_resolved": [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}], "during_escalation": [{"id": "IKTP3Y9F4JPBS", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}, {"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}], "after_final_resolve": [{"id": "IKTP3Y9F4JPBS", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}, {"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)",
+  escalation: {"first_page_s": 2.0, "second_page_s": 68.1, "mail": [["bob@example.com", "CheckoutHighErrorRate (checkout)", "2026-11-05T23:49:57.511Z"], ["alice@example.com", "CheckoutHighErrorRate (checkout)", "2026-11-05T23:48:52.524Z"]]}
+  not tested: SMS and phone: needs your own Twilio, Exotel or Zvonok account since Grafana's Cloud Connection stopped serving OSS. Mobile push does not work. Delivery was tested with email to a local Mailpit.
+## oncall-appwrite-fork v1.24.14 error: None
+  install_seconds 68.3
+  seconds_to_first_alert 71.7
+  firing_http 200
+  repeat_http 200
+  resolved_http 200
+  steps: 5
+   - download docker-compose.yml
+   - write .env: DOMAIN, COMPOSE_PROFILES=with_grafana, SECRET_KEY
+   - docker compose pull && docker compose up -d
+   - provision the plugin: POST .../settings then POST .../resources/plugin/install
+   - create an integration of type alertmanager (UI or public API)
+  first: [{"id": "IX3CUQ6E5TVCL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 1}]
+  states: {"after_repeat": [{"id": "IX3CUQ6E5TVCL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}], "after_resolved": [{"id": "IX3CUQ6E5TVCL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}], "during_escalation": [{"id": "IC5G5TYU6K1NS", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}, {"id": "IX3CUQ6E5TVCL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}], "after_final_resolve": [{"id": "IC5G5TYU6K1NS", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}, {"id": "IX3CUQ6E5TVCL", "title": "CheckoutHighErrorRate (checkout)",
+  escalation: {"first_page_s": 2.0, "second_page_s": 68.1, "mail": [["bob@example.com", "CheckoutHighErrorRate (checkout)", "2026-11-05T23:58:43.173Z"], ["alice@example.com", "CheckoutHighErrorRate (checkout)", "2026-11-05T23:57:38.173Z"]]}
+  not tested: SMS and phone: needs your own Twilio, Exotel or Zvonok account since Grafana's Cloud Connection stopped serving OSS. Mobile push does not work. Delivery was tested with email to a local Mailpit.
+## oneuptime 14.0.103
+Tue Nov 3 20:18:47 2026 +0000 error: None
+  install_seconds 222.2
+  seconds_to_first_alert 223.8
+  firing_http 200
+  repeat_http 200
+  resolved_http 200
+  steps: 5
+   - git clone --branch release the repo
+   - cp config.example.env config.env
+   - npm start (needs Node on the host, at least 8 GB of memory per the README)
+   - register the first user and create a project in the web UI
+   - create an Incoming Request monitor with two criteria: request body contains "status":"firing" opens an incident, "status":"resolved" brings it back; turn on grouping by requestBody.alerts[*].fingerprint
+  first: [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}]
+  states: {"after_repeat": [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}], "after_resolved": [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Resolved"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Resolved"}], "during_escalation": [{"n": 4, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 3, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}, {"n": 2, "title": "CheckoutHighErrorRate - Finger
+  escalation: {"execution_log": [{"_id": "e326fa0e-d169-4e29-9a0b-02480db44b8b", "createdAt": {"_type": "DateTime", "value": "2026-11-06T00:03:35.260Z"}, "status": "Executing", "statusMessage": "First escalation rule executed...", "lastExecutedEscalationRuleOrder": 2, "lastEscalationRuleExecutedAt": {"_type": "DateTime", "value": "2026-11-06T00:05:00.570Z"}, "executeNextEscalationRuleInMinutes": 1}, {"_id": "ffc96791-59e4-4c00-89d1-4b644878ca77", "createdAt": {"_type": "DateTime", "value": "2026-11-06T00:03:35.193Z"}, "status": "Executing", "statusMessage": "First escalation rule executed...", "lastExecutedEscalationRuleOrder": 2, "lastEscalationRuleExecutedAt": {"_type": "DateTime", "value": "2026-11-06T00:05:00.571Z"}, "executeNextEscalationRuleInMinutes": 1}], "raw_http": 200}
+  not tested: Delivery: no SMTP or Twilio was configured on OneUptime, so we read its on-call execution log. Schedules were created but a rotation layer was not exercised.

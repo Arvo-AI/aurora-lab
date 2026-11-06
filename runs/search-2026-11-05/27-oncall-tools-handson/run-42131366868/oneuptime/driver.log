@@ -1,0 +1,91 @@
+STEP 1 git clone --branch release the repo
+$ git clone -q --depth 1 --single-branch --branch release https://github.com/OneUptime/oneuptime.git src
+exit=0
+
+$ cat src/VERSION; git -C src log -1 --format=%cd
+exit=0
+14.0.103
+Tue Nov 3 20:18:47 2026 +0000
+
+STEP 2 cp config.example.env config.env
+$ cp config.example.env config.env
+exit=0
+
+STEP 3 npm start (needs Node on the host, at least 8 GB of memory per the README)
+$ npm start
+exit=0
+
+> @oneuptime/root@14.0.103 start
+> node ./Scripts/Install/Preflight.js && node ./Scripts/Install/GenerateDatabasePassword.js && node ./Scripts/Install/ReplacePlaceholderSecrets.js && node ./Scripts/Install/FollowIngressPort.js && node ./Scripts/Install/CheckIngressPorts.js && sh ./Scripts/In
+$ docker ps --format '{{.Names}} {{.Image}} {{.Status}}'
+exit=0
+oneuptime-global-runner-1 oneuptime/runner:release Up About a minute
+oneuptime-probe-1-1 oneuptime/probe:release Up About a minute
+oneuptime-app-1 oneuptime/app:release Up About a minute
+oneuptime-ingress-1 oneuptime/nginx:release Up About a minute
+oneuptime-clickhouse-1 clickhouse/clickhouse
+STEP 4 register the first user and create a project in the web UI
+POST http://localhost/identity/signup body={'data': {'email': 'admin@example.com', 'password': 'Lab-password-1!', 'name': 'admin', 'companyName': 'lab', 'companyPhoneNumber': '+15145550100'}}
+-> 200 {"_id":"0328c12e-06d2-4ac5-91df-8fe54eebdcb4","name":"admin","email":"admin@example.com","isEmailVeri
+cookies ['user-token', 'user-refresh-token', 'user-id', 'user-email', 'user-name', 'user-is-master-admin']
+POST http://localhost/api/project body={'data': {'name': 'lab'}}
+-> 200 {"_id":"2b4c5c81-e381-4946-9beb-d4b840f53504","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:21.317Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:21.317Z"},"deletedAt":null,"version":1,"name":"lab","slu
+POST http://localhost/api/monitor-status/get-list?skip=0&limit=50 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'_id': True, 'name': True, 'isOperationalState': True, 'isOfflineState': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"d3e5238f-c51a-4373-b751-80cad6c9edd4"
+statuses [{'_id': 'd3e5238f-c51a-4373-b751-80cad6c9edd4', 'name': 'Offline', 'isOperationalState': False, 'isOfflineState': True}, {'_id': 'f1d681e6-e5fd-4e51-8152-5fd0ae80e4f7', 'name': 'Degraded', 'isOperationalState': False, 'isOfflineState': False}, {'_id': 'be743409-7233-4203-89cd-b019b2ecef69'
+POST http://localhost/api/incident-severity/get-list?skip=0&limit=50 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'_id': True, 'name': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"329bb242-6e9d-4ff8-a29e-15cfa9272cd5","name":"Minor Incident"},{"_id":"595ff43e-30b2-4
+sev [{'_id': '329bb242-6e9d-4ff8-a29e-15cfa9272cd5', 'name': 'Minor Incident'}, {'_id': '595ff43e-30b2-4678-9bee-76db7ed2804c', 'name': 'Major Incident'}, {'_id': '7c0475a2-f2e8-4d09-b57e-192bd7281725', 'name': 'Critical Incident'}]
+STEP 5 create an Incoming Request monitor with two criteria: request body contains "status":"firing" opens an incident, "status":"resolved" brings it back; turn on grouping by requestBody.alerts[*].fingerprint
+POST http://localhost/api/monitor body={'data': {'name': 'Alertmanager', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'monitorType': 'Incoming Request', 'monitorSteps': {'_type': 'MonitorSteps', 'value': {'defaultMonitorStatusId': {'_type': 'ObjectID', 'value': 'be743409-7233-4203-89cd-b019b
+POST http://localhost/api/monitor/18b69c94-5165-41cd-8e0e-a44d27b615ca/get-item body={'select': {'incomingRequestSecretKey': True}}
+-> 200 {"_id":"18b69c94-5165-41cd-8e0e-a44d27b615ca","incomingRequestSecretKey":{"_type":"ObjectID","value":"54fe668d-d0fb-4276-882b-1e3b9043165c"}}
+--- A. first firing
+POST http://localhost/heartbeat/54fe668d-d0fb-4276-882b-1e3b9043165c body=<1483 bytes>
+-> 200 {}
+ALERTS after first firing [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}]
+--- B. repeat firing, same bytes
+POST http://localhost/heartbeat/54fe668d-d0fb-4276-882b-1e3b9043165c body=<1483 bytes>
+-> 200 {}
+ALERTS after_repeat [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}]
+--- C. resolved
+POST http://localhost/heartbeat/54fe668d-d0fb-4276-882b-1e3b9043165c body=<1504 bytes>
+-> 200 {}
+ALERTS after_resolved [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Resolved"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Resolved"}]
+--- D. schedule and escalation
+POST http://localhost/api/user/get-list?skip=0&limit=5 body={'query': {}, 'select': {'_id': True, 'email': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"0328c12e-06d2-4ac5-91df-8fe54eebdcb4","email":{"_type":"Email","value":"admin@example.com"}}],"count":1,"skip":0,"limit":5}
+POST http://localhost/api/on-call-duty-policy body={'data': {'name': 'checkout', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}}
+-> 200 {"_id":"fb9d6e6b-6754-4910-a8f5-578287508b5d","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.828Z"},"updatedAt":{"_type":"DateTime","value":"202
+POST http://localhost/api/on-call-duty-policy-schedule body={'data': {'name': 'primary', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}}
+-> 200 {"_id":"f0f9b88b-771f-4e29-8a9b-b13f71d9e859","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.849Z"},"updatedAt":{"_type":"DateTime","val
+POST http://localhost/api/on-call-duty-policy-escalation-rule body={'data': {'name': 'first', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'order': 1, 'escalateAfterInMinutes': 1}}
+-> 200 {"_id":"14ec098d-7fcf-420e-ae8e-e9118e8533
+POST http://localhost/api/on-call-duty-policy-escalation-rule-user body={'data': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'onCallDutyPolicyEscalationRuleId': '14ec098d-7fcf-420e-ae8e-e9118e8533c6', 'userId': '0328c12e-06d2-4a
+POST http://localhost/api/on-call-duty-policy-escalation-rule body={'data': {'name': 'second', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'order': 2, 'escalateAfterInMinutes': 1}}
+-> 200 {"_id":"dc7b8599-c3d1-44cb-8000-da3a922c6
+POST http://localhost/api/on-call-duty-policy-escalation-rule-user body={'data': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'onCallDutyPolicyEscalationRuleId': 'dc7b8599-c3d1-44cb-8000-da3a922c66f4', 'userId': '0328c12e-06d2-4a
+POST http://localhost/api/monitor body={'data': {'name': 'Alertmanager paged', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'monitorType': 'Incoming Request', 'monitorSteps': {'_type': 'MonitorSteps', 'value': {'defaultMonitorStatusId': {'_type': 'ObjectID', 'value': 'be743409-7233-4203-89cd
+POST http://localhost/api/monitor/bf0fff01-e3f3-45ac-8d3d-c5e3b879ff0c/get-item body={'select': {'incomingRequestSecretKey': True}}
+-> 200 {"_id":"bf0fff01-e3f3-45ac-8d3d-c5e3b879ff0c","incomingRequestSecretKey":{"_type":"ObjectID","value":"7c141b43-a3a6-4094-8775-3a3cfc3129e9"}}
+POST http://localhost/heartbeat/7c141b43-a3a6-4094-8775-3a3cfc3129e9 body=<1483 bytes>
+-> 200 {}
+POST http://localhost/api/on-call-duty-policy-execution-log/get-list?skip=0&limit=10 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'status': True, 'statusMessage': True, 'lastEscalationRuleExecutedAt': True, 'lastExecutedEscalationRuleOrder': True, 'executeNextEsca
+POST http://localhost/api/on-call-duty-policy-execution-log-timeline/get-list?skip=0&limit=10 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'status': True, 'statusMessage': True, 'createdAt': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"f83fc536-85a9-4987-8dd4-e9ec63
+ALERTS during_escalation [{"n": 4, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 3, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}, {"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "
+POST http://localhost/heartbeat/7c141b43-a3a6-4094-8775-3a3cfc3129e9 body=<1504 bytes>
+-> 200 {}
+ALERTS after_final_resolve [{"n": 4, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Resolved"}, {"n": 3, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Resolved"}, {"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "st
+NOT TESTED Delivery: no SMTP or Twilio was configured on OneUptime, so we read its on-call execution log. Schedules were created but a rotation layer was not exercised.
+$ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+exit=0
+oneuptime-global-runner-1 170.6MiB / 15.61GiB
+oneuptime-probe-1-1 200.6MiB / 15.61GiB
+oneuptime-app-1 719.1MiB / 15.61GiB
+oneuptime-ingress-1 302.6MiB / 15.61GiB
+oneuptime-clickhouse-1 333.9MiB / 15.61GiB
+oneuptime-postgres-1 138.9MiB / 15.61GiB
+oneuptime-valkey-1 6.254MiB / 15.61GiB
+
+exit 0

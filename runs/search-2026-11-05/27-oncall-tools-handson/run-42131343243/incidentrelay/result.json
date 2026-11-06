@@ -1,0 +1,215 @@
+{
+ "tool": "incidentrelay",
+ "steps_to_first_alert": [
+  "git clone the repo",
+  "cd docker && docker compose up -d",
+  "manage.py create-admin inside the container",
+  "create a group",
+  "create a team",
+  "create a route with source alertmanager and copy its intake token"
+ ],
+ "not_tested": [
+  "Voice calls and SMS: IncidentRelay ships a stub voice provider, and you plug in your own. Delivery was tested with a generic webhook channel pointed at a local sink."
+ ],
+ "findings": [
+  "the documented create-admin command exits 1 with: insecure IncidentRelay secret configuration, because exec does not get the runtime config the entrypoint generates. It works with -e INCIDENTRELAY_CONFIG_FILE=/var/lib/incidentrelay/incidentrelay.conf"
+ ],
+ "version": "v2.4.0",
+ "boot_seconds": 0.0,
+ "install_seconds": 22.4,
+ "firing_http": 200,
+ "firing_body": "[{\"alert_id\":1,\"assignee\":null,\"created\":true,\"group_id\":1,\"id\":1,\"outcome\":\"created\",\"processing_status\":\"completed\",\"reason\":null,\"rotation_id\":null,\"route_id\":1,\"routing_error\":null,\"status\":\"firing\",\"team_id\":1,\"team_slug\":\"platform\",\"trace_id\":\"4bf811c9ac0f4ca5bb7d702862dd5602\"},{\"alert_id\":2,\"assignee\":null,\"created\":true,\"group_id\":2,\"id\":2,\"outcome\":\"created\",\"processing_status\":\"completed",
+ "seconds_to_first_alert": 22.7,
+ "after_first_firing": [
+  {
+   "id": 2,
+   "title": "checkout returns 5xx above 5%",
+   "status": "firing",
+   "assignee": null,
+   "alert_count": 1
+  },
+  {
+   "id": 1,
+   "title": "checkout returns 5xx above 5%",
+   "status": "firing",
+   "assignee": null,
+   "alert_count": 1
+  }
+ ],
+ "repeat_http": 200,
+ "alert_states": {
+  "after_repeat": [
+   {
+    "id": 2,
+    "title": "checkout returns 5xx above 5%",
+    "status": "firing",
+    "assignee": null,
+    "alert_count": 1
+   },
+   {
+    "id": 1,
+    "title": "checkout returns 5xx above 5%",
+    "status": "firing",
+    "assignee": null,
+    "alert_count": 1
+   }
+  ],
+  "after_resolved": [
+   {
+    "id": 2,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   },
+   {
+    "id": 1,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   }
+  ],
+  "mid": [
+   {
+    "id": 4,
+    "title": "checkout returns 5xx above 5%",
+    "status": "firing",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 3,
+    "title": "checkout returns 5xx above 5%",
+    "status": "firing",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 2,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   },
+   {
+    "id": 1,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   }
+  ],
+  "during_escalation": [
+   {
+    "id": 4,
+    "title": "checkout returns 5xx above 5%",
+    "status": "firing",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 3,
+    "title": "checkout returns 5xx above 5%",
+    "status": "firing",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 2,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   },
+   {
+    "id": 1,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   }
+  ],
+  "after_final_resolve": [
+   {
+    "id": 4,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 3,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 2,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   },
+   {
+    "id": 1,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   }
+  ],
+  "after_pagerduty_event": [
+   {
+    "id": 5,
+    "title": "[FIRING:1] PagerDutyShape checkout (critical)",
+    "status": "firing",
+    "assignee": null,
+    "alert_count": 1
+   },
+   {
+    "id": 4,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 3,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": "bob",
+    "alert_count": 1
+   },
+   {
+    "id": 2,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   },
+   {
+    "id": 1,
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "assignee": null,
+    "alert_count": 1
+   }
+  ]
+ },
+ "resolved_http": 200,
+ "resolved_body": "[{\"alert_id\":1,\"assignee\":null,\"created\":false,\"group_id\":1,\"id\":1,\"outcome\":\"updated\",\"processing_status\":\"completed\",\"reason\":null,\"rotation_id\":null,\"route_id\":1,\"routing_error\":null,\"status\":\"resolved\",\"team_id\":1,\"team_slug\":\"platform\",\"trace_id\":\"195d8a95ffbb4691bafef44c08d3bab0\"},{\"alert_id\":",
+ "escalation": {
+  "first_page_s": 36.1,
+  "assignee_became_bob_s": 48.2,
+  "posts": 4,
+  "sample": [
+   "{\"text\":\"NOTIFICATION: [P1] checkout returns 5xx above 5%\\nTeam: Platform\\nService: Service #3\\nStatus: firing\\nSeverity: critical\\nPriority: P1\\nAssignee: alice\\nSource: alertmanager\\nMessage: 5xx ratio on checkout is above 5% for 5 minutes\\nAlert URL: http://localhost:8080/alerts/3\\nSource event: http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"alert_id\":3,\"alert_url\":\"http://localhost:8080/alerts/3\",\"source_event_url\":\"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"team\":\"platform\",\"status\":\"firing\",\"source\":\"alertmanager\",\"title\":\"checkout returns 5xx above 5%\",\"message",
+   "{\"text\":\"NOTIFICATION: [P1] checkout returns 5xx above 5%\\nTeam: Platform\\nService: Service #4\\nStatus: firing\\nSeverity: critical\\nPriority: P1\\nAssignee: alice\\nSource: alertmanager\\nMessage: 5xx ratio on checkout is above 5% for 5 minutes\\nAlert URL: http://localhost:8080/alerts/4\\nSource event: http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"alert_id\":4,\"alert_url\":\"http://localhost:8080/alerts/4\",\"source_event_url\":\"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"team\":\"platform\",\"status\":\"firing\",\"source\":\"alertmanager\",\"title\":\"checkout returns 5xx above 5%\",\"message",
+   "{\"text\":\"ESCALATION: [P1] checkout returns 5xx above 5%\\nTeam: Platform\\nService: Service #3\\nStatus: firing\\nSeverity: critical\\nPriority: P1\\nAssignee: bob\\nSource: alertmanager\\nMessage: 5xx ratio on checkout is above 5% for 5 minutes\\nAlert URL: http://localhost:8080/alerts/3\\nSource event: http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"alert_id\":3,\"alert_url\":\"http://localhost:8080/alerts/3\",\"source_event_url\":\"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"team\":\"platform\",\"status\":\"firing\",\"source\":\"alertmanager\",\"title\":\"checkout returns 5xx above 5%\",\"message\":\"5"
+  ]
+ },
+ "pagerduty_events_v2_http": 202,
+ "total_seconds": 120.3
+}

@@ -1,0 +1,156 @@
+[23:59:39] STEP 1 git clone --branch release the repo
+[23:59:39] $ git clone -q --depth 1 --single-branch --branch release https://github.com/OneUptime/oneuptime.git src
+[00:00:27] exit=0
+
+[00:00:27] $ cat src/VERSION; git -C src log -1 --format=%cd
+[00:00:27] exit=0
+14.0.103
+Tue Nov 3 20:18:47 2026 +0000
+
+[00:00:27] STEP 2 cp config.example.env config.env
+[00:00:27] $ cp config.example.env config.env
+[00:00:27] exit=0
+
+[00:00:27] STEP 3 npm start (needs Node on the host, at least 8 GB of memory per the README)
+[00:00:27] $ npm start
+[00:03:21] exit=0
+
+> @oneuptime/root@14.0.103 start
+> node ./Scripts/Install/Preflight.js && node ./Scripts/Install/GenerateDatabasePassword.js && node ./Scripts/Install/ReplacePlaceholderSecrets.js && node ./Scripts/Install/FollowIngressPort.js && node ./Scripts/Install/CheckIngressPorts.js && sh ./Scripts/Install/WithConfig.sh docker compose up --remove-orphans -d $npm_config_services && npm run status-check
+
+Checking this server before OneUptime starts:
+  ✓ Docker 28.0.4 with Docker Compose 2.38.2.
+  ✓ 17 GB of memory.
+  ✓ 93 GB free for Docker's images and data.
+  ✓ Ports 80, 443, 3874 and 5400 are free.
+  ! HOST is localhost, so only this computer can open OneUptime. To open it from other computers, set HOST in config.env to this server's domain name or IP address, such as HOST=10.1.0.150, then run npm start again.
+ Network oneuptime_oneuptime  Creating
+ Network oneuptime_oneuptime  Created
+ Volume "oneuptime_postgres"  Creating
+ Volume "oneuptime_postgres"  Created
+ postgres Pulling 
+ 37fb86c2a767 Pulling fs layer 
+ 20f976d1514c Pulling fs layer 
+ 6e416cccfea8 Pulling fs layer 
+ a673edbe6c83 Pulling fs layer 
+ ea9864a1d4a6 Pulling fs layer 
+ e1360bbadd82 Pulling fs layer 
+ fd5a19c62926 Pulling fs layer 
+ e3579906994e Pulling fs layer 
+ 409d34150237 Pulling fs layer 
+ a7a21f92427a Pulling fs layer 
+ abafd1a7270f Pulling fs layer 
+ b885494f524c Pulling fs layer 
+ 29a4db89327d Pulling fs layer 
+ 5e3bbf876be1 Pulling fs layer 
+ fd5a19c62926 Waiting 
+ e3579906994e Waiting 
+ 409d34150237 Waiti
+...[trimmed]...
+rned HTTP 000, retrying in 15 seconds. The first start usually takes a few minutes.
+App localhost returned HTTP 502, retrying in 15 seconds. The first start usually takes a few minutes.
+App localhost returned HTTP 502, retrying in 15 seconds. The first start usually takes a few minutes.
+App localhost returned HTTP 502, retrying in 15 seconds. The first start usually takes a few minutes.
+✅ App endpoint is up (localhost)
+✅ App (Status Check) endpoint is up (localhost/status)
+✅ App (Ready Check) endpoint is up (localhost/status/ready)
+✅ Dashboard endpoint is up (localhost/dashboard)
+✅ Admin Dashboard endpoint is up (localhost/admin/env.js)
+✅ Public Dashboard endpoint is up (localhost/public-dashboard)
+✅ Accounts endpoint is up (localhost/accounts)
+✅ Status Page endpoint is up (localhost/status-page/)
+
+⏳ Confirming the backend stays ready (need 5 consecutive checks)
+   ✅ ready 1/5
+   ✅ ready 2/5
+   ✅ ready 3/5
+   ✅ ready 4/5
+   ✅ ready 5/5
+✅ Backend held ready across 5 consecutive checks
+
+🚀 OneUptime is up! 🚀
+
+Open http://localhost in your browser. On a new install, sign up at http://localhost/accounts/register: the first account becomes the admin of this OneUptime.
+Only this computer can open http://localhost. To open OneUptime from other computers, set HOST in config.env to this server's domain name or IP address, then run npm start again.
+
+Questions or feedback? Email hello@oneuptime.com. Running OneUptime for your organization? Ask sales@oneuptime.com about priority support.
+
+[00:03:21] $ docker ps --format '{{.Names}} {{.Image}} {{.Status}}'
+[00:03:21] exit=0
+oneuptime-global-runner-1 oneuptime/runner:release Up About a minute
+oneuptime-probe-1-1 oneuptime/probe:release Up About a minute
+oneuptime-app-1 oneuptime/app:release Up About a minute
+oneuptime-ingress-1 oneuptime/nginx:release Up About a minute
+oneuptime-clickhouse-1 clickhouse/clickhouse-server:26.7 Up About a minute (healthy)
+oneuptime-postgres-1 postgres:15 Up About a minute (healthy)
+oneuptime-valkey-1 valkey/valkey:9.1-alpine Up About a minute (healthy)
+
+[00:03:21] STEP 4 register the first user and create a project in the web UI
+[00:03:21] POST http://localhost/identity/signup body={'data': {'email': 'admin@example.com', 'password': 'Lab-password-1!', 'name': 'admin', 'companyName': 'lab', 'companyPhoneNumber': '+15145550100'}}
+-> 200 {"_id":"0328c12e-06d2-4ac5-91df-8fe54eebdcb4","name":"admin","email":"admin@example.com","isEmailVerified":true,"profilePictureId":null,"timezone":null,"isMasterAdmin":true,"enableTwoFactorAuth":false}
+[00:03:21] cookies ['user-token', 'user-refresh-token', 'user-id', 'user-email', 'user-name', 'user-is-master-admin']
+[00:03:21] POST http://localhost/api/project body={'data': {'name': 'lab'}}
+-> 200 {"_id":"2b4c5c81-e381-4946-9beb-d4b840f53504","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:21.317Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:21.317Z"},"deletedAt":null,"version":1,"name":"lab","slug":"lab-9146357763","paymentProviderPlanId":null,"paymentProviderSubscriptionId":null,"paymentProviderMeteredSubscriptionId":null,"paymentProviderSubscriptionSeats":null,"trialEndsAt":null,"paymentProviderCustomerId":null,"businessDetails":null,"businessDetailsCountry":null,"financeAccountingEmail":null,"paymentProviderSubscriptionStatus":null,"paymentProviderMeteredSubscriptionStatus":null,"paymentProviderPromoCode":null,"createdByUserId":{"_type":"ObjectID","value":"0328c12e-06d2-4ac5-91df-8fe54eebdcb4"},"deletedByUserId":null,"isBlocked":false,"isFeatureFlagMonitorGroupsEnabled":false,"unpaidSubscriptionNotificationCount":null,"paymentFailedDate":null,"paymentS
+[00:03:21] POST http://localhost/api/monitor-status/get-list?skip=0&limit=50 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'_id': True, 'name': True, 'isOperationalState': True, 'isOfflineState': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"d3e5238f-c51a-4373-b751-80cad6c9edd4","name":"Offline","isOperationalState":false,"isOfflineState":true},{"_id":"f1d681e6-e5fd-4e51-8152-5fd0ae80e4f7","name":"Degraded","isOperationalState":false,"isOfflineState":false},{"_id":"be743409-7233-4203-89cd-b019b2ecef69","name":"Operational","isOperationalState":true,"isOfflineState":false}],"count":3,"skip":0,"limit":50}
+[00:03:21] statuses [{'_id': 'd3e5238f-c51a-4373-b751-80cad6c9edd4', 'name': 'Offline', 'isOperationalState': False, 'isOfflineState': True}, {'_id': 'f1d681e6-e5fd-4e51-8152-5fd0ae80e4f7', 'name': 'Degraded', 'isOperationalState': False, 'isOfflineState': False}, {'_id': 'be743409-7233-4203-89cd-b019b2ecef69', 'name': 'Operational', 'isOperationalState': True, 'isOfflineState': False}]
+[00:03:21] POST http://localhost/api/incident-severity/get-list?skip=0&limit=50 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'_id': True, 'name': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"329bb242-6e9d-4ff8-a29e-15cfa9272cd5","name":"Minor Incident"},{"_id":"595ff43e-30b2-4678-9bee-76db7ed2804c","name":"Major Incident"},{"_id":"7c0475a2-f2e8-4d09-b57e-192bd7281725","name":"Critical Incident"}],"count":3,"skip":0,"limit":50}
+[00:03:21] sev [{'_id': '329bb242-6e9d-4ff8-a29e-15cfa9272cd5', 'name': 'Minor Incident'}, {'_id': '595ff43e-30b2-4678-9bee-76db7ed2804c', 'name': 'Major Incident'}, {'_id': '7c0475a2-f2e8-4d09-b57e-192bd7281725', 'name': 'Critical Incident'}]
+[00:03:21] STEP 5 create an Incoming Request monitor with two criteria: request body contains "status":"firing" opens an incident, "status":"resolved" brings it back; turn on grouping by requestBody.alerts[*].fingerprint
+[00:03:21] POST http://localhost/api/monitor body={'data': {'name': 'Alertmanager', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'monitorType': 'Incoming Request', 'monitorSteps': {'_type': 'MonitorSteps', 'value': {'defaultMonitorStatusId': {'_type': 'ObjectID', 'value': 'be743409-7233-4203-89cd-b019b2ecef69'}, 'monitorStepsInstanceArray': [{'_type': 'MonitorStep', 'value': {'id': '4981becd-eabb-4fbe-8831-fd2217c533a4', 'monitorDestination': None, 'requestType': 'GET', 'monitorCriteria': {'_type': 'MonitorCriteria', 'value': {'monitorCriteriaInstanceArray': [{'_type': 'MonitorCriteriaInstance', 'value': {'id': '91c7848d-268e-4300-a7a
+-> 200 {"_id":"18b69c94-5165-41cd-8e0e-a44d27b615ca","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:21.749Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:21.749Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"name":"Alertmanager","description":null,"slug":"alertmanager-8778859113","createdByUserId":{"_type":"ObjectID","value":"0328c12e-06d2-4ac5-91df-8fe54eebdcb4"},"deletedByUserId":null,"isArchived":false,"archiv
+[00:03:21] POST http://localhost/api/monitor/18b69c94-5165-41cd-8e0e-a44d27b615ca/get-item body={'select': {'incomingRequestSecretKey': True}}
+-> 200 {"_id":"18b69c94-5165-41cd-8e0e-a44d27b615ca","incomingRequestSecretKey":{"_type":"ObjectID","value":"54fe668d-d0fb-4276-882b-1e3b9043165c"}}
+[00:03:21] --- A. first firing
+[00:03:21] POST http://localhost/heartbeat/54fe668d-d0fb-4276-882b-1e3b9043165c body=<1483 bytes>
+-> 200 {}
+[00:03:22] ALERTS after first firing [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}]
+[00:03:22] --- B. repeat firing, same bytes
+[00:03:22] POST http://localhost/heartbeat/54fe668d-d0fb-4276-882b-1e3b9043165c body=<1483 bytes>
+-> 200 {}
+[00:03:26] ALERTS after_repeat [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}]
+[00:03:26] --- C. resolved
+[00:03:26] POST http://localhost/heartbeat/54fe668d-d0fb-4276-882b-1e3b9043165c body=<1504 bytes>
+-> 200 {}
+[00:03:34] ALERTS after_resolved [{"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Resolved"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Resolved"}]
+[00:03:34] --- D. schedule and escalation
+[00:03:34] POST http://localhost/api/user/get-list?skip=0&limit=5 body={'query': {}, 'select': {'_id': True, 'email': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"0328c12e-06d2-4ac5-91df-8fe54eebdcb4","email":{"_type":"Email","value":"admin@example.com"}}],"count":1,"skip":0,"limit":5}
+[00:03:34] POST http://localhost/api/on-call-duty-policy body={'data': {'name': 'checkout', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}}
+-> 200 {"_id":"fb9d6e6b-6754-4910-a8f5-578287508b5d","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.828Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.828Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"name":"c
+[00:03:34] POST http://localhost/api/on-call-duty-policy-schedule body={'data': {'name': 'primary', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}}
+-> 200 {"_id":"f0f9b88b-771f-4e29-8a9b-b13f71d9e859","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.849Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.849Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"name":"p
+[00:03:34] POST http://localhost/api/on-call-duty-policy-escalation-rule body={'data': {'name': 'first', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'order': 1, 'escalateAfterInMinutes': 1}}
+-> 200 {"_id":"14ec098d-7fcf-420e-ae8e-e9118e8533c6","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.862Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.862Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"onCallDu
+[00:03:34] POST http://localhost/api/on-call-duty-policy-escalation-rule-user body={'data': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'onCallDutyPolicyEscalationRuleId': '14ec098d-7fcf-420e-ae8e-e9118e8533c6', 'userId': '0328c12e-06d2-4ac5-91df-8fe54eebdcb4'}}
+-> 200 {"_id":"e3410a53-7ab0-4acb-a1ae-7389c8bd7f95","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.872Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.872Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"onCallDu
+[00:03:34] POST http://localhost/api/on-call-duty-policy-escalation-rule body={'data': {'name': 'second', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'order': 2, 'escalateAfterInMinutes': 1}}
+-> 200 {"_id":"dc7b8599-c3d1-44cb-8000-da3a922c66f4","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.917Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.917Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"onCallDu
+[00:03:34] POST http://localhost/api/on-call-duty-policy-escalation-rule-user body={'data': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'onCallDutyPolicyId': 'fb9d6e6b-6754-4910-a8f5-578287508b5d', 'onCallDutyPolicyEscalationRuleId': 'dc7b8599-c3d1-44cb-8000-da3a922c66f4', 'userId': '0328c12e-06d2-4ac5-91df-8fe54eebdcb4'}}
+-> 200 {"_id":"fab375b3-bc5c-40c0-8ca0-659805513e8d","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.925Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.925Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"onCallDu
+[00:03:34] POST http://localhost/api/monitor body={'data': {'name': 'Alertmanager paged', 'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504', 'monitorType': 'Incoming Request', 'monitorSteps': {'_type': 'MonitorSteps', 'value': {'defaultMonitorStatusId': {'_type': 'ObjectID', 'value': 'be743409-7233-4203-89cd-b019b2ecef69'}, 'monitorStepsInstanceArray': [{'_type': 'MonitorStep', 'value': {'id': '8a688664-dc41-40f5-b1bd-18ff16e27944', 'monitorDestination': None, 'requestType': 'GET', 'monitorCriteria': {'_type': 'MonitorCriteria', 'value': {'monitorCriteriaInstanceArray': [{'_type': 'MonitorCriteriaInstance', 'value': {'id': 'd58a9eee-d642-4c
+-> 200 {"_id":"bf0fff01-e3f3-45ac-8d3d-c5e3b879ff0c","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.963Z"},"updatedAt":{"_type":"DateTime","value":"2026-11-06T00:03:34.963Z"},"deletedAt":null,"version":1,"projectId":{"_type":"ObjectID","value":"2b4c5c81-e381-4946-9beb-d4b840f53504"},"name":"A
+[00:03:34] POST http://localhost/api/monitor/bf0fff01-e3f3-45ac-8d3d-c5e3b879ff0c/get-item body={'select': {'incomingRequestSecretKey': True}}
+-> 200 {"_id":"bf0fff01-e3f3-45ac-8d3d-c5e3b879ff0c","incomingRequestSecretKey":{"_type":"ObjectID","value":"7c141b43-a3a6-4094-8775-3a3cfc3129e9"}}
+[00:03:34] POST http://localhost/heartbeat/7c141b43-a3a6-4094-8775-3a3cfc3129e9 body=<1483 bytes>
+-> 200 {}
+[00:05:14] POST http://localhost/api/on-call-duty-policy-execution-log/get-list?skip=0&limit=10 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'status': True, 'statusMessage': True, 'lastEscalationRuleExecutedAt': True, 'lastExecutedEscalationRuleOrder': True, 'executeNextEscalationRuleInMinutes': True, 'createdAt': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"e326fa0e-d169-4e29-9a0b-02480db44b8b","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:35.260Z"},"status":"Executing","statusMessage":"First escalation rule executed...","lastExecutedEscalationRuleOrder":2,"lastEscalationRuleExecutedAt":{"_type":"DateTime","value":"2026-11-06T00:05:00.570Z"},"executeNextEscalationRuleInMinutes":1},{"_id":"ffc96791-59e4-4c00-89d1-4b644878ca77","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:35.193Z"},"status":"Executing","statusMessage":"First escalation rule executed...","lastExecutedEscalationRuleOrder":2,"lastEscalationRuleExecutedAt":{"_type":"DateTime","value":"2026-11-06T00:05:00.571Z"},"executeNextEscalationRuleInMinutes":1}],"count":2,"skip":0,"limit":10}
+[00:05:14] POST http://localhost/api/on-call-duty-policy-execution-log-timeline/get-list?skip=0&limit=10 body={'query': {'projectId': '2b4c5c81-e381-4946-9beb-d4b840f53504'}, 'select': {'status': True, 'statusMessage': True, 'createdAt': True}, 'sort': {}}
+-> 200 {"data":[{"_id":"f83fc536-85a9-4987-8dd4-e9ec638bf603","createdAt":{"_type":"DateTime","value":"2026-11-06T00:05:00.617Z"},"statusMessage":"Alert Sent","status":"Notification Sent"},{"_id":"cf35d19f-dec5-43b9-ac2b-e114637b004d","createdAt":{"_type":"DateTime","value":"2026-11-06T00:05:00.616Z"},"statusMessage":"Alert Sent","status":"Notification Sent"},{"_id":"095c7c37-2900-4d5b-8c0a-32fa7994a387","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:35.298Z"},"statusMessage":"Alert Sent","status":"Notification Sent"},{"_id":"f7fc4fc0-cb80-483d-9379-446e026bb30d","createdAt":{"_type":"DateTime","value":"2026-11-06T00:03:35.238Z"},"statusMessage":"Alert Sent","status":"Notification Sent"}],"count":4,"skip":0,"limit":10}
+[00:05:16] ALERTS during_escalation [{"n": 4, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Identified"}, {"n": 3, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Identified"}, {"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Resolved"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Resolved"}]
+[00:05:16] POST http://localhost/heartbeat/7c141b43-a3a6-4094-8775-3a3cfc3129e9 body=<1504 bytes>
+-> 200 {}
+[00:05:36] ALERTS after_final_resolve [{"n": 4, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Resolved"}, {"n": 3, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Resolved"}, {"n": 2, "title": "CheckoutHighErrorRate - Fingerprint: 5d3b118068113e9d", "state": "Resolved"}, {"n": 1, "title": "CheckoutHighErrorRate - Fingerprint: d77e5210e3203776", "state": "Resolved"}]
+[00:05:36] NOT TESTED Delivery: no SMTP or Twilio was configured on OneUptime, so we read its on-call execution log. Schedules were created but a rotation layer was not exercised.
+[00:05:36] $ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+[00:05:38] exit=0
+oneuptime-global-runner-1 170.6MiB / 15.61GiB
+oneuptime-probe-1-1 200.6MiB / 15.61GiB
+oneuptime-app-1 719.1MiB / 15.61GiB
+oneuptime-ingress-1 302.6MiB / 15.61GiB
+oneuptime-clickhouse-1 333.9MiB / 15.61GiB
+oneuptime-postgres-1 138.9MiB / 15.61GiB
+oneuptime-valkey-1 6.254MiB / 15.61GiB
+

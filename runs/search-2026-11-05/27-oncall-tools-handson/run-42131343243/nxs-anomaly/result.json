@@ -1,0 +1,156 @@
+{
+ "tool": "nxs-anomaly",
+ "steps_to_first_alert": [
+  "git clone at the release tag, cp .env.example .env and fill in the version, Postgres password and admin password",
+  "docker compose up -d --wait",
+  "create an integration of type alertmanager in the UI or API"
+ ],
+ "not_tested": [],
+ "findings": [],
+ "version": "v1.9.23",
+ "boot_seconds": 0.0,
+ "install_seconds": 48.8,
+ "firing_http": 202,
+ "firing_body": "{\"external_url\":\"http://ca4b3f2ca228:9093\",\"group_key\":\"{}:{alertname=\\\"CheckoutHighErrorRate\\\", service=\\\"checkout\\\"}\",\"processed\":2,\"receiver\":\"capture\",\"results\":[{\"alert\":{\"alert_group_id\":\"grp_cc97b74c6278\",\"annotations\":{\"description\":\"5xx ratio on checkout is above 5% for 5 minutes\",\"summary\":\"checkout returns 5xx above 5%\"},\"ends_at\":null,\"fingerprint\":\"d77e5210e3203776\",\"generator_url\":\"h",
+ "seconds_to_first_alert": 48.8,
+ "after_first_firing": [
+  {
+   "title": "checkout returns 5xx above 5%",
+   "status": "open",
+   "alert_count": 1,
+   "id": "grp_cc97b74c6278"
+  },
+  {
+   "title": "checkout returns 5xx above 5%",
+   "status": "open",
+   "alert_count": 1,
+   "id": "grp_c67e5e10bf38"
+  }
+ ],
+ "repeat_http": 202,
+ "alert_states": {
+  "after_repeat": [
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "open",
+    "alert_count": 2,
+    "id": "grp_cc97b74c6278"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "open",
+    "alert_count": 2,
+    "id": "grp_c67e5e10bf38"
+   }
+  ],
+  "after_resolved": [
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_cc97b74c6278"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_c67e5e10bf38"
+   }
+  ],
+  "during_escalation": [
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "open",
+    "alert_count": 2,
+    "id": "grp_c4f0a942f72e"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "open",
+    "alert_count": 2,
+    "id": "grp_b23925e57ae9"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_cc97b74c6278"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_c67e5e10bf38"
+   }
+  ],
+  "after_final_resolve": [
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_c4f0a942f72e"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_b23925e57ae9"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_cc97b74c6278"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_c67e5e10bf38"
+   }
+  ],
+  "after_pagerduty_event": [
+   {
+    "title": "[FIRING:1] PagerDutyShape checkout (critical)",
+    "status": "open",
+    "alert_count": 1,
+    "id": "grp_b4a5b52379e9"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_c4f0a942f72e"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_b23925e57ae9"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_cc97b74c6278"
+   },
+   {
+    "title": "checkout returns 5xx above 5%",
+    "status": "resolved",
+    "alert_count": 2,
+    "id": "grp_c67e5e10bf38"
+   }
+  ]
+ },
+ "resolved_http": 202,
+ "resolved_body": "{\"external_url\":\"http://ca4b3f2ca228:9093\",\"group_key\":\"{}:{alertname=\\\"CheckoutHighErrorRate\\\", service=\\\"checkout\\\"}\",\"processed\":2,\"receiver\":\"capture\",\"results\":[{\"alert\":{\"annotations\":{\"description\":\"5xx ratio on checkout is above 5% for 5 minutes\",\"summary\":\"checkout returns 5xx above 5%\"},\"e",
+ "escalation": {
+  "first_page_s": 1.0,
+  "second_page_s": 61.0,
+  "alice_posts": 2,
+  "bob_posts": 2,
+  "sample": "{\"alerts\":[{\"annotations\":{\"summary\":\"checkout returns 5xx above 5%\"},\"endsAt\":\"0001-01-01T00:00:00Z\",\"fingerprint\":\"\",\"generatorURL\":\"\",\"labels\":{\"alertname\":\"CheckoutHighErrorRate\",\"namespace\":\"shop\",\"pod\":\"checkout-1\",\"service\":\"checkout\",\"severity\":\"critical\"},\"startsAt\":\"2026-11-05T23:49:19+00:00\",\"status\":\"firing\"}],\"commonAnnotations\":{\"summary\":\"checkout returns 5xx above 5%\"},\"commonLabels\":{\"alertname\":\"CheckoutHighErrorRate\",\"namespace\":\"shop\",\"pod\":\"checkout-1\",\"service\":\"checkout\",\""
+ },
+ "pagerduty_events_v2_http": 202,
+ "total_seconds": 158.6
+}

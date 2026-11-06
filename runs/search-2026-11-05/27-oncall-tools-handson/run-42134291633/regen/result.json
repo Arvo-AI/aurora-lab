@@ -1,0 +1,128 @@
+{
+ "tool": "regen",
+ "steps_to_first_alert": [
+  "git clone the repo and cp .env.example .env",
+  "strip the inline comments from .env: on empty keys they are read as values, so SAML and Teams switch on and the app exits in a loop",
+  "docker compose up -d with the app service pointed at the published image ghcr.io/fluidifyai/regen:1.2.4 instead of building",
+  "create the first admin account (first-run page or POST /api/v1/auth/bootstrap)",
+  "point Alertmanager at /api/v1/webhooks/prometheus (no token, no integration object)"
+ ],
+ "not_tested": [
+  "Delivery: Regen's escalation engine sends DMs through Slack, Teams or Telegram and has no outbound webhook, so no notification reached a person. We read the escalation state from its database, and it records tier and notification time only."
+ ],
+ "findings": [
+  "user 8 refused: HTTP 403 {\"error\":{\"code\":\"user_limit_reached\",\"current\":7,\"limit\":7,\"message\":\"You've reached the community edition limit of 7 users. Upgrade to Fluidify Pro for unlimited users.\"}}"
+ ],
+ "version": "v1.2.4",
+ "boot_seconds": 0.0,
+ "install_seconds": 50.7,
+ "firing_http": 200,
+ "firing_body": "{\"incidents_created\":1,\"received\":2}",
+ "seconds_to_first_alert": 50.9,
+ "after_first_firing": [
+  {
+   "alert": "CheckoutHighErrorRate",
+   "status": "firing",
+   "id": "5d3b118068113e9d"
+  },
+  {
+   "alert": "CheckoutHighErrorRate",
+   "status": "firing",
+   "id": "d77e5210e3203776"
+  },
+  {
+   "incident": "CheckoutHighErrorRate",
+   "status": "triggered"
+  }
+ ],
+ "repeat_http": 200,
+ "alert_states": {
+  "after_repeat": [
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "firing",
+    "id": "5d3b118068113e9d"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "firing",
+    "id": "d77e5210e3203776"
+   },
+   {
+    "incident": "CheckoutHighErrorRate",
+    "status": "triggered"
+   }
+  ],
+  "after_resolved": [
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "5d3b118068113e9d"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "d77e5210e3203776"
+   },
+   {
+    "incident": "CheckoutHighErrorRate",
+    "status": "triggered"
+   }
+  ],
+  "during_escalation": [
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "firing",
+    "id": "bbbb118068113e9d"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "firing",
+    "id": "aaaa5210e3203776"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "5d3b118068113e9d"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "d77e5210e3203776"
+   },
+   {
+    "incident": "CheckoutHighErrorRate",
+    "status": "triggered"
+   }
+  ],
+  "after_final_resolve": [
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "bbbb118068113e9d"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "aaaa5210e3203776"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "5d3b118068113e9d"
+   },
+   {
+    "alert": "CheckoutHighErrorRate",
+    "status": "resolved",
+    "id": "d77e5210e3203776"
+   },
+   {
+    "incident": "CheckoutHighErrorRate",
+    "status": "triggered"
+   }
+  ]
+ },
+ "resolved_http": 200,
+ "resolved_body": "{\"incidents_created\":0,\"received\":2}",
+ "total_seconds": 314.1
+}

@@ -9,7 +9,7 @@ Run it:
     gh workflow run repro.yml -R Arvo-AI/aurora-lab -f ref=<branch> -f scenario=27 -f kind=false
 
 `tools.list` picks the tools for a run. The job has a 45 minute limit, so the set
-was split over two runs; both are under `runs/search-2026-11-05/27-oncall-tools-handson/`.
+was split over three runs (run ids in the folder names); all are under `runs/search-2026-11-05/27-oncall-tools-handson/`.
 
 Protocol for each tool, in `harness/lib.py`:
 
@@ -22,3 +22,5 @@ Protocol for each tool, in `harness/lib.py`:
 
 Each tool's raw HTTP and shell output is in `<tool>/transcript.log`, the extracted
 numbers in `<tool>/result.json`. Timings come from one run on a 4 vCPU, 16 GB runner.
+
+The final LinkedIn Oncall and Iris run never got past HTTP 401 Application not found on the seeded applications, so no webhook behaviour was observed for it.

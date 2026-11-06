@@ -1,0 +1,275 @@
+STEP 1 download docker-compose.yml
+$ curl -fsSL https://raw.githubusercontent.com/grafana-cold-storage/oncall/v1.16.11/docker-compose.yml -o docker-compose.yml
+exit=0
+
+STEP 2 write .env: DOMAIN, COMPOSE_PROFILES=with_grafana, SECRET_KEY
+STEP 3 docker compose pull && docker compose up -d
+$ docker compose -f docker-compose.yml -f override.yml pull
+exit=0
+ oncall_db_migration Skipped - Image is already being pulled by celery 
+ engine Skipped - Image is already being pulled by celery 
+ mailpit Pulling 
+ celery Pulling 
+ grafana Pulling 
+ redis Pulling 
+ 7b229517ed22 Pulling fs layer 
+ 5d9afc867194 Pulling fs layer 
+ e1656acc19fd Pulling fs laye
+$ docker compose -f docker-compose.yml -f override.yml up -d --wait --wait-timeout 300
+exit=0
+ Network grafana-oncall-oss_default  Creating
+ Network grafana-oncall-oss_default  Created
+ Volume "grafana-oncall-oss_grafana_data"  Creating
+ Volume "grafana-oncall-oss_grafana_data"  Created
+ Volume "grafana-oncall-oss_oncall_data"  Creating
+ Volume "grafana-oncall-oss_oncall_data"  Create
+$ docker compose -f docker-compose.yml -f override.yml ps -a --format '{{.Service}} {{.Image}} {{.Status}}'
+exit=0
+celery grafana/oncall Up Less than a second
+engine grafana/oncall Up Less than a second
+grafana grafana/grafana:latest Up 21 seconds
+mailpit axllent/mailpit:v1.33.0 Up 21 seconds (healthy)
+oncall_db_migration grafana/oncall Exited (0) 1 second ago
+redis redis:7.0.15 Up 21 seconds (healthy)
+
+$ docker compose -f docker-compose.yml -f override.yml logs grafana --tail=40 | grep -iE 'plugin|oncall|error' | tail -15
+exit=0
+grafana-1  | logger=plugin.installer t=2026-11-05T23:43:19.605906928Z level=info msg="Updating plugin" pluginId=opentsdb from=13.0.6 to=13.0.8
+grafana-1  | logger=installer.fs t=2026-11-05T23:43:20.013993141Z level=info msg="Downloaded and extracted opentsdb v13.0.8 zip successfully to /var/l
+GET http://localhost:3000/api/health body=None
+-> 200 {
+  "database": "ok",
+  "version": "13.3.0",
+  "commit": "6f8ce3c693b493043ebcd4787566d2b6b118b0f0"
+}
+GET http://localhost:3000/api/plugins/grafana-oncall-app/settings body=None
+-> 200 {"name":"Grafana OnCall","type":"app","id":"grafana-oncall-app","enabled":false,"pinned":false,"autoEnabled":false,"module":"public/plugins/grafana-oncall-app/module.js","baseUrl":"public/plugins/grafana-oncall-app","
+STEP 4 provision the plugin: POST .../settings then POST .../resources/plugin/install
+POST http://localhost:3000/api/plugins/grafana-oncall-app/settings body={'enabled': True, 'jsonData': {'stackId': 5, 'orgId': 100, 'onCallApiUrl': 'http://engine:8080', 'grafanaUrl': 'http://grafana:3000'}}
+-> 200 {"message":"Plugin settings updated"}
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/install body=None
+-> 200 
+GET http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/status body=None
+-> 200 {"pluginConnection":{"settings":{"ok":true},"service_account_token":{"ok":true},"grafana_url_from_plugin":{"ok":true},"grafana_url_from_engine":{"ok":false,"error":"Not validated"},"oncall_api_url":{"ok
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/install body=None
+-> 200 
+GET http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/status body=None
+-> 200 {"pluginConnection":{"settings":{"ok":true},"service_account_token":{"ok":true},"grafana_url_from_plugin":{"ok":true},"grafana_url_from_engine":{"ok":true},"oncall_api_url":{"ok":true},"oncall_token":{"
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/tokens/ body={'name': 'lab'}
+-> 201 {"id":1,"token":"23388f0fc1b757cc9464ec5087ce9dcdebcfee888b79b82137a5355bc6aacd1d","name":"lab","created_at":"2026-11-05T23:43:36.069269Z"}
+STEP 5 create an integration of type alertmanager (UI or public API)
+POST http://localhost:8080/api/v1/integrations/ body={'type': 'alertmanager', 'name': 'prometheus'}
+-> 201 {"maintenance_mode":null,"maintenance_started_at":null,"maintenance_end_at":null,"id":"C1L93MHWMLSZK","name":"prometheus","description_short":null,"team_id":null,"link":"http://localhost:8080/i
+--- A. first firing
+POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+ALERTS after first firing [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 1}]
+--- B. repeat firing, same bytes
+POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+ALERTS after_repeat [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}]
+--- C. resolved
+POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1504 bytes>
+-> 200 "Ok."
+ALERTS after_resolved [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}]
+--- D. schedule and escalation
+POST http://localhost:3000/api/admin/users body={'name': 'alice', 'email': 'alice@example.com', 'login': 'alice', 'password': 'lab-password-1'}
+-> 200 {"id":3,"uid":"ag3fhulywlaf4e","message":"User created"}
+PATCH http://localhost:3000/api/org/users/3 body={'role': 'Editor'}
+-> 200 {"message":"Organization user updated"}
+POST http://localhost:3000/api/admin/users body={'name': 'bob', 'email': 'bob@example.com', 'login': 'bob', 'password': 'lab-password-1'}
+-> 200 {"id":4,"uid":"dg3fhum00jny8d","message":"User created"}
+PATCH http://localhost:3000/api/org/users/4 body={'role': 'Editor'}
+-> 200 {"message":"Organization user updated"}
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":3,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+POST http://localhost:8080/api/v1/personal_notification_rules/ body={'user_id': 'U82HRAQU1J69N', 'type': 'notify_by_email', 'position': 0}
+-> 201 {"position":0,"id":"NFSNBGVY2CAHR","user_id":"U82HRAQU1J69N","important":false,"type":"notify_by_email"}
+POST http://localhost:8080/api/v1/personal_notification_rules/ body={'user_id': 'UML9YK7KMX626', 'type': 'notify_by_email', 'position': 0}
+-> 201 {"position":0,"id":"NHY4SNC6UY57B","user_id":"UML9YK7KMX626","important":false,"type":"notify_by_email"}
+POST http://localhost:8080/api/v1/on_call_shifts/ body={'name': 'primary', 'type': 'rolling_users', 'start': '2026-11-05T22:48:46', 'duration': 86400, 'frequency': 'daily', 'rolling_users': [['U82HRAQU1J69N'], ['UML9YK7KMX626']], 'start_rotation_from_user_index': 0, 'time_zone': 'UTC'}
+-> 201 {"id":
+POST http://localhost:8080/api/v1/schedules/ body={'name': 'primary', 'type': 'calendar', 'time_zone': 'UTC', 'shifts': ['O7KXCFHKZUFEQ']}
+-> 201 {"id":"SK8D2I6EUARVC","team_id":null,"name":"primary","time_zone":"UTC","on_call_now":["U82HRAQU1J69N"],"shifts":["O7KXCFHKZUFEQ"],"ical_url_overrides":nu
+GET http://localhost:8080/api/v1/schedules/SK8D2I6EUARVC/ body=None
+-> 200 {"id":"SK8D2I6EUARVC","team_id":null,"name":"primary","time_zone":"UTC","on_call_now":["U82HRAQU1J69N"],"shifts":["O7KXCFHKZUFEQ"],"ical_url_overrides":null,"enable_web_overrides":false,"slack":{"channel_id":null,"user_group_
+POST http://localhost:8080/api/v1/escalation_chains/ body={'name': 'checkout'}
+-> 201 {"id":"F4KV6PIQZL45H","name":"checkout","team_id":null}
+POST http://localhost:8080/api/v1/escalation_policies/ body={'type': 'notify_on_call_from_schedule', 'notify_on_call_from_schedule': 'SK8D2I6EUARVC', 'escalation_chain_id': 'F4KV6PIQZL45H', 'position': 0}
+-> 201 {"position":0,"id":"EIX19RCZ5JZU8","escalation_chain_id":"F4KV6PIQZL45H","type":"notify_
+POST http://localhost:8080/api/v1/escalation_policies/ body={'type': 'wait', 'duration': 60, 'escalation_chain_id': 'F4KV6PIQZL45H', 'position': 1}
+-> 201 {"position":1,"id":"ERFSQFBIW5413","escalation_chain_id":"F4KV6PIQZL45H","type":"wait","duration":60}
+POST http://localhost:8080/api/v1/escalation_policies/ body={'type': 'notify_persons', 'persons_to_notify': ['UML9YK7KMX626'], 'escalation_chain_id': 'F4KV6PIQZL45H', 'position': 2}
+-> 201 {"position":2,"id":"EIW65XBH9YN5X","escalation_chain_id":"F4KV6PIQZL45H","type":"notify_persons","persons_to_no
+PUT http://localhost:8080/api/v1/routes/RIJ5MNZRQ644L/ body={'escalation_chain_id': 'F4KV6PIQZL45H'}
+-> 200 {"position":0,"id":"RIJ5MNZRQ644L","integration_id":"C1L93MHWMLSZK","escalation_chain_id":"F4KV6PIQZL45H","routing_type":"regex","routing_regex":null,"is_the_last_route":true,"slack":{"channel
+POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+ALERTS during_escalation [{"id": "IKTP3Y9F4JPBS", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}, {"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}]
+POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1504 bytes>
+-> 200 "Ok."
+ALERTS after_final_resolve [{"id": "IKTP3Y9F4JPBS", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}, {"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}]
+$ docker compose -f docker-compose.yml -f override.yml logs celery --tail=15
+exit=0
+celery-1  | 2026-11-05 23:50:23,484 source=engine:celery worker=ForkPoolWorker-2 task_id=92fe098a-ebb9-4f86-b18a-969d70b0db47 task_name=apps.slack.representatives.alert_group_representative.on_alert_group_action_triggered_async name=engine.celery level=INFO task finished args=[12]
+celery-1  |
+NOT TESTED SMS and phone: needs your own Twilio, Exotel or Zvonok account since Grafana's Cloud Connection stopped serving OSS. Mobile push does not work. Delivery was tested with email to a local Mailpit.
+$ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+exit=0
+grafana-oncall-oss-celery-1 262.2MiB / 15.61GiB
+grafana-oncall-oss-engine-1 249MiB / 15.61GiB
+grafana-oncall-oss-grafana-1 458.8MiB / 500MiB
+grafana-oncall-oss-redis-1 4.055MiB / 500MiB
+grafana-oncall-oss-mailpit-1 8.922MiB / 15.61GiB
+
+exit 0

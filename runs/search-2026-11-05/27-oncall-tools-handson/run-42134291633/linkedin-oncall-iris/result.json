@@ -1,0 +1,31 @@
+{
+ "tool": "linkedin-oncall-iris",
+ "steps_to_first_alert": [
+  "git clone linkedin/iris and linkedin/oncall",
+  "docker compose up -d --build in each repo (no published images; each builds from its Dockerfile)",
+  "find or create an Iris application and key, plus a plan"
+ ],
+ "not_tested": [
+  "LinkedIn Oncall schedules and Iris plans: we stopped after the webhook test. Oncall is a calendar and Iris does the paging, and the two are connected by config we did not set up. Senders need your own Twilio or SMTP."
+ ],
+ "findings": [],
+ "version": "iris aa814f0 2024-01-18\noncall 9bc2b68 2025-08-20",
+ "iris_build_exit": 0,
+ "oncall_build_exit": 0,
+ "install_seconds": 150.8,
+ "firing_http": 401,
+ "firing_body": "{\"title\":\"Authentication failure\",\"description\":\"Application not found\"}",
+ "seconds_to_first_alert": 239.2,
+ "after_first_firing": [],
+ "repeat_http": 401,
+ "alert_states": {
+  "after_repeat": [],
+  "after_resolved": [],
+  "after_iris_plan": []
+ },
+ "resolved_http": 401,
+ "resolved_body": "{\"title\":\"Authentication failure\",\"description\":\"Application not found\"}",
+ "with_iris_plan_http": 401,
+ "with_iris_plan_body": "{\"title\":\"Authentication failure\",\"description\":\"Application not found\"}",
+ "total_seconds": 255.6
+}

@@ -1,0 +1,100 @@
+$ docker compose -f compose.yml pull
+exit=0
+ goalert Pulling 
+ db Pulling 
+ 55afa1ecc21d Pulling fs layer 
+ 17bb662c6913 Pulling fs layer 
+ 343d3ac26327 Pulling fs layer 
+ 4f4fb700ef54 Pulling fs layer 
+ 4f4fb700ef54 Waiting 
+ 881fc932939e Pulling fs layer 
+ 4af2f594366f Pulling fs layer 
+ a6e011ae4b07 Pulling fs layer 
+ 80bf5832b7b5 P
+STEP 1 write a compose file: Postgres plus goalert/goalert:v0.35.0 (no compose file ships in the docs, the docs show docker run)
+STEP 2 docker compose up -d
+$ docker compose -f compose.yml up -d --wait
+exit=0
+ Network goalert_default  Creating
+ Network goalert_default  Created
+ Container goalert-db-1  Creating
+ Container goalert-db-1  Created
+ Container goalert-goalert-1  Creating
+ Container goalert-goalert-1  Created
+ Container goalert-db-1  Starting
+ Container goalert-db-1  Started
+ Container go
+STEP 3 goalert add-user --admin (first login needs a CLI step)
+$ docker compose -f compose.yml exec -T goalert goalert add-user --admin --user admin --pass lab-password-1 --email admin@example.com
+exit=0
+time="2026-11-05T23:42:36Z" level=info msg="Username 'admin' added." AuthSystemComponent=AddUser
+
+$ docker compose -f compose.yml exec -T goalert goalert add-user  --user alice --pass lab-password-1 --email alice@example.com
+exit=0
+time="2026-11-05T23:42:36Z" level=info msg="Username 'alice' added." AuthSystemComponent=AddUser
+
+$ docker compose -f compose.yml exec -T goalert goalert add-user  --user bob --pass lab-password-1 --email bob@example.com
+exit=0
+time="2026-11-05T23:42:37Z" level=info msg="Username 'bob' added." AuthSystemComponent=AddUser
+
+POST http://localhost:8081/api/v2/identity/providers/basic?noRedirect=1 body={'username': 'admin', 'password': 'lab-password-1'}
+-> 200 U2zFbU37SUistCcJqYbygfkBABwcxUG3PAnnNiEsLnXbnUzoO6We7gP3QtNZUmEF_zG6KNCMlbbG0KP9JnrwrAvgZ5uhpRJgs68gQxE=
+STEP 4 UI or GraphQL: create a service, an escalation policy and an integration key of type Prometheus Alertmanager
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:CreateServiceInput!){createService(input:$i){id name escalationPolicyID integrationKeys{id type href}}}', 'variables': {'i': {'name': 'checkout', 'newEscalationPolicy': {'name': 'checkout-ep', 'repeat': 0}, 'newIntegrationKeys': [{'t
+--- A. first firing
+POST http://localhost:8081/api/v2/prometheusalertmanager/incoming?token=REDACTED body=<1483 bytes>
+-> 200 
+ALERTS after first firing [{"alertID": 1, "status": "StatusUnacknowledged", "summary": "checkout returns 5xx above 5%"}]
+--- B. repeat firing, same bytes
+POST http://localhost:8081/api/v2/prometheusalertmanager/incoming?token=REDACTED body=<1483 bytes>
+-> 200 
+ALERTS after_repeat [{"alertID": 1, "status": "StatusUnacknowledged", "summary": "checkout returns 5xx above 5%"}]
+--- C. resolved
+POST http://localhost:8081/api/v2/prometheusalertmanager/incoming?token=REDACTED body=<1504 bytes>
+-> 200 
+ALERTS after_resolved [{"alertID": 1, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}]
+--- D. schedule and escalation
+POST http://localhost:8081/api/graphql body={'query': 'mutation{setConfig(input:[{id:"Webhook.Enable",value:"true"}])}', 'variables': {}}
+-> 200 {"data":{"setConfig":true}}
+POST http://localhost:8081/api/graphql body={'query': 'query{users(first:10){nodes{id name}}}', 'variables': {}}
+-> 200 {"data":{"users":{"nodes":[{"id":"b17e8926-1dfb-41ab-9ef8-b6a939ac0e2c","name":"admin"},{"id":"4c1cf2eb-c3fd-416e-ab06-2bce63c7120c","name":"alice"},{"id":"420da3f5-41ee-433c-ba3c-
+users {'admin': 'b17e8926-1dfb-41ab-9ef8-b6a939ac0e2c', 'alice': '4c1cf2eb-c3fd-416e-ab06-2bce63c7120c', 'bob': '420da3f5-41ee-433c-ba3c-0479c45a7a54'}
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:CreateUserContactMethodInput!){createUserContactMethod(input:$i){id}}', 'variables': {'i': {'userID': '4c1cf2eb-c3fd-416e-ab06-2bce63c7120c', 'name': 'lab-sink', 'dest': {'type': 'builtin-webhook', 'args': {'webhook_url': 'http://10.
+webhook contact methods start disabled, GoAlert posts a code to the URL and it must be typed back
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:SendContactMethodVerificationInput!){sendContactMethodVerification(input:$i)}', 'variables': {'i': {'contactMethodID': '392373df-c739-4fdc-ae63-687aa3ae5b16'}}}
+-> 200 {"data":{"sendContactMethodVerification":true}}
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:VerifyContactMethodInput!){verifyContactMethod(input:$i)}', 'variables': {'i': {'contactMethodID': '392373df-c739-4fdc-ae63-687aa3ae5b16', 'code': 184232}}}
+-> 200 {"data":{"verifyContactMethod":true}}
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:CreateUserContactMethodInput!){createUserContactMethod(input:$i){id}}', 'variables': {'i': {'userID': '420da3f5-41ee-433c-ba3c-0479c45a7a54', 'name': 'lab-sink', 'dest': {'type': 'builtin-webhook', 'args': {'webhook_url': 'http://10.
+webhook contact methods start disabled, GoAlert posts a code to the URL and it must be typed back
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:SendContactMethodVerificationInput!){sendContactMethodVerification(input:$i)}', 'variables': {'i': {'contactMethodID': '1968fd93-4de8-4ccc-a683-a8e22b7f3bf5'}}}
+-> 200 {"data":{"sendContactMethodVerification":true}}
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:VerifyContactMethodInput!){verifyContactMethod(input:$i)}', 'variables': {'i': {'contactMethodID': '1968fd93-4de8-4ccc-a683-a8e22b7f3bf5', 'code': 201970}}}
+-> 200 {"data":{"verifyContactMethod":true}}
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:CreateRotationInput!){createRotation(input:$i){id}}', 'variables': {'i': {'name': 'primary', 'timeZone': 'UTC', 'start': '2026-11-05T22:42:56Z', 'type': 'daily', 'shiftLength': 1, 'userIDs': ['4c1cf2eb-c3fd-416e-ab06-2bce63c7120c', '
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:CreateEscalationPolicyStepInput!){createEscalationPolicyStep(input:$i){id}}', 'variables': {'i': {'escalationPolicyID': '4efb2326-e702-441b-984b-438f14d3f801', 'delayMinutes': 1, 'targets': [{'id': 'd1286678-d764-41a1-bf3d-9bccc75263
+POST http://localhost:8081/api/graphql body={'query': 'mutation($i:CreateEscalationPolicyStepInput!){createEscalationPolicyStep(input:$i){id}}', 'variables': {'i': {'escalationPolicyID': '4efb2326-e702-441b-984b-438f14d3f801', 'delayMinutes': 1, 'targets': [{'id': '420da3f5-41ee-433c-ba3c-0479c45a7a
+POST http://localhost:8081/api/graphql body={'query': 'query($id:ID!){service(id:$id){onCallUsers{userName stepNumber}}}', 'variables': {'id': 'a9799853-f991-4685-a8e2-79edd5750691'}}
+-> 200 {"data":{"service":{"onCallUsers":[{"userName":"alice","stepNumber":0},{"userName":"bob","stepNumber":1}]}}}
+firing again, now with a rotation and a two-step policy
+POST http://localhost:8081/api/v2/prometheusalertmanager/incoming?token=REDACTED body=<1483 bytes>
+-> 200 
+POST http://localhost:8081/api/v2/prometheusalertmanager/incoming?token=REDACTED body=<1483 bytes>
+-> 200 
+POST http://localhost:8081/api/graphql body={'query': 'query{messageLogs(input:{first:20}){nodes{createdAt type status additionalDetails userName}}}', 'variables': {}}
+-> 422 {"errors":[{"message":"Cannot query field \"additionalDetails\" on type \"DebugMessage\".","locations":[{"line":1,"column":65
+ALERTS during_escalation [{"alertID": 2, "status": "StatusUnacknowledged", "summary": "checkout returns 5xx above 5%"}, {"alertID": 1, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}]
+POST http://localhost:8081/api/v2/prometheusalertmanager/incoming?token=REDACTED body=<1504 bytes>
+-> 200 
+ALERTS after_final_resolve [{"alertID": 2, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}, {"alertID": 1, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}]
+NOT TESTED SMS and voice: GoAlert sends these through Twilio, and no Twilio account was used. Delivery was tested with GoAlert's webhook contact method pointed at a local sink.
+$ docker compose -f compose.yml logs goalert --tail=30
+exit=0
+goalert-1  | time="2026-11-05T23:42:35Z" level=info msg="River client started" client_id=8779a7d712c3_2026_11_05T23_42_34_809029 module=river
+goalert-1  | time="2026-11-05T23:42:37Z" level=info msg=Mutation. AuthSource="SourceTypeAuthProvider{6cc56d4d-fb49-48ac-b427-09a986f281f9}" AuthUserID=
+$ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+exit=0
+goalert-goalert-1 19.5MiB / 15.61GiB
+goalert-db-1 195.6MiB / 15.61GiB
+
+exit 0

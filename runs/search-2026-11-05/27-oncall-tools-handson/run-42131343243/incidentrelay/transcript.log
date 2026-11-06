@@ -1,0 +1,280 @@
+[23:50:57] $ git clone -q --depth 1 -b v2.4.0 https://github.com/roxy-wi/IncidentRelay.git src
+[23:50:59] exit=0
+Note: switching to '21ea27d92927242ed499b7584a276f47cb1c68cd'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+
+[23:50:59] STEP 1 git clone the repo
+[23:50:59] STEP 2 cd docker && docker compose up -d
+[23:50:59] $ docker compose up -d --wait
+[23:51:16] exit=0
+ incidentrelay-slack Pulling 
+ incidentrelay Pulling 
+ incidentrelay-telegram Pulling 
+ incidentrelay-scheduler Pulling 
+ f2be67225471 Pulling fs layer 
+ be6443c06d3c Pulling fs layer 
+ b524bb3aba73 Pulling fs layer 
+ 5c397e4307db Pulling fs layer 
+ 84d63c7c3ca9 Pulling fs layer 
+ eddbdc534a11 Pulling fs layer 
+ f7b6d8c5ee6e Pulling fs layer 
+ d4875d441bf1 Pulling fs layer 
+ c9cdefbc219f Pulling fs layer 
+ 07c6df342a79 Pulling fs layer 
+ 778bc7e27949 Pulling fs layer 
+ b93af29a8705 Pulling fs layer 
+ 2c5d470ebf27 Pulling fs layer 
+ 98fddb0ac06e Pulling fs layer 
+ 5c397e4307db Waiting 
+ 84d63c7c3ca9 Waiting 
+ eddbdc534a11 Waiting 
+ f7b6d8c5ee6e Waiting 
+ d4875d441bf1 Waiting 
+ c9cdefbc219f Waiting 
+ 07c6df342a79 Waiting 
+ b93af29a8705 Waiting 
+ 2c5d470ebf27 Waiting 
+ 98fddb0ac06e Waiting 
+ 778bc7e27949 Waiting 
+ f2be67225471 Pulling fs layer 
+ be6443c06d3c Pulling fs layer 
+ b524bb3aba73 Pulling fs layer 
+ 5c397e4307db Pulling fs layer 
+ 84d63c7c3ca9 Pulling fs layer 
+ eddbdc534a11 Pulling fs layer 
+ f7b6d8c5ee6e Pulling fs layer 
+ d4875d441bf1 Pulling fs layer 
+ c9cdefbc219f Pulling fs layer 
+ 07c6df342a79 Pulling fs layer 
+ 778bc7e27949 Pulling fs layer 
+ b93af29a8705 Pulling fs layer 
+ 2c5d470ebf27 Pulling fs layer 
+ 98fddb0ac06e Pulling fs layer 
+ 98fddb0ac06e Waiting 
+ 5c397e4307db Waiting 
+ 84d63c7c3ca9 Waiting 
+ eddbdc534a11 Waiting 
+ f7b6d8c5ee6e Waiting 
+ d4875d441bf1 Waiting 
+ c9cdefbc219f Waiting 
+ 07c6df342a79 Waiting 
+ 778bc7e27949 Waiting 
+ b93af29a8705 Waiting 
+ 2c5d470ebf27 Waiting 
+ f2be67225471 Pulling fs layer 
+ be6443c06d3c Pulling fs layer 
+ b524bb3aba73 Pulling fs layer 
+ 5c397e4307db Pulling fs layer 
+ 84d63c7c3ca9 Pulling fs layer 
+ eddbdc534a11 Pulling fs layer 
+ f7b6d8c5ee6e Pulling fs layer 
+ d4875d441bf1 Pulling fs layer 
+ c9cdefbc219f Pulling fs layer 
+ 07c6df342a79 Pulling fs layer 
+ 778bc7e27949 Pulling fs layer 
+ b93af29a8705 Pulling fs layer 
+ 2c5d470ebf27 Pulling fs layer 
+ 98fddb0ac06e Pulling fs layer 
+ 98fddb0ac06e Waiting 
+ 5c397
+...[trimmed]...
+================================>]  3.818kB/3.818kB
+ 98fddb0ac06e Extracting [==================================================>]  3.818kB/3.818kB
+ 98fddb0ac06e Extracting [==================================================>]  3.818kB/3.818kB
+ 98fddb0ac06e Extracting [==================================================>]  3.818kB/3.818kB
+ 98fddb0ac06e Pull complete 
+ 98fddb0ac06e Pull complete 
+ 98fddb0ac06e Pull complete 
+ 98fddb0ac06e Pull complete 
+ incidentrelay-scheduler Pulled 
+ incidentrelay-slack Pulled 
+ incidentrelay Pulled 
+ incidentrelay-telegram Pulled 
+ Network docker_default  Creating
+ Network docker_default  Created
+ Volume "docker_incidentrelay-logs"  Creating
+ Volume "docker_incidentrelay-logs"  Created
+ Volume "docker_incidentrelay-data"  Creating
+ Volume "docker_incidentrelay-data"  Created
+ Container incidentrelay  Creating
+ Container incidentrelay  Created
+ Container incidentrelay-slack  Creating
+ Container incidentrelay-telegram  Creating
+ Container incidentrelay-scheduler  Creating
+ Container incidentrelay-telegram  Created
+ Container incidentrelay-scheduler  Created
+ Container incidentrelay-slack  Created
+ Container incidentrelay  Starting
+ Container incidentrelay  Started
+ Container incidentrelay  Waiting
+ Container incidentrelay  Waiting
+ Container incidentrelay  Waiting
+ Container incidentrelay  Healthy
+ Container incidentrelay-scheduler  Starting
+ Container incidentrelay  Healthy
+ Container incidentrelay-slack  Starting
+ Container incidentrelay  Healthy
+ Container incidentrelay-telegram  Starting
+ Container incidentrelay-telegram  Started
+ Container incidentrelay-scheduler  Started
+ Container incidentrelay-slack  Started
+ Container incidentrelay  Waiting
+ Container incidentrelay-scheduler  Waiting
+ Container incidentrelay-telegram  Waiting
+ Container incidentrelay-slack  Waiting
+ Container incidentrelay-slack  Healthy
+ Container incidentrelay  Healthy
+ Container incidentrelay-scheduler  Healthy
+ Container incidentrelay-telegram  Healthy
+
+[23:51:16] STEP 3 manage.py create-admin inside the container
+[23:51:16] $ docker compose exec -T --user 10001:10001 incidentrelay python manage.py create-admin --username admin --password lab-password-1 --email admin@example.com
+[23:51:17] exit=1
+Traceback (most recent call last):
+  File "/opt/incidentrelay/manage.py", line 7, in <module>
+    from app.db import init_database
+  File "/opt/incidentrelay/app/__init__.py", line 4, in <module>
+    from app.settings import Config
+  File "/opt/incidentrelay/app/settings.py", line 571, in <module>
+    validate_security_configuration()
+  File "/opt/incidentrelay/app/settings.py", line 565, in validate_security_configuration
+    raise RuntimeError(
+RuntimeError: insecure IncidentRelay secret configuration: main.secret_key must be set to a unique cryptographically random value
+
+[23:51:17] FINDING the documented create-admin command exits 1 with: insecure IncidentRelay secret configuration, because exec does not get the runtime config the entrypoint generates. It works with -e INCIDENTRELAY_CONFIG_FILE=/var/lib/incidentrelay/incidentrelay.conf
+[23:51:17] $ docker compose exec -T --user 10001:10001 -e INCIDENTRELAY_CONFIG_FILE=/var/lib/incidentrelay/incidentrelay.conf incidentrelay python manage.py create-admin --username admin --password lab-password-1 --email admin@example.com
+[23:51:20] exit=0
+/opt/incidentrelay/app/views/sso_auth_view.py:8: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+It will be compatible before version 2.0.0.
+  from authlib.jose import JsonWebKey, JsonWebToken
+No pending migrations to apply
+{
+  "id": 1,
+  "username": "admin",
+  "is_admin": true,
+  "group": null,
+  "active_group": null
+}
+
+[23:51:20] POST http://localhost:8080/api/auth/login body={'username': 'admin', 'password': 'lab-password-1'}
+-> 200 {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidXNlcm5hbWUiOiJhZG1pbiIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE3OTQwMDkwODAsImlhdCI6MTc5MzkyMjY4MH0.oIw6P8RbDgqgx2ERXdECQIudw0Wewefeu1g-5q
+[23:51:20] STEP 4 create a group
+[23:51:20] POST http://localhost:8080/api/groups body={'slug': 'prod', 'name': 'Production'}
+-> 201 {"active":true,"description":null,"id":1,"name":"Production","permissions":{"can_manage_users":true,"can_read":true,"can_write":true},"slug":"prod"}
+
+[23:51:20] STEP 5 create a team
+[23:51:20] POST http://localhost:8080/api/teams body={'group_id': 1, 'slug': 'platform', 'name': 'Platform'}
+-> 201 {"active":true,"description":null,"escalation_after_reminders":2,"escalation_enabled":true,"group_id":1,"group_name":"Production","group_slug":"prod","id":1,"name":"Platform","permissions":{"can_create_incident":true,"can_create_manual_alert_group":true,"can_manage_users":true,"can_read":true,"can_respond":true,"can_view_oncall":true,"can_write":true,"can_write_resources":true},"slug":"platform"}
+
+[23:51:20] STEP 6 create a route with source alertmanager and copy its intake token
+[23:51:20] POST http://localhost:8080/api/routes body={'team_id': 1, 'name': 'alertmanager', 'source': 'alertmanager'}
+-> 201 {"active_maintenance":null,"channels":[],"enabled":true,"escalation_mode":"rotation","escalation_policy_id":null,"escalation_policy_name":null,"group_by":[],"has_intake_token":true,"id":1,"intake_token":"1FCMC1BnKf0sS64zz_Q_wpGf4_TXkIz6CZnsJOipbLcw2zq0_oRQ-FCY6Qvp_zPb","intake_token_prefix":"1FCMC1BnKf0s","integration_config":{},"matcher_preset":null,"matcher_preset_id":null,"matchers":{},"name":"alertmanager","notification_channel_mode":"route_only","permissions":{"can_create_incident":true,"can_create_manual_alert_group":true,"can_manage_users":true,"can_read":true,"can_respond":true,"can_view_oncall":true,"can_write":true,"can_write_resources":true},"rotation_id":null,"rotation_name":null,"service_id":null,"service_name":null,"service_slug":null,"source":"alertmanager","team_escalation_after_reminders":2,"team_escalation_enabled":true,"team_id":1,"team_name":"Platform","team_slug":"platform"}
+
+[23:51:20] --- A. first firing
+[23:51:20] POST http://localhost:8080/api/integrations/alertmanager body=<1483 bytes>
+-> 200 [{"alert_id":1,"assignee":null,"created":true,"group_id":1,"id":1,"outcome":"created","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"4bf811c9ac0f4ca5bb7d702862dd5602"},{"alert_id":2,"assignee":null,"created":true,"group_id":2,"id":2,"outcome":"created","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"4bec70199fb54028a9367db90fee5ca1"}]
+
+[23:51:20] ALERTS after first firing [{"id": 2, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}]
+[23:51:20] --- B. repeat firing, same bytes
+[23:51:20] POST http://localhost:8080/api/integrations/alertmanager body=<1483 bytes>
+-> 200 [{"alert_id":1,"assignee":null,"created":false,"group_id":1,"id":1,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"d385ea82d4ed4151966ac1c318662a90"},{"alert_id":2,"assignee":null,"created":false,"group_id":2,"id":2,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"f3e73267acb04a9ab8ce7c407bc2f8ff"}]
+
+[23:51:24] ALERTS after_repeat [{"id": 2, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}]
+[23:51:24] --- C. resolved
+[23:51:24] POST http://localhost:8080/api/integrations/alertmanager body=<1504 bytes>
+-> 200 [{"alert_id":1,"assignee":null,"created":false,"group_id":1,"id":1,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"resolved","team_id":1,"team_slug":"platform","trace_id":"195d8a95ffbb4691bafef44c08d3bab0"},{"alert_id":2,"assignee":null,"created":false,"group_id":2,"id":2,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"resolved","team_id":1,"team_slug":"platform","trace_id":"be60f8c4307c4a339cc1ae093df0ceb8"}]
+
+[23:51:32] ALERTS after_resolved [{"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}]
+[23:51:32] --- D. schedule and escalation
+[23:51:32] raw alert group {"acknowledged_at": null, "acknowledged_by": null, "acknowledged_by_details": null, "acknowledged_count": 0, "active_maintenance": null, "alert_count": 1, "assignee": null, "assignee_details": null, "assignee_id": null, "business_impact_summary": {"has_business_impact": false, "highest_score": 0, "highest_status": null, "services": [], "total": 0}, "common_labels": {"alertmanager_url": "http://ca4b3f2ca228:9093", "alertname": "CheckoutHighErrorRate", "event_link": "http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio", "generator_url": "http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio", "namespace": "shop", "pod": "checkout-1", "service": "checkout", "severity": "critical"}, "correlation_summary": {"best_score": 0, "downstream_impacts": 0, "has_correlation": false, "roles": [], "root_candidates": 0, "total": 0}, "escalation_level": 0, "escalation_mode": "rotation", "escalation_policy_id": null, "escalation_policy_name": null, "escalation_repeat_count": 0, "escalation_rule_id": null, "escalation_rule_position": null, "escalation_rule_target_type": null, "firing_count": 0, "first_seen_at": "2026-11-05T23:51:20.575763Z", "group_key": "source=alertmanager|team_id=1|route_id=1|service_id=|dedup_key=5d3b118068113e9d", "group_key_hash": "821c4e2c486ae5ab059bf7233d3ac80cadb14fd8fa351fd48da6f3e43606e386", "id": 2, "label_values": {}, "labels": {"alertmanager_url": "http://ca4b3f2ca228:9093", "alertname": "CheckoutHighErrorRate", "event_link": "http://prometheus:9090/graph?g0
+[23:51:32] POST http://localhost:8080/api/admin/users body={'username': 'alice', 'email': 'alice@example.com', 'password': 'lab-password-1', 'group_id': 1}
+-> 201 {"active":true,"active_group_id":1,"active_group_role":"viewer","active_group_slug":"prod","display_name":null,"email":"alice@example.com","groups":[{"active":true,"group_id":1,"group_name":"Production","group_slug":"prod","id":1,"role":"viewer"}],"id":2,"is_admin":false,"is_current_user":false,"locale":null,"mattermost_user_id":null,"notify_oncall_shift_end_email":true,"notify_oncall_shift_start_email":true,"notify_oncall_shift_start_mattermost":true,"phone":null,"slack_user_id":null,"telegram_user_id":null,"theme":"system","timezone":null,"username":"alice"}
+
+[23:51:32] POST http://localhost:8080/api/teams/1/users body={'user_id': 2, 'role': 'responder'}
+-> 201 {"active":true,"display_name":null,"id":1,"role":"responder","user_id":2,"username":"alice"}
+
+[23:51:33] POST http://localhost:8080/api/admin/users body={'username': 'bob', 'email': 'bob@example.com', 'password': 'lab-password-1', 'group_id': 1}
+-> 201 {"active":true,"active_group_id":1,"active_group_role":"viewer","active_group_slug":"prod","display_name":null,"email":"bob@example.com","groups":[{"active":true,"group_id":1,"group_name":"Production","group_slug":"prod","id":2,"role":"viewer"}],"id":3,"is_admin":false,"is_current_user":false,"locale":null,"mattermost_user_id":null,"notify_oncall_shift_end_email":true,"notify_oncall_shift_start_email":true,"notify_oncall_shift_start_mattermost":true,"phone":null,"slack_user_id":null,"telegram_user_id":null,"theme":"system","timezone":null,"username":"bob"}
+
+[23:51:33] POST http://localhost:8080/api/teams/1/users body={'user_id': 3, 'role': 'responder'}
+-> 201 {"active":true,"display_name":null,"id":2,"role":"responder","user_id":3,"username":"bob"}
+
+[23:51:33] POST http://localhost:8080/api/rotations body={'team_id': 1, 'name': 'primary', 'start_at': '2026-11-05T22:51:33', 'rotation_type': 'daily', 'reminder_interval_seconds': 0}
+-> 201 {"current_oncall":"alice","description":null,"duration_seconds":86400,"enabled":true,"handoff_time":"09:00","handoff_weekday":null,"id":1,"interval_unit":"days","interval_value":1,"name":"primary","permissions":{"can_create_incident":true,"can_create_manual_alert_group":true,"can_manage_users":true,"can_read":true,"can_respond":true,"can_view_oncall":true,"can_write":true,"can_write_resources":true},"reminder_interval_seconds":0,"rotation_type":"daily","start_at":"2026-11-05T22:51:33","team_id":1,"team_name":"Platform","team_slug":"platform","timezone":"UTC"}
+
+[23:51:33] POST http://localhost:8080/api/rotations/1/members body={'user_id': 2, 'position': 0}
+-> 201 {"id":1}
+
+[23:51:33] POST http://localhost:8080/api/rotations/1/members body={'user_id': 3, 'position': 1}
+-> 201 {"id":2}
+
+[23:51:33] POST http://localhost:8080/api/channels body={'team_id': 1, 'name': 'lab-sink', 'channel_type': 'webhook', 'config': {'webhook_url': 'http://10.1.0.238:9099/incidentrelay/hook'}}
+-> 201 {"channel_type":"webhook","config":{"webhook_url":"__INCIDENTRELAY_SECRET__"},"enabled":true,"group_id":1,"group_name":"Production","group_slug":"prod","id":1,"name":"lab-sink","permissions":{"can_create_incident":true,"can_create_manual_alert_group":true,"can_manage_users":true,"can_read":true,"can_respond":true,"can_view_oncall":true,"can_write":true,"can_write_resources":true},"team_id":1,"team_name":"Platform","team_slug":"platform"}
+
+[23:51:33] POST http://localhost:8080/api/escalation-policies body={'team_id': 1, 'name': 'checkout-ep'}
+-> 201 {"created_at":"2026-11-05T23:51:33.118036","description":null,"enabled":true,"group_id":1,"group_slug":"prod","id":1,"name":"checkout-ep","permissions":{"can_create_incident":true,"can_create_manual_alert_group":true,"can_manage_users":true,"can_read":true,"can_respond":true,"can_view_oncall":true,"can_write":true,"can_write_resources":true},"repeat_count":0,"rules":[],"team_id":1,"team_name":"Platform","team_slug":"platform","updated_at":"2026-11-05T23:51:33.118041"}
+
+[23:51:33] POST http://localhost:8080/api/escalation-policies/1/rules body={'position': 1, 'delay_seconds': 0, 'target_type': 'rotation', 'target_id': 1}
+-> 201 {"created_at":"2026-11-05T23:51:33.131885","delay_seconds":0,"enabled":true,"id":1,"policy_id":1,"position":1,"target_id":1,"target_name":"primary","target_type":"rotation","updated_at":"2026-11-05T23:51:33.131890"}
+
+[23:51:33] POST http://localhost:8080/api/escalation-policies/1/rules body={'position': 2, 'delay_seconds': 60, 'target_type': 'user', 'target_id': 3}
+-> 201 {"created_at":"2026-11-05T23:51:33.142143","delay_seconds":60,"enabled":true,"id":2,"policy_id":1,"position":2,"target_id":3,"target_name":"bob","target_type":"user","updated_at":"2026-11-05T23:51:33.142146"}
+
+[23:51:33] PUT http://localhost:8080/api/routes/1 body={'team_id': 1, 'name': 'alertmanager', 'source': 'alertmanager', 'rotation_id': 1, 'channel_ids': [1], 'escalation_mode': 'policy', 'escalation_policy_id': 1}
+-> 200 {"active_maintenance":null,"channels":[{"channel_type":"webhook","enabled":true,"id":1,"name":"lab-sink"}],"enabled":true,"escalation_mode":"policy","escalation_policy_id":1,"escalation_policy_name":"checkout-ep","group_by":[],"has_intake_token":true,"id":1,"intake_token_prefix":"1FCMC1BnKf0s","integration_config":{},"matcher_preset":null,"matcher_preset_id":null,"matchers":{},"name":"alertmanager","notification_channel_mode":"route_only","permissions":{"can_create_incident":true,"can_create_manual_alert_group":true,"can_manage_users":true,"can_read":true,"can_respond":true,"can_view_oncall":true,"can_write":true,"can_write_resources":true},"rotation_id":1,"rotation_name":"primary","service_id":null,"service_name":null,"service_slug":null,"source":"alertmanager","team_escalation_after_reminders":2,"team_escalation_enabled":true,"team_id":1,"team_name":"Platform","team_slug":"platform"}
+
+[23:51:33] POST http://localhost:8080/api/integrations/alertmanager body=<1483 bytes>
+-> 200 [{"alert_id":3,"assignee":"alice","created":true,"group_id":3,"id":3,"outcome":"created","processing_status":"completed","reason":null,"rotation_id":1,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"f1f12403bed44c4c9c714ed4f6c10f50"},{"alert_id":4,"assignee":"alice","created":true,"group_id":4,"id":4,"outcome":"created","processing_status":"completed","reason":null,"rotation_id":1,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"3c07f224fec54cc0ad085774c56c6fa4"}]
+
+[23:52:13] ALERTS mid [{"id": 4, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "alice", "alert_count": 1}, {"id": 3, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "alice", "alert_count": 1}, {"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}]
+[23:52:17] ALERTS mid [{"id": 4, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "alice", "alert_count": 1}, {"id": 3, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "alice", "alert_count": 1}, {"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}]
+[23:52:21] ALERTS mid [{"id": 4, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "bob", "alert_count": 1}, {"id": 3, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "bob", "alert_count": 1}, {"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}]
+[23:52:21] POST http://localhost:8080/api/integrations/alertmanager body=<1483 bytes>
+-> 200 [{"alert_id":3,"assignee":"bob","created":false,"group_id":3,"id":3,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"2a847f3725b243559ada408c89df32bd"},{"alert_id":4,"assignee":"bob","created":false,"group_id":4,"id":4,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"firing","team_id":1,"team_slug":"platform","trace_id":"6ce80990cc57486488790864194a0b5d"}]
+
+[23:52:45] ALERTS during_escalation [{"id": 4, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "bob", "alert_count": 1}, {"id": 3, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "bob", "alert_count": 1}, {"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}]
+[23:52:45] POST http://localhost:8080/api/integrations/alertmanager body=<1504 bytes>
+-> 200 [{"alert_id":3,"assignee":"bob","created":false,"group_id":3,"id":3,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"resolved","team_id":1,"team_slug":"platform","trace_id":"6546f8d221d9447bacf5f8031a6d7ef3"},{"alert_id":4,"assignee":"bob","created":false,"group_id":4,"id":4,"outcome":"updated","processing_status":"completed","reason":null,"rotation_id":null,"route_id":1,"routing_error":null,"status":"resolved","team_id":1,"team_slug":"platform","trace_id":"2994433808b346f0a4a4a2dd275640d3"}]
+
+[23:52:51] ALERTS after_final_resolve [{"id": 4, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": "bob", "alert_count": 1}, {"id": 3, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": "bob", "alert_count": 1}, {"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}]
+[23:52:51] --- E. PagerDuty Events v2 body, as Alertmanager's pagerduty_configs sends it
+[23:52:51] POST http://localhost:8080/api/routes body={'team_id': 1, 'name': 'pd', 'source': 'webhook'}
+-> 201 {"active_maintenance":null,"channels":[],"enabled":true,"escalation_mode":"rotation","escalation_policy_id":null,"escalation_policy_name":null,"group_by":[],"has_intake_token":true,"id":2,"intake_token":"oPdJEKjVGlqH3pKxc6OCEGJZtBrQuphTQZ2EGQ0xFgLSvdmLyYUot8uX3Z0eqJo7","intake_token_prefix":"oPdJEKjVGlqH","integration_config":{},"matcher_preset":null,"matcher_preset_id":null,"matchers":{},"name":"pd","notification_channel_mode":"route_only","permissions":{"can_create_incident":true,"can_create_manual_alert_group":true,"can_manage_users":true,"can_read":true,"can_respond":true,"can_view_oncall":true,"can_write":true,"can_write_resources":true},"rotation_id":null,"rotation_name":null,"service_id":null,"service_name":null,"service_slug":null,"source":"webhook","team_escalation_after_reminders":2,"team_escalation_enabled":true,"team_id":1,"team_name":"Platform","team_slug":"platform"}
+
+[23:52:51] POST http://localhost:8080/api/integrations/webhook body=<754 bytes>
+-> 202 {"dedup_key":"a6155e6da321546b81ec701dd0ae11648d37e95e340b8216c7bb9fe1073bf5a6","message":"Event processed","status":"success"}
+
+[23:52:55] ALERTS after_pagerduty_event [{"id": 5, "title": "[FIRING:1] PagerDutyShape checkout (critical)", "status": "firing", "assignee": null, "alert_count": 1}, {"id": 4, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": "bob", "alert_count": 1}, {"id": 3, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": "bob", "alert_count": 1}, {"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}]
+[23:52:55] $ docker compose logs incidentrelay-scheduler --tail=20
+[23:52:55] exit=0
+incidentrelay-scheduler  | Using config: /var/lib/incidentrelay/incidentrelay.conf
+incidentrelay-scheduler  | Starting IncidentRelay service: scheduler
+incidentrelay-scheduler  | Using config: /var/lib/incidentrelay/incidentrelay.conf
+incidentrelay-scheduler  | Starting IncidentRelay service: scheduler
+incidentrelay-scheduler  | /opt/incidentrelay/app/views/sso_auth_view.py:8: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+incidentrelay-scheduler  | It will be compatible before version 2.0.0.
+incidentrelay-scheduler  |   from authlib.jose import JsonWebKey, JsonWebToken
+
+[23:52:55] NOT TESTED Voice calls and SMS: IncidentRelay ships a stub voice provider, and you plug in your own. Delivery was tested with a generic webhook channel pointed at a local sink.
+[23:52:55] $ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+[23:52:58] exit=0
+incidentrelay-slack 85.74MiB / 15.61GiB
+incidentrelay-scheduler 96.84MiB / 15.61GiB
+incidentrelay-telegram 83.62MiB / 15.61GiB
+incidentrelay 112.5MiB / 15.61GiB
+

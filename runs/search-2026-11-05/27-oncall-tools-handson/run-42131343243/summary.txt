@@ -1,0 +1,79 @@
+## goalert v0.35.0 error: None
+  install_seconds 12.3
+  seconds_to_first_alert 12.6
+  firing_http 200
+  repeat_http 200
+  resolved_http 200
+  steps: 4
+   - write a compose file: Postgres plus goalert/goalert:v0.35.0 (no compose file ships in the docs, the docs show docker run)
+   - docker compose up -d
+   - goalert add-user --admin (first login needs a CLI step)
+   - UI or GraphQL: create a service, an escalation policy and an integration key of type Prometheus Alertmanager
+  first: [{"alertID": 1, "status": "StatusUnacknowledged", "summary": "checkout returns 5xx above 5%"}]
+  states: {"after_repeat": [{"alertID": 1, "status": "StatusUnacknowledged", "summary": "checkout returns 5xx above 5%"}], "after_resolved": [{"alertID": 1, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}], "during_escalation": [{"alertID": 2, "status": "StatusUnacknowledged", "summary": "checkout returns 5xx above 5%"}, {"alertID": 1, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}], "after_final_resolve": [{"alertID": 2, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}, {"alertID": 1, "status": "StatusClosed", "summary": "checkout returns 5xx above 5%"}]}
+  escalation: {"first_page_s": 3.0, "second_page_s": 68.0, "alice_posts": 1, "bob_posts": 1, "sample": "{\"AppName\":\"GoAlert\",\"Type\":\"Alert\",\"AlertID\":2,\"Summary\":\"checkout returns 5xx above 5%\",\"Details\":\"[Prometheus Alertmanager UI](http://ca4b3f2ca228:9093)\\n\\ncheckout returns 5xx above 5% [View](http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio)\\n\\ncheckout returns 5xx above 5% [View](http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio)\\n\\n## Payload\\n\\n```json\\n{\\n  \\\"receiver\\\": \\\"capture\\\",\\n  \\\"status\\\": \\\"firing\\\",\\n  \\\"alerts\\\": [\\n    {\\n      \\\"status\\\": \\\"firing\\\",\\n      \\\"l"}
+  not tested: SMS and voice: GoAlert sends these through Twilio, and no Twilio account was used. Delivery was tested with GoAlert's webhook contact method pointed at a local sink.
+## incidentrelay v2.4.0 error: None
+  install_seconds 22.4
+  seconds_to_first_alert 22.7
+  firing_http 200
+  repeat_http 200
+  resolved_http 200
+  steps: 6
+   - git clone the repo
+   - cd docker && docker compose up -d
+   - manage.py create-admin inside the container
+   - create a group
+   - create a team
+   - create a route with source alertmanager and copy its intake token
+  first: [{"id": 2, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}]
+  states: {"after_repeat": [{"id": 2, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": null, "alert_count": 1}], "after_resolved": [{"id": 2, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}, {"id": 1, "title": "checkout returns 5xx above 5%", "status": "resolved", "assignee": null, "alert_count": 1}], "mid": [{"id": 4, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "bob", "alert_count": 1}, {"id": 3, "title": "checkout returns 5xx above 5%", "status": "firing", "assignee": "bob", "alert_count
+  escalation: {"first_page_s": 36.1, "assignee_became_bob_s": 48.2, "posts": 4, "sample": ["{\"text\":\"NOTIFICATION: [P1] checkout returns 5xx above 5%\\nTeam: Platform\\nService: Service #3\\nStatus: firing\\nSeverity: critical\\nPriority: P1\\nAssignee: alice\\nSource: alertmanager\\nMessage: 5xx ratio on checkout is above 5% for 5 minutes\\nAlert URL: http://localhost:8080/alerts/3\\nSource event: http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"alert_id\":3,\"alert_url\":\"http://localhost:8080/alerts/3\",\"source_event_url\":\"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio\",\"team\":\"platform\",\"status\":\"firing\",\"source\":\"alertmanager\",\"title\":\"checkout returns 5xx above 5%\",\"message", "{\"text\":\"NOTIFICATION: [P1] checkout returns 5xx above 5%\\nTeam: Platform\\nService: Service #4\\nStatus: firing\\nSeverity: critical\\nPriority: P1\\nAssignee: alice\\nSour
+  finding: the documented create-admin command exits 1 with: insecure IncidentRelay secret configuration, because exec does not get the runtime config the entrypoint generates. It works with -e INCIDENTRELAY_CONFIG_FILE=/var/lib/incidentrelay/incidentrelay.conf
+  not tested: Voice calls and SMS: IncidentRelay ships a stub voice provider, and you plug in your own. Delivery was tested with a generic webhook channel pointed at a local sink.
+## linkedin-oncall-iris iris aa814f0 2024-01-18
+oncall 9bc2b68 2025-08-20 error: None
+  install_seconds 162.4
+  seconds_to_first_alert 246.9
+  firing_http 401
+  repeat_http 401
+  resolved_http 401
+  steps: 3
+   - git clone linkedin/iris and linkedin/oncall
+   - docker compose up -d --build in each repo (no published images; each builds from its Dockerfile)
+   - find or create an Iris application and key, plus a plan
+  first: []
+  states: {"after_repeat": [], "after_resolved": [], "after_iris_plan": []}
+  escalation: null
+  finding: right after docker compose up the seeded application returns 401 Application not found; restarting iris-web fixes it
+  not tested: LinkedIn Oncall schedules and Iris plans: we stopped after the webhook test. Oncall is a calendar and Iris does the paging, and the two are connected by config we did not set up. Senders need your own Twilio or SMTP.
+## nxs-anomaly v1.9.23 error: None
+  install_seconds 48.8
+  seconds_to_first_alert 48.8
+  firing_http 202
+  repeat_http 202
+  resolved_http 202
+  steps: 3
+   - git clone at the release tag, cp .env.example .env and fill in the version, Postgres password and admin password
+   - docker compose up -d --wait
+   - create an integration of type alertmanager in the UI or API
+  first: [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 1, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 1, "id": "grp_c67e5e10bf38"}]
+  states: {"after_repeat": [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_c67e5e10bf38"}], "after_resolved": [{"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c67e5e10bf38"}], "during_escalation": [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_c4f0a942f72e"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_b23925e57ae
+  escalation: {"first_page_s": 1.0, "second_page_s": 61.0, "alice_posts": 2, "bob_posts": 2, "sample": "{\"alerts\":[{\"annotations\":{\"summary\":\"checkout returns 5xx above 5%\"},\"endsAt\":\"0001-01-01T00:00:00Z\",\"fingerprint\":\"\",\"generatorURL\":\"\",\"labels\":{\"alertname\":\"CheckoutHighErrorRate\",\"namespace\":\"shop\",\"pod\":\"checkout-1\",\"service\":\"checkout\",\"severity\":\"critical\"},\"startsAt\":\"2026-11-05T23:49:19+00:00\",\"status\":\"firing\"}],\"commonAnnotations\":{\"summary\":\"checkout returns 5xx above 5%\"},\"commonLabels\":{\"alertname\":\"CheckoutHighErrorRate\",\"namespace\":\"shop\",\"pod\":\"checkout-1\",\"service\":\"checkout\",\""}
+## regen v1.2.4 error: None
+  install_seconds 53.8
+  seconds_to_first_alert 54.1
+  firing_http 200
+  repeat_http 200
+  resolved_http 200
+  steps: 5
+   - git clone the repo and cp .env.example .env
+   - strip the inline comments from .env: on empty keys they are read as values, so SAML and Teams switch on and the app exits in a loop
+   - docker compose up -d with the app service pointed at the published image ghcr.io/fluidifyai/regen:1.2.4 instead of building
+   - create the first admin account (first-run page or POST /api/v1/auth/bootstrap)
+   - point Alertmanager at /api/v1/webhooks/prometheus (no token, no integration object)
+  first: [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}]
+  states: {"after_repeat": [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}], "after_resolved": [{"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "5d3b118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "resolved", "id": "d77e5210e3203776"}, {"incident": "CheckoutHighErrorRate", "status": "triggered"}], "during_escalation": [{"alert": "CheckoutHighErrorRate", "status": "firing", "id": "bbbb118068113e9d"}, {"alert": "CheckoutHighErrorRate", "status": "firing", "id": "aaaa5210e3203776"}, {"alert": "Checkout
+  escalation: null
+  finding: user 8 refused: HTTP 403 {"error":{"code":"user_limit_reached","current":7,"limit":7,"message":"You've reached the community edition limit of 7 users. Upgrade to Fluidify Pro for unlimited users."}}
+  not tested: Delivery: Regen's escalation engine sends DMs through Slack, Teams or Telegram and has no outbound webhook, so no notification reached a person. We read the escalation state from its database, and it records tier and notification time only.

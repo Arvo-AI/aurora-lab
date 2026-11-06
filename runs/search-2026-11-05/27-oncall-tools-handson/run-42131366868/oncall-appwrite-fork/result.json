@@ -1,0 +1,95 @@
+{
+ "tool": "oncall-appwrite-fork",
+ "steps_to_first_alert": [
+  "download docker-compose.yml",
+  "write .env: DOMAIN, COMPOSE_PROFILES=with_grafana, SECRET_KEY",
+  "docker compose pull && docker compose up -d",
+  "provision the plugin: POST .../settings then POST .../resources/plugin/install",
+  "create an integration of type alertmanager (UI or public API)"
+ ],
+ "not_tested": [
+  "SMS and phone: needs your own Twilio, Exotel or Zvonok account since Grafana's Cloud Connection stopped serving OSS. Mobile push does not work. Delivery was tested with email to a local Mailpit."
+ ],
+ "findings": [],
+ "version": "v1.24.14",
+ "plugin_install_attempts": 2,
+ "install_seconds": 68.3,
+ "firing_http": 200,
+ "firing_body": "\"Ok.\"",
+ "seconds_to_first_alert": 71.7,
+ "after_first_firing": [
+  {
+   "id": "IX3CUQ6E5TVCL",
+   "title": "CheckoutHighErrorRate (checkout)",
+   "state": "firing",
+   "alerts_count": 1
+  }
+ ],
+ "repeat_http": 200,
+ "alert_states": {
+  "after_repeat": [
+   {
+    "id": "IX3CUQ6E5TVCL",
+    "title": "CheckoutHighErrorRate (checkout)",
+    "state": "firing",
+    "alerts_count": 2
+   }
+  ],
+  "after_resolved": [
+   {
+    "id": "IX3CUQ6E5TVCL",
+    "title": "CheckoutHighErrorRate (checkout)",
+    "state": "resolved",
+    "alerts_count": 3
+   }
+  ],
+  "during_escalation": [
+   {
+    "id": "IC5G5TYU6K1NS",
+    "title": "CheckoutHighErrorRate (checkout)",
+    "state": "firing",
+    "alerts_count": 2
+   },
+   {
+    "id": "IX3CUQ6E5TVCL",
+    "title": "CheckoutHighErrorRate (checkout)",
+    "state": "resolved",
+    "alerts_count": 3
+   }
+  ],
+  "after_final_resolve": [
+   {
+    "id": "IC5G5TYU6K1NS",
+    "title": "CheckoutHighErrorRate (checkout)",
+    "state": "resolved",
+    "alerts_count": 3
+   },
+   {
+    "id": "IX3CUQ6E5TVCL",
+    "title": "CheckoutHighErrorRate (checkout)",
+    "state": "resolved",
+    "alerts_count": 3
+   }
+  ]
+ },
+ "resolved_http": 200,
+ "resolved_body": "\"Ok.\"",
+ "user_sync_seconds": 296,
+ "escalation": {
+  "first_page_s": 2.0,
+  "second_page_s": 68.1,
+  "mail": [
+   [
+    "bob@example.com",
+    "CheckoutHighErrorRate (checkout)",
+    "2026-11-05T23:58:43.173Z"
+   ],
+   [
+    "alice@example.com",
+    "CheckoutHighErrorRate (checkout)",
+    "2026-11-05T23:57:38.173Z"
+   ]
+  ]
+ },
+ "total_seconds": 488.6
+}

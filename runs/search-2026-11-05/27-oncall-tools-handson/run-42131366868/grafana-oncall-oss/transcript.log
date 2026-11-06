@@ -1,0 +1,445 @@
+[23:42:23] STEP 1 download docker-compose.yml
+[23:42:23] $ curl -fsSL https://raw.githubusercontent.com/grafana-cold-storage/oncall/v1.16.11/docker-compose.yml -o docker-compose.yml
+[23:42:23] exit=0
+
+[23:42:23] STEP 2 write .env: DOMAIN, COMPOSE_PROFILES=with_grafana, SECRET_KEY
+[23:42:23] STEP 3 docker compose pull && docker compose up -d
+[23:42:23] $ docker compose -f docker-compose.yml -f override.yml pull
+[23:43:00] exit=0
+ oncall_db_migration Skipped - Image is already being pulled by celery 
+ engine Skipped - Image is already being pulled by celery 
+ mailpit Pulling 
+ celery Pulling 
+ grafana Pulling 
+ redis Pulling 
+ 7b229517ed22 Pulling fs layer 
+ 5d9afc867194 Pulling fs layer 
+ e1656acc19fd Pulling fs layer 
+ d49a2dee86fb Pulling fs layer 
+ b68324d8345e Pulling fs layer 
+ c3d50fe721a5 Pulling fs layer 
+ c8a873636c7b Pulling fs layer 
+ bdac4cf939bf Pulling fs layer 
+ 74a869b18fbc Pulling fs layer 
+ 145af45d2bec Pulling fs layer 
+ 93e30d7cd050 Pulling fs layer 
+ c4a347e3731f Pulling fs layer 
+ 84d95b11ba61 Pulling fs layer 
+ 4939e1bd1434 Pulling fs layer 
+ 711c8b2ffbf1 Pulling fs layer 
+ 80870e1e00bf Pulling fs layer 
+ 4dbae04ab4da Pulling fs layer 
+ d15139bbcaeb Pulling fs layer 
+ d0cc5f655dd1 Pulling fs layer 
+ e1bed91d747c Pulling fs layer 
+ a93c36784c88 Pulling fs layer 
+ 4582659f7ba9 Pulling fs layer 
+ 1da5c02b4806 Pulling fs layer 
+ 7911a1fee9b5 Pulling fs layer 
+ d49a2dee86fb Waiting 
+ b68324d8345e Waiting 
+ c3d50fe721a5 Waiting 
+ c8a873636c7b Waiting 
+ bdac4cf939bf Waiting 
+ 74a869b18fbc Waiting 
+ 145af45d2bec Waiting 
+ 93e30d7cd050 Waiting 
+ c4a347e3731f Waiting 
+ 84d95b11ba61 Waiting 
+ 4939e1bd1434 Waiting 
+ 711c8b2ffbf1 Waiting 
+ 80870e1e00bf Waiting 
+ 4dbae04ab4da Waiting 
+ d15139bbcaeb Waiting 
+ d0cc5f655dd1 Waiting 
+ e1bed91d747c Waiting 
+ a93c36784c88 Waiting 
+ 4582659f7ba9 Waiting 
+ 1da5c02b4806 Waiting 
+ 7911a1fee9b5 Waiting 
+ 7b229517ed22 Pulling fs layer 
+ bcd7fa5168a7 Pulling fs layer 
+ d69c4cfa651f Pulling fs layer 
+ 1bd0660b80e5 Pulling fs layer 
+ f4e5155cc91f Pulling fs layer 
+ 9a60019a8816 Pulling fs layer 
+ 1ff600371a0f Pulling fs layer 
+ aa465df46998 Pulling fs layer 
+ 06da073526e3 Pulling fs layer 
+ 4f4fb700ef54 Pulling fs layer 
+ 4a2b3a64321a Pulling fs layer 
+ 1ff600371a0f Waiting 
+ aa465df46998 Waiting 
+ 06da073526e3 Waiting 
+ 4f4fb700ef54 Waiting 
+ 4a2b3a64321a Waiting 
+ f4e5155cc91f Waiting 
+ 9a60019a8816 Waiting 
+ bcd7fa5168a7 Waiting 
+ d69c4cfa651f
+...[trimmed]...
+==>                                      ]  1.442MB/5.599MB
+ 4dbae04ab4da Extracting [===============================>                   ]  3.473MB/5.599MB
+ 4dbae04ab4da Extracting [==================================================>]  5.599MB/5.599MB
+ 4dbae04ab4da Pull complete 
+ d15139bbcaeb Extracting [==================================================>]     136B/136B
+ d15139bbcaeb Extracting [==================================================>]     136B/136B
+ d15139bbcaeb Pull complete 
+ d0cc5f655dd1 Extracting [>                                                  ]  32.77kB/2.417MB
+ d0cc5f655dd1 Extracting [=========================================>         ]  1.999MB/2.417MB
+ d0cc5f655dd1 Extracting [==================================================>]  2.417MB/2.417MB
+ d0cc5f655dd1 Extracting [==================================================>]  2.417MB/2.417MB
+ d0cc5f655dd1 Pull complete 
+ e1bed91d747c Extracting [==================================================>]     176B/176B
+ e1bed91d747c Extracting [==================================================>]     176B/176B
+ e1bed91d747c Pull complete 
+ a93c36784c88 Extracting [==================================================>]     125B/125B
+ a93c36784c88 Extracting [==================================================>]     125B/125B
+ a93c36784c88 Pull complete 
+ 4582659f7ba9 Extracting [==================================================>]     135B/135B
+ 4582659f7ba9 Extracting [==================================================>]     135B/135B
+ 4582659f7ba9 Pull complete 
+ 1da5c02b4806 Extracting [==================================================>]     138B/138B
+ 1da5c02b4806 Extracting [==================================================>]     138B/138B
+ 1da5c02b4806 Pull complete 
+ 7911a1fee9b5 Extracting [==================================================>]     145B/145B
+ 7911a1fee9b5 Extracting [==================================================>]     145B/145B
+ 7911a1fee9b5 Pull complete 
+ celery Pulled 
+
+[23:43:00] $ docker compose -f docker-compose.yml -f override.yml up -d --wait --wait-timeout 300
+[23:43:22] exit=0
+ Network grafana-oncall-oss_default  Creating
+ Network grafana-oncall-oss_default  Created
+ Volume "grafana-oncall-oss_grafana_data"  Creating
+ Volume "grafana-oncall-oss_grafana_data"  Created
+ Volume "grafana-oncall-oss_oncall_data"  Creating
+ Volume "grafana-oncall-oss_oncall_data"  Created
+ Volume "grafana-oncall-oss_redis_data"  Creating
+ Volume "grafana-oncall-oss_redis_data"  Created
+ Container grafana-oncall-oss-redis-1  Creating
+ Container grafana-oncall-oss-grafana-1  Creating
+ Container grafana-oncall-oss-mailpit-1  Creating
+ Container grafana-oncall-oss-grafana-1  Created
+ Container grafana-oncall-oss-redis-1  Created
+ Container grafana-oncall-oss-oncall_db_migration-1  Creating
+ Container grafana-oncall-oss-mailpit-1  Created
+ Container grafana-oncall-oss-oncall_db_migration-1  Created
+ Container grafana-oncall-oss-engine-1  Creating
+ Container grafana-oncall-oss-celery-1  Creating
+ Container grafana-oncall-oss-celery-1  Created
+ Container grafana-oncall-oss-engine-1  Created
+ Container grafana-oncall-oss-redis-1  Starting
+ Container grafana-oncall-oss-mailpit-1  Starting
+ Container grafana-oncall-oss-grafana-1  Starting
+ Container grafana-oncall-oss-redis-1  Started
+ Container grafana-oncall-oss-redis-1  Waiting
+ Container grafana-oncall-oss-mailpit-1  Started
+ Container grafana-oncall-oss-grafana-1  Started
+ Container grafana-oncall-oss-redis-1  Healthy
+ Container grafana-oncall-oss-oncall_db_migration-1  Starting
+ Container grafana-oncall-oss-oncall_db_migration-1  Started
+ Container grafana-oncall-oss-redis-1  Waiting
+ Container grafana-oncall-oss-redis-1  Waiting
+ Container grafana-oncall-oss-oncall_db_migration-1  Waiting
+ Container grafana-oncall-oss-oncall_db_migration-1  Waiting
+ Container grafana-oncall-oss-redis-1  Healthy
+ Container grafana-oncall-oss-redis-1  Healthy
+ Container grafana-oncall-oss-oncall_db_migration-1  Exited
+ Container grafana-oncall-oss-oncall_db_migration-1  Exited
+ Container grafana-oncall-oss-celery-1  Starting
+ Container grafana-oncall-oss-engine-1  Starting
+ Container grafana-oncall-oss-celery-1  Started
+ Container grafana-oncall-oss-engine-1  Started
+ Container grafana-oncall-oss-mailpit-1  Waiting
+ Container grafana-oncall-oss-engine-1  Waiting
+ Container grafana-oncall-oss-celery-1  Waiting
+ Container grafana-oncall-oss-oncall_db_migration-1  Waiting
+ Container grafana-oncall-oss-redis-1  Waiting
+ Container grafana-oncall-oss-grafana-1  Waiting
+ Container grafana-oncall-oss-oncall_db_migration-1  Exited
+ Container grafana-oncall-oss-redis-1  Healthy
+ Container grafana-oncall-oss-engine-1  Healthy
+ Container grafana-oncall-oss-mailpit-1  Healthy
+ Container grafana-oncall-oss-grafana-1  Healthy
+ Container grafana-oncall-oss-celery-1  Healthy
+
+[23:43:22] $ docker compose -f docker-compose.yml -f override.yml ps -a --format '{{.Service}} {{.Image}} {{.Status}}'
+[23:43:22] exit=0
+celery grafana/oncall Up Less than a second
+engine grafana/oncall Up Less than a second
+grafana grafana/grafana:latest Up 21 seconds
+mailpit axllent/mailpit:v1.33.0 Up 21 seconds (healthy)
+oncall_db_migration grafana/oncall Exited (0) 1 second ago
+redis redis:7.0.15 Up 21 seconds (healthy)
+
+[23:43:23] $ docker compose -f docker-compose.yml -f override.yml logs grafana --tail=40 | grep -iE 'plugin|oncall|error' | tail -15
+[23:43:23] exit=0
+grafana-1  | logger=plugin.installer t=2026-11-05T23:43:19.605906928Z level=info msg="Updating plugin" pluginId=opentsdb from=13.0.6 to=13.0.8
+grafana-1  | logger=installer.fs t=2026-11-05T23:43:20.013993141Z level=info msg="Downloaded and extracted opentsdb v13.0.8 zip successfully to /var/lib/grafana/plugins/.opentsdb.staging"
+grafana-1  | logger=plugin.opentsdb t=2026-11-05T23:43:20.015540438Z level=info msg="plugin process exited" plugin=/usr/share/grafana/data/plugins-bundled/opentsdb/gpx_grafana-opentsdb-datasource_linux_amd64 id=80
+grafana-1  | logger=plugin.installer t=2026-11-05T23:43:20.015604415Z level=info msg="Installed plugin update" pluginId=opentsdb path=/var/lib/grafana/plugins/opentsdb
+grafana-1  | logger=plugins.registration t=2026-11-05T23:43:20.102196763Z level=info msg="Plugin registered" pluginId=opentsdb pluginVersion=13.0.8
+grafana-1  | logger=plugin.backgroundinstaller t=2026-11-05T23:43:20.102228661Z level=info msg="Plugin successfully installed" pluginId=opentsdb version= duration=559.757502ms
+grafana-1  | logger=plugin.backgroundinstaller t=2026-11-05T23:43:20.162112009Z level=info msg="Installing plugin" pluginId=jaeger version=
+grafana-1  | logger=plugin.installer t=2026-11-05T23:43:20.231143447Z level=info msg="Updating plugin" pluginId=jaeger from=13.0.5 to=13.0.8
+grafana-1  | logger=installer.fs t=2026-11-05T23:43:22.590033413Z level=info msg="Downloaded and extracted jaeger v13.0.8 zip successfully to /var/lib/grafana/plugins/.jaeger.staging"
+grafana-1  | logger=plugin.jaeger t=2026-11-05T23:43:22.59214997Z level=info msg="plugin process exited" plugin=/usr/share/grafana/data/plugins-bundled/jaeger/gpx_grafana-jaeger-datasource_linux_amd64 id=52
+grafana-1  | logger=plugin.installer t=2026-11-05T23:43:22.592221188Z level=info msg="Installed plugin update" pluginId=jaeger path=/var/lib/grafana/plugins/jaeger
+grafana-1  | logger=plugins.registration t=2026-11-05T23:43:22.67588183Z level=info msg="Plugin registered" pluginId=jaeger pluginVersion=13.0.8
+grafana-1  | logger=plugin.backgroundinstaller t=2026-11-05T23:43:22.675926868Z level=info msg="Plugin successfully installed" pluginId=jaeger version= duration=2.513802801s
+grafana-1  | logger=plugin.backgroundinstaller t=2026-11-05T23:43:22.737437218Z level=info msg="Installing plugin" pluginId=grafana-pyroscope-datasource version=
+grafana-1  | logger=plugin.installer t=2026-11-05T23:43:22.808464726Z level=info msg="Updating plugin" pluginId=grafana-pyroscope-datasource from=13.0.8 to=13.0.10
+
+[23:43:23] GET http://localhost:3000/api/health body=None
+-> 200 {
+  "database": "ok",
+  "version": "13.3.0",
+  "commit": "6f8ce3c693b493043ebcd4787566d2b6b118b0f0"
+}
+[23:43:23] GET http://localhost:3000/api/plugins/grafana-oncall-app/settings body=None
+-> 200 {"name":"Grafana OnCall","type":"app","id":"grafana-oncall-app","enabled":false,"pinned":false,"autoEnabled":false,"module":"public/plugins/grafana-oncall-app/module.js","baseUrl":"public/plugins/grafana-oncall-app","info":{"author":{"name":"Grafana Labs","url":"https://grafana.com"},"description":"Collect and analyze alerts, escalate based on schedules and deliver them to Slack, Phone Calls, SMS and others","links":[{"name":"Website","url":"https://github.com/grafana/oncall"},{"name":"License",
+[23:43:23] STEP 4 provision the plugin: POST .../settings then POST .../resources/plugin/install
+[23:43:23] POST http://localhost:3000/api/plugins/grafana-oncall-app/settings body={'enabled': True, 'jsonData': {'stackId': 5, 'orgId': 100, 'onCallApiUrl': 'http://engine:8080', 'grafanaUrl': 'http://grafana:3000'}}
+-> 200 {"message":"Plugin settings updated"}
+[23:43:23] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/install body=None
+-> 200 
+[23:43:26] GET http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/status body=None
+-> 200 {"pluginConnection":{"settings":{"ok":true},"service_account_token":{"ok":true},"grafana_url_from_plugin":{"ok":true},"grafana_url_from_engine":{"ok":false,"error":"Not validated"},"oncall_api_url":{"ok":false,"error":"Not validated"},"oncall_token":{"ok":false,"error":"Unauthorized/Forbidden while accessing OnCall engine: /api/internal/v1/plugin/v2/status, status code: 403, check token"}},"license":"","version":"","currently_undergoing_maintenance_message":"","api_url":""}
+
+[23:43:30] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/install body=None
+-> 200 
+[23:43:33] GET http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/status body=None
+-> 200 {"pluginConnection":{"settings":{"ok":true},"service_account_token":{"ok":true},"grafana_url_from_plugin":{"ok":true},"grafana_url_from_engine":{"ok":true},"oncall_api_url":{"ok":true},"oncall_token":{"ok":true}},"license":"OpenSource","version":"v1.16.11","currently_undergoing_maintenance_message":"","api_url":"http://localhost:8080/"}
+
+[23:43:33] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:43:36] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/tokens/ body={'name': 'lab'}
+-> 201 {"id":1,"token":"23388f0fc1b757cc9464ec5087ce9dcdebcfee888b79b82137a5355bc6aacd1d","name":"lab","created_at":"2026-11-05T23:43:36.069269Z"}
+[23:43:36] STEP 5 create an integration of type alertmanager (UI or public API)
+[23:43:36] POST http://localhost:8080/api/v1/integrations/ body={'type': 'alertmanager', 'name': 'prometheus'}
+-> 201 {"maintenance_mode":null,"maintenance_started_at":null,"maintenance_end_at":null,"id":"C1L93MHWMLSZK","name":"prometheus","description_short":null,"team_id":null,"link":"http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/","inbound_email":null,"type":"alertmanager","templates":{"grouping_key":null,"resolve_signal":null,"acknowledge_signal":null,"source_link":null,"slack":{"title":null,"message":null,"image_url":null},"web":{"title":null,"message":null,"image_url":null},"sms":{"title":null},"phone_call":{"title":null},"telegram":{"title":null,"message":null,"image_url":null},"mobile_app":{"title":null,"message":null},"email":{"title":null,"message":null},"webhook":{"title":null,"message":null,"image_url":null}},"heartbeat":{"link":"http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/heartbeat/"},"default_route":{"id":"RIJ5MNZRQ644L","escalation_chain_id":null,"slack":{"channel_id":null,"enabled":true},"telegram":{"id":null,"enabled":false},"mobile_app":{"id":null,"enabled":false},"mobile_app_critical":{"id":null,"enabled":false},"email":{"id":null,"enabled":false},"webhook":{"id":null,"enabled":false}}}
+[23:43:36] --- A. first firing
+[23:43:36] POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+[23:43:37] ALERTS after first firing [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 1}]
+[23:43:37] --- B. repeat firing, same bytes
+[23:43:37] POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+[23:43:41] ALERTS after_repeat [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}]
+[23:43:41] --- C. resolved
+[23:43:41] POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1504 bytes>
+-> 200 "Ok."
+[23:43:49] ALERTS after_resolved [{"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}]
+[23:43:49] --- D. schedule and escalation
+[23:43:49] POST http://localhost:3000/api/admin/users body={'name': 'alice', 'email': 'alice@example.com', 'login': 'alice', 'password': 'lab-password-1'}
+-> 200 {"id":3,"uid":"ag3fhulywlaf4e","message":"User created"}
+[23:43:49] PATCH http://localhost:3000/api/org/users/3 body={'role': 'Editor'}
+-> 200 {"message":"Organization user updated"}
+[23:43:49] POST http://localhost:3000/api/admin/users body={'name': 'bob', 'email': 'bob@example.com', 'login': 'bob', 'password': 'lab-password-1'}
+-> 200 {"id":4,"uid":"dg3fhum00jny8d","message":"User created"}
+[23:43:49] PATCH http://localhost:3000/api/org/users/4 body={'role': 'Editor'}
+-> 200 {"message":"Organization user updated"}
+[23:43:49] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:43:57] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:43:57] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:44:05] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:44:05] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:44:13] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:44:13] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:44:21] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:44:21] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:44:29] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:44:29] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:44:37] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:44:37] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:44:45] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:44:45] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:44:53] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:44:53] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:01] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:01] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:09] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:09] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:17] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:17] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:25] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:25] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:33] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:33] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:41] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:41] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:49] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:49] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:45:57] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:45:57] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:46:05] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:46:05] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:46:13] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:46:13] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:46:21] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:46:21] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:46:29] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:46:29] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:46:37] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:46:37] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:46:45] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:46:45] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:46:53] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:46:54] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:02] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:02] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:10] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:10] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:18] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:18] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:26] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:26] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:34] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:34] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:42] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:42] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:50] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:50] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:47:58] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:47:58] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:48:06] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:48:06] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:48:14] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:48:14] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:48:22] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:48:22] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:48:30] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:48:30] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:48:38] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":1,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:48:38] POST http://localhost:3000/api/plugins/grafana-oncall-app/resources/plugin/sync body=None
+-> 200 
+[23:48:46] GET http://localhost:8080/api/v1/users/ body=None
+-> 200 {"count":3,"next":null,"previous":null,"results":[{"id":"USPTZVCA3UYZH","grafana_id":1,"email":"admin@localhost","slack":null,"username":"admin","role":"admin","is_phone_number_verified":false,"timezo
+[23:48:46] POST http://localhost:8080/api/v1/personal_notification_rules/ body={'user_id': 'U82HRAQU1J69N', 'type': 'notify_by_email', 'position': 0}
+-> 201 {"position":0,"id":"NFSNBGVY2CAHR","user_id":"U82HRAQU1J69N","important":false,"type":"notify_by_email"}
+[23:48:46] POST http://localhost:8080/api/v1/personal_notification_rules/ body={'user_id': 'UML9YK7KMX626', 'type': 'notify_by_email', 'position': 0}
+-> 201 {"position":0,"id":"NHY4SNC6UY57B","user_id":"UML9YK7KMX626","important":false,"type":"notify_by_email"}
+[23:48:46] POST http://localhost:8080/api/v1/on_call_shifts/ body={'name': 'primary', 'type': 'rolling_users', 'start': '2026-11-05T22:48:46', 'duration': 86400, 'frequency': 'daily', 'rolling_users': [['U82HRAQU1J69N'], ['UML9YK7KMX626']], 'start_rotation_from_user_index': 0, 'time_zone': 'UTC'}
+-> 201 {"id":"O7KXCFHKZUFEQ","team_id":null,"schedule":null,"name":"primary","type":"rolling_users","time_zone":"UTC","level":0,"start":"2026-11-05T22:48:46","duration":86400,"rotation_start":"2026-11-05T22:48:46","frequency":"daily","interval":1,"until":null,"by_day":null,"by_month":null,"by_monthday":null,"rolling_users":[["U82HRAQU1J69N"],["UML9YK7KMX626"]],"start_rotation_from_user_index":0}
+[23:48:46] POST http://localhost:8080/api/v1/schedules/ body={'name': 'primary', 'type': 'calendar', 'time_zone': 'UTC', 'shifts': ['O7KXCFHKZUFEQ']}
+-> 201 {"id":"SK8D2I6EUARVC","team_id":null,"name":"primary","time_zone":"UTC","on_call_now":["U82HRAQU1J69N"],"shifts":["O7KXCFHKZUFEQ"],"ical_url_overrides":null,"enable_web_overrides":false,"slack":{"channel_id":null,"user_group_id":null},"type":"calendar"}
+[23:48:51] GET http://localhost:8080/api/v1/schedules/SK8D2I6EUARVC/ body=None
+-> 200 {"id":"SK8D2I6EUARVC","team_id":null,"name":"primary","time_zone":"UTC","on_call_now":["U82HRAQU1J69N"],"shifts":["O7KXCFHKZUFEQ"],"ical_url_overrides":null,"enable_web_overrides":false,"slack":{"channel_id":null,"user_group_id":null},"type":"calendar"}
+[23:48:51] POST http://localhost:8080/api/v1/escalation_chains/ body={'name': 'checkout'}
+-> 201 {"id":"F4KV6PIQZL45H","name":"checkout","team_id":null}
+[23:48:51] POST http://localhost:8080/api/v1/escalation_policies/ body={'type': 'notify_on_call_from_schedule', 'notify_on_call_from_schedule': 'SK8D2I6EUARVC', 'escalation_chain_id': 'F4KV6PIQZL45H', 'position': 0}
+-> 201 {"position":0,"id":"EIX19RCZ5JZU8","escalation_chain_id":"F4KV6PIQZL45H","type":"notify_on_call_from_schedule","notify_on_call_from_schedule":"SK8D2I6EUARVC","important":false}
+[23:48:51] POST http://localhost:8080/api/v1/escalation_policies/ body={'type': 'wait', 'duration': 60, 'escalation_chain_id': 'F4KV6PIQZL45H', 'position': 1}
+-> 201 {"position":1,"id":"ERFSQFBIW5413","escalation_chain_id":"F4KV6PIQZL45H","type":"wait","duration":60}
+[23:48:51] POST http://localhost:8080/api/v1/escalation_policies/ body={'type': 'notify_persons', 'persons_to_notify': ['UML9YK7KMX626'], 'escalation_chain_id': 'F4KV6PIQZL45H', 'position': 2}
+-> 201 {"position":2,"id":"EIW65XBH9YN5X","escalation_chain_id":"F4KV6PIQZL45H","type":"notify_persons","persons_to_notify":["UML9YK7KMX626"],"important":false}
+[23:48:51] PUT http://localhost:8080/api/v1/routes/RIJ5MNZRQ644L/ body={'escalation_chain_id': 'F4KV6PIQZL45H'}
+-> 200 {"position":0,"id":"RIJ5MNZRQ644L","integration_id":"C1L93MHWMLSZK","escalation_chain_id":"F4KV6PIQZL45H","routing_type":"regex","routing_regex":null,"is_the_last_route":true,"slack":{"channel_id":null,"enabled":true},"telegram":{"id":null,"enabled":false},"mobile_app":{"id":null,"enabled":false},"mobile_app_critical":{"id":null,"enabled":false},"email":{"id":null,"enabled":false},"webhook":{"id":null,"enabled":false}}
+[23:48:51] POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+[23:49:59] POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1483 bytes>
+-> 200 "Ok."
+[23:50:23] ALERTS during_escalation [{"id": "IKTP3Y9F4JPBS", "title": "CheckoutHighErrorRate (checkout)", "state": "firing", "alerts_count": 2}, {"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}]
+[23:50:23] POST http://localhost:8080/integrations/v1/alertmanager/CUYAgsvm5LHCHr5ehNz59i3U5/ body=<1504 bytes>
+-> 200 "Ok."
+[23:50:31] ALERTS after_final_resolve [{"id": "IKTP3Y9F4JPBS", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}, {"id": "IK6R3L6UQEJWL", "title": "CheckoutHighErrorRate (checkout)", "state": "resolved", "alerts_count": 3}]
+[23:50:31] $ docker compose -f docker-compose.yml -f override.yml logs celery --tail=15
+[23:50:31] exit=0
+celery-1  | 2026-11-05 23:50:23,484 source=engine:celery worker=ForkPoolWorker-2 task_id=92fe098a-ebb9-4f86-b18a-969d70b0db47 task_name=apps.slack.representatives.alert_group_representative.on_alert_group_action_triggered_async name=engine.celery level=INFO task finished args=[12]
+celery-1  | 2026-11-05 23:50:23,485 source=engine:celery worker=ForkPoolWorker-2 task_id=da24422c-89ea-4956-b776-e7c8af52672d task_name=apps.webhooks.tasks.alert_group_status.alert_group_status_change name=engine.celery level=INFO task started args=[13, 2, None]
+celery-1  | 2026-11-05 23:50:23,488 source=engine:celery worker=ForkPoolWorker-2 task_id=da24422c-89ea-4956-b776-e7c8af52672d task_name=apps.webhooks.tasks.alert_group_status.alert_group_status_change name=celery.app.trace level=INFO Task apps.webhooks.tasks.alert_group_status.alert_group_status_change[da24422c-89ea-4956-b776-e7c8af52672d] succeeded in 0.003288027000053262s: None
+celery-1  | 2026-11-05 23:50:23,488 source=engine:celery worker=ForkPoolWorker-2 task_id=da24422c-89ea-4956-b776-e7c8af52672d task_name=apps.webhooks.tasks.alert_group_status.alert_group_status_change name=engine.celery level=INFO task finished args=[13, 2, None]
+celery-1  | 2026-11-05 23:50:23,489 source=engine:celery worker=ForkPoolWorker-2 task_id=5e750ebb-5ffe-4cbc-adf2-afd65a2397cf task_name=apps.telegram.tasks.on_alert_group_action_triggered_async name=engine.celery level=INFO task started args=[12]
+celery-1  | 2026-11-05 23:50:23,489 source=engine:celery worker=ForkPoolWorker-2 task_id=5e750ebb-5ffe-4cbc-adf2-afd65a2397cf task_name=apps.telegram.tasks.on_alert_group_action_triggered_async name=apps.telegram.tasks level=INFO AlertGroupTelegramRepresentative ACTION SIGNAL, log record 12
+celery-1  | 2026-11-05 23:50:23,493 source=engine:celery worker=ForkPoolWorker-2 task_id=5e750ebb-5ffe-4cbc-adf2-afd65a2397cf task_name=apps.telegram.tasks.on_alert_group_action_triggered_async name=celery.app.trace level=INFO Task apps.telegram.tasks.on_alert_group_ac
+...[trimmed]...
+slack.tasks.start_update_slack_user_group_for_schedules name=engine.celery level=INFO task started args=[]
+celery-1  | 2026-11-05 23:50:30,027 source=engine:celery worker=ForkPoolWorker-2 task_id=de3ae079-5180-4296-9c23-ea5c00ac25f6 task_name=apps.slack.tasks.start_update_slack_user_group_for_schedules name=celery.app.trace level=INFO Task apps.slack.tasks.start_update_slack_user_group_for_schedules[de3ae079-5180-4296-9c23-ea5c00ac25f6] succeeded in 0.002715240999918933s: None
+celery-1  | 2026-11-05 23:50:30,028 source=engine:celery worker=ForkPoolWorker-2 task_id=de3ae079-5180-4296-9c23-ea5c00ac25f6 task_name=apps.slack.tasks.start_update_slack_user_group_for_schedules name=engine.celery level=INFO task finished args=[]
+celery-1  | 2026-11-05 23:50:31,452 source=engine:celery worker=ForkPoolWorker-2 task_id=cdd0d1a0-c01a-4387-9d56-9fb564f88bfe task_name=apps.alerts.tasks.send_update_log_report_signal.send_update_log_report_signal name=engine.celery level=INFO task started args=[]
+celery-1  | 2026-11-05 23:50:31,456 source=engine:celery worker=ForkPoolWorker-2 task_id=cdd0d1a0-c01a-4387-9d56-9fb564f88bfe task_name=apps.alerts.tasks.send_update_log_report_signal.send_update_log_report_signal name=apps.telegram.alert_group_representative level=INFO AlertGroupTelegramRepresentative UPDATE LOG REPORT SIGNAL
+celery-1  | 2026-11-05 23:50:31,457 source=engine:celery worker=ForkPoolWorker-2 task_id=cdd0d1a0-c01a-4387-9d56-9fb564f88bfe task_name=apps.alerts.tasks.send_update_log_report_signal.send_update_log_report_signal name=celery.app.trace level=INFO Task apps.alerts.tasks.send_update_log_report_signal.send_update_log_report_signal[cdd0d1a0-c01a-4387-9d56-9fb564f88bfe] succeeded in 0.004635602000007566s: None
+celery-1  | 2026-11-05 23:50:31,457 source=engine:celery worker=ForkPoolWorker-2 task_id=cdd0d1a0-c01a-4387-9d56-9fb564f88bfe task_name=apps.alerts.tasks.send_update_log_report_signal.send_update_log_report_signal name=engine.celery level=INFO task finished args=[]
+
+[23:50:31] NOT TESTED SMS and phone: needs your own Twilio, Exotel or Zvonok account since Grafana's Cloud Connection stopped serving OSS. Mobile push does not work. Delivery was tested with email to a local Mailpit.
+[23:50:31] $ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+[23:50:34] exit=0
+grafana-oncall-oss-celery-1 262.2MiB / 15.61GiB
+grafana-oncall-oss-engine-1 249MiB / 15.61GiB
+grafana-oncall-oss-grafana-1 458.8MiB / 500MiB
+grafana-oncall-oss-redis-1 4.055MiB / 500MiB
+grafana-oncall-oss-mailpit-1 8.922MiB / 15.61GiB
+

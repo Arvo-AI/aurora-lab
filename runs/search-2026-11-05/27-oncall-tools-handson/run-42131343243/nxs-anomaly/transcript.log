@@ -1,0 +1,238 @@
+[23:48:18] $ git clone -q --depth 1 -b v1.9.23 https://github.com/nixys/nxs-anomaly.git src
+[23:48:19] exit=0
+warning: refs/tags/v1.9.23 9fa919e2fb745d11f18a01698a4aa0eda0dfe1e2 is not a commit!
+Note: switching to 'a0c6192bb8409e172c96e066cd15b845ead3e87e'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+
+[23:48:19] STEP 1 git clone at the release tag, cp .env.example .env and fill in the version, Postgres password and admin password
+[23:48:19] $ grep -nE 'ports|127.0.0.1|8080' docker-compose.yml | head -20; tail -12 .env
+[23:48:19] exit=0
+16:      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U nxs_anomaly -d nxs_anomaly"]
+42:    ports:
+43:      - "127.0.0.1:8080:8080"
+46:      test: ["CMD", "/usr/local/bin/nxs-anomaly", "healthcheck", "--url", "http://127.0.0.1:8080/health"]
+58:      NXS_ANOMALY_API_UPSTREAM: app:8080
+59:    ports:
+60:      - "127.0.0.1:3100:8080"
+77:    ports:
+78:      - "127.0.0.1:8081:8081"
+80:      test: ["CMD", "/usr/local/bin/nxs-anomaly", "healthcheck", "--url", "http://127.0.0.1:8081/ready"]
+NXS_ANOMALY_SMTP_HOST=
+NXS_ANOMALY_SMTP_PORT=587
+NXS_ANOMALY_SMTP_USERNAME=
+NXS_ANOMALY_SMTP_PASSWORD=
+NXS_ANOMALY_SMTP_SENDER=
+NXS_ANOMALY_SMTP_USE_TLS=true
+
+NXS_ANOMALY_VERSION=v1.9.23
+POSTGRES_PASSWORD=lab-password-1
+NXS_ANOMALY_BOOTSTRAP_ADMIN_PASSWORD=lab-password-1
+NXS_ANOMALY_API_KEY=lab-api-key-0123456789
+NXS_ANOMALY_BLOCK_PRIVATE_WEBHOOKS_EXCEPT=172.16.0.0/12,10.0.0.0/8
+
+[23:48:19] STEP 2 docker compose up -d --wait
+[23:48:19] $ docker compose -f docker-compose.yml -f override.yml up -d --wait --wait-timeout 180
+[23:49:06] exit=0
+ frontend Pulling 
+ app Pulling 
+ worker Pulling 
+ postgres Pulling 
+ f18232174bc9 Pulling fs layer 
+ 61ca4f733c80 Pulling fs layer 
+ b464cfdf2a63 Pulling fs layer 
+ d7e507024086 Pulling fs layer 
+ 81bd8ed7ec67 Pulling fs layer 
+ 197eb75867ef Pulling fs layer 
+ 34a64644b756 Pulling fs layer 
+ 39c2ddfd6010 Pulling fs layer 
+ 9db8b36a3142 Pulling fs layer 
+ 157b0dfeadba Pulling fs layer 
+ 197eb75867ef Waiting 
+ 34a64644b756 Waiting 
+ 39c2ddfd6010 Waiting 
+ d7e507024086 Waiting 
+ 9db8b36a3142 Waiting 
+ 157b0dfeadba Waiting 
+ 81bd8ed7ec67 Waiting 
+ a5789fc40e82 Pulling fs layer 
+ 990a9c434e5e Pulling fs layer 
+ 39dc083afc39 Pulling fs layer 
+ bf7a4185f015 Pulling fs layer 
+ 2780920e5dbf Pulling fs layer 
+ 7c12895b777b Pulling fs layer 
+ 3214acf345c0 Pulling fs layer 
+ 52630fc75a18 Pulling fs layer 
+ dd64bf2dd177 Pulling fs layer 
+ b839dfae01f6 Pulling fs layer 
+ dcaa5a89b0cc Pulling fs layer 
+ 96ed2737ae31 Pulling fs layer 
+ 2780920e5dbf Waiting 
+ 7c12895b777b Waiting 
+ 3214acf345c0 Waiting 
+ 52630fc75a18 Waiting 
+ dd64bf2dd177 Waiting 
+ b839dfae01f6 Waiting 
+ dcaa5a89b0cc Waiting 
+ a5789fc40e82 Waiting 
+ 990a9c434e5e Waiting 
+ 39dc083afc39 Waiting 
+ bf7a4185f015 Waiting 
+ 90a9a283e30a Pulling fs layer 
+ 96ed2737ae31 Waiting 
+ 90a9a283e30a Waiting 
+ a5789fc40e82 Pulling fs layer 
+ 990a9c434e5e Pulling fs layer 
+ 39dc083afc39 Pulling fs layer 
+ bf7a4185f015 Pulling fs layer 
+ 2780920e5dbf Pulling fs layer 
+ 7c12895b777b Pulling fs layer 
+ 3214acf345c0 Pulling fs layer 
+ 52630fc75a18 Pulling fs layer 
+ dd64bf2dd177 Pulling fs layer 
+ b839dfae01f6 Pulling fs layer 
+ dcaa5a89b0cc Pulling fs layer 
+ 96ed2737ae31 Pulling fs layer 
+ 90a9a283e30a Pulling fs layer 
+ 90a9a283e30a Waiting 
+ 7c12895b777b Waiting 
+ a5789fc40e82 Waiting 
+ 990a9c434e5e Waiting 
+ 39dc083afc39 Waiting 
+ bf7a4185f015 Waiting 
+ 2780920e5dbf Waiting 
+ dd64bf2dd177 Waiting 
+ 3214acf345c0 Waiting 
+ 52630fc75a18 Waiting 
+ dcaa5a89b0cc Waiting 
+ b839dfae01f6 Waiting 
+ 96ed2737ae31 Waiting 
+ b464cfdf2a63 Downlo
+...[trimmed]...
+974 Extracting [==================================================>]     128B/128B
+ 0465fcfe7974 Extracting [==================================================>]     128B/128B
+ 0465fcfe7974 Pull complete 
+ e0de8084b760 Extracting [==================================================>]     168B/168B
+ e0de8084b760 Extracting [==================================================>]     168B/168B
+ e0de8084b760 Pull complete 
+ bdfe5a2c0729 Extracting [==================================================>]   6.11kB/6.11kB
+ bdfe5a2c0729 Extracting [==================================================>]   6.11kB/6.11kB
+ bdfe5a2c0729 Pull complete 
+ 253db6c496ed Extracting [==================================================>]     186B/186B
+ 253db6c496ed Extracting [==================================================>]     186B/186B
+ 253db6c496ed Pull complete 
+ postgres Pulled 
+ Network src_default  Creating
+ Network src_default  Created
+ Volume "src_pgdata"  Creating
+ Volume "src_pgdata"  Created
+ Container src-postgres-1  Creating
+ Container src-postgres-1  Created
+ Container src-worker-1  Creating
+ Container src-app-1  Creating
+ Container src-app-1  Created
+ Container src-worker-1  Created
+ Container src-frontend-1  Creating
+ Container src-frontend-1  Created
+ Container src-postgres-1  Starting
+ Container src-postgres-1  Started
+ Container src-postgres-1  Waiting
+ Container src-postgres-1  Waiting
+ Container src-postgres-1  Healthy
+ Container src-worker-1  Starting
+ Container src-postgres-1  Healthy
+ Container src-app-1  Starting
+ Container src-worker-1  Started
+ Container src-app-1  Started
+ Container src-app-1  Waiting
+ Container src-app-1  Healthy
+ Container src-frontend-1  Starting
+ Container src-frontend-1  Started
+ Container src-app-1  Waiting
+ Container src-frontend-1  Waiting
+ Container src-worker-1  Waiting
+ Container src-postgres-1  Waiting
+ Container src-app-1  Healthy
+ Container src-postgres-1  Healthy
+ Container src-worker-1  Healthy
+ Container src-frontend-1  Healthy
+
+[23:49:06] STEP 3 create an integration of type alertmanager in the UI or API
+[23:49:06] POST http://localhost:18080/api/v1/integrations body={'name': 'prometheus', 'type': 'alertmanager'}
+-> 201 {"created_at":"2026-11-05T23:49:06+00:00","group_by":["alertname","service"],"heartbeat":{"grace_seconds":0,"interval_seconds":0},"id":"int_d9608e903289","kafka_topic":null,"key":"key_7b3a29a4026d","legacy_pool":null,"name":"prometheus","notification_policy":{"batch_deadline_seconds":0,"batch_timeout_seconds":0,"channels":[],"emergency_user_id":null,"epic_threshold_count":0,"epic_threshold_seconds":0,"epic_user_id":null},"pipeline":null,"routes":[{"escalation_chain_id":null,"id":"route_13f4a071f30b","is_default":true,"labels":{},"match_type":"all","name":"default","pattern":""}],"routing_key":"key_7b3a29a4026d","source_type":"alertmanager","team_id":null,"templates":{},"type":"alertmanager","updated_at":"2026-11-05T23:49:06+00:00","webhook_secret":null,"webhook_secret_set":false}
+[23:49:06] --- A. first firing
+[23:49:06] POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_cc97b74c6278","annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"ends_at":null,"fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","id":"alr_3286ac30d331","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"alertmanager":{"common_annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"common_labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","service":"checkout","severity":"critical"},"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","group_labels":{"alertname":"CheckoutHighErrorRate","service":"checkout"},"receiver":"capture","status":"firing","truncated_alerts":0},"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"dedupe_key":"d77e5210e3203776","ends_at":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"endsAt":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generatorURL":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"startsAt":"2026-11-05T23:42:08.516741351Z","status":"firing"},"severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"firing","title":"checkout returns 5xx above 5%"},"received_at":"2026-11-05T23:49:06+00:00","route_id":"route_13f4a071f30b","severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"f
+[23:49:06] ALERTS after first firing [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 1, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 1, "id": "grp_c67e5e10bf38"}]
+[23:49:06] --- B. repeat firing, same bytes
+[23:49:06] POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_cc97b74c6278","annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"ends_at":null,"fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","id":"alr_2ec4d7f49ce3","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"alertmanager":{"common_annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"common_labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","service":"checkout","severity":"critical"},"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","group_labels":{"alertname":"CheckoutHighErrorRate","service":"checkout"},"receiver":"capture","status":"firing","truncated_alerts":0},"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"dedupe_key":"d77e5210e3203776","ends_at":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"endsAt":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generatorURL":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"startsAt":"2026-11-05T23:42:08.516741351Z","status":"firing"},"severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"firing","title":"checkout returns 5xx above 5%"},"received_at":"2026-11-05T23:49:06+00:00","route_id":"route_13f4a071f30b","severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"f
+[23:49:10] ALERTS after_repeat [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_c67e5e10bf38"}]
+[23:49:10] --- C. resolved
+[23:49:10] POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1504 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"ends_at":"2026-11-05T23:42:17.571881Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","id":"alr_be74052b339d","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"alertmanager":{"common_annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"common_labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","service":"checkout","severity":"critical"},"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","group_labels":{"alertname":"CheckoutHighErrorRate","service":"checkout"},"receiver":"capture","status":"resolved","truncated_alerts":0},"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"dedupe_key":"d77e5210e3203776","ends_at":"2026-11-05T23:42:17.571881Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"endsAt":"2026-11-05T23:42:17.571881Z","fingerprint":"d77e5210e3203776","generatorURL":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"startsAt":"2026-11-05T23:42:08.516741351Z","status":"resolved"},"severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"resolved","title":"checkout returns 5xx above 5%"},"received_at":"2026-11-05T23:49:10+00:00","route_id":"route_13f4a071f30b","severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","s
+[23:49:18] ALERTS after_resolved [{"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c67e5e10bf38"}]
+[23:49:18] --- D. schedule and escalation
+[23:49:18] POST http://localhost:18080/api/v1/users body={'name': 'alice', 'username': 'alice', 'email': 'alice@example.com', 'notification_targets': [{'type': 'webhook', 'target': 'http://10.1.0.238:9099/nxs/alice'}]}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","email":"alice@example.com","id":"usr_116b16c4376c","locale":"","mattermost_id":"","name":"alice","notification_policies":null,"notification_targets":[{"target":"http://10.1.0.238:9099/nxs/alice","type":"webhook"}],"on_duty":false,"phone":"","priority":"medium","role":"","slack_id":"","telegram_id":"","timezone":"UTC","updated_at":"2026-11-05T23:49:18+00:00","username":"alice"}
+[23:49:18] POST http://localhost:18080/api/v1/users body={'name': 'bob', 'username': 'bob', 'email': 'bob@example.com', 'notification_targets': [{'type': 'webhook', 'target': 'http://10.1.0.238:9099/nxs/bob'}]}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","email":"bob@example.com","id":"usr_29e4b452a174","locale":"","mattermost_id":"","name":"bob","notification_policies":null,"notification_targets":[{"target":"http://10.1.0.238:9099/nxs/bob","type":"webhook"}],"on_duty":false,"phone":"","priority":"medium","role":"","slack_id":"","telegram_id":"","timezone":"UTC","updated_at":"2026-11-05T23:49:18+00:00","username":"bob"}
+[23:49:18] POST http://localhost:18080/api/v1/teams body={'name': 'platform', 'member_ids': ['usr_116b16c4376c', 'usr_29e4b452a174']}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","id":"team_2f486111e568","member_ids":["usr_116b16c4376c","usr_29e4b452a174"],"name":"platform","updated_at":"2026-11-05T23:49:18+00:00"}
+[23:49:18] POST http://localhost:18080/api/v1/schedules body={'name': 'primary', 'team_id': 'team_2f486111e568', 'timezone': 'UTC', 'enabled': True, 'rotation': {'enabled': True, 'start_at': '2026-11-05T22:49:18Z', 'handoff_interval': 1, 'handoff_unit': 'days', 'participant_ids': ['usr_116b16c4376c', 'usr_29e4b452a174']}}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","enabled":true,"id":"sch_2000baf7ef09","name":"primary","notify_on_shift_change":false,"overrides":[],"rotation":{"enabled":true,"handoff_interval":1,"handoff_unit":"days","participant_ids":["usr_116b16c4376c","usr_29e4b452a174"],"start_at":"2026-11-05T22:49:18+00:00"},"shifts":null,"team_id":"team_2f486111e568","timezone":"UTC","updated_at":"2026-11-05T23:49:18+00:00"}
+[23:49:18] GET http://localhost:18080/api/v1/schedules/sch_2000baf7ef09/on-call body=None
+-> 200 {"at":"2026-11-05T23:49:18+00:00","next":{"duration_seconds":86400,"end":"2026-11-07T22:49:18+00:00","source":"rotation","start":"2026-11-06T22:49:18+00:00","user_ids":["usr_29e4b452a174"]},"schedule_id":"sch_2000baf7ef09","source":"rotation","user_ids":["usr_116b16c4376c"],"users":[{"created_at":"2026-11-05T23:49:18+00:00","email":"alice@example.com","id":"usr_116b16c4376c","locale":"","mattermost_id":"","name":"alice","notification_policies":null,"notification_targets":[{"target":"http://10.1.0.238:9099/nxs/alice","type":"webhook"}],"on_duty":false,"phone":"","priority":"medium","role":"","slack_id":"","telegram_id":"","timezone":"UTC","updated_at":"2026-11-05T23:49:18+00:00","username":"alice"}]}
+[23:49:18] POST http://localhost:18080/api/v1/escalation-chains body={'name': 'checkout', 'team_id': 'team_2f486111e568', 'steps': [{'kind': 'NOTIFY_SCHEDULE', 'schedule_id': 'sch_2000baf7ef09'}, {'kind': 'WAIT', 'delay_minutes': 1}, {'kind': 'NOTIFY_USER', 'user_ids': ['usr_29e4b452a174']}]}
+-> 201 {"created_at":"2026-11-05T23:49:18+00:00","id":"esc_773e0048bb23","name":"checkout","steps":[{"allow_uncovered":false,"id":"step_1b2bc0f7209b","kind":"NOTIFY_SCHEDULE","position":0,"schedule_id":"sch_2000baf7ef09"},{"delay_minutes":1,"id":"step_61c67d34fda8","kind":"WAIT","position":1},{"id":"step_ad3ec663bbdc","kind":"NOTIFY_USER","position":2,"user_ids":["usr_29e4b452a174"]}],"updated_at":"2026-11-05T23:49:18+00:00"}
+[23:49:18] PUT http://localhost:18080/api/v1/integrations/int_d9608e903289 body={'name': 'prometheus', 'type': 'alertmanager', 'team_id': 'team_2f486111e568', 'routes': [{'escalation_chain_id': 'esc_773e0048bb23', 'id': 'route_13f4a071f30b', 'is_default': True, 'labels': {}, 'match_type': 'all', 'name': 'default', 'pattern': ''}]}
+-> 200 {"created_at":"2026-11-05T23:49:06+00:00","group_by":["alertname","service"],"heartbeat":{"grace_seconds":0,"interval_seconds":0},"id":"int_d9608e903289","kafka_topic":null,"key":"key_7b3a29a4026d","legacy_pool":null,"name":"prometheus","notification_policy":{"batch_deadline_seconds":0,"batch_timeout_seconds":0,"channels":[],"emergency_user_id":null,"epic_threshold_count":0,"epic_threshold_seconds":0,"epic_user_id":null},"pipeline":null,"routes":[{"escalation_chain_id":"esc_773e0048bb23","id":"route_330bae2ca0e5","is_default":true,"labels":{},"match_type":"all","name":"default","pattern":""}],"routing_key":"key_7b3a29a4026d","source_type":"alertmanager","team_id":"team_2f486111e568","templates":{},"type":"alertmanager","updated_at":"2026-11-05T23:49:18+00:00","webhook_secret":null,"webhook_secret_set":false}
+[23:49:18] GET http://localhost:18080/api/v1/readiness body=None
+-> 200 {"blocker_fingerprint":"9e9c7dbeb881a195a3b70c91ea801422a218329542ba587972eb834e517a7a8d","blockers":1,"checked_at":"2026-11-05T23:49:18+00:00","checks":[{"detail":"the database answered.","items":[],"key":"database","severity":"ok","title":"Database reachable"},{"detail":"the worker completed a cycle 12s ago.","items":[],"key":"worker","severity":"ok","title":"Escalation worker running"},{"detail":"1 integration(s) can receive alerts.","items":[],"key":"integrations","severity":"ok","title":"An alert source is configured"},{"detail":"every route ends at a chain with at least one step.","items":[],"key":"routing","severity":"ok","title":"Every route reaches a chain with steps"},{"detail":"all 2 people a chain or schedule can select have a working transport.","items":[],"key":"notification_targets","severity":"ok","title":"Everyone on call can be reached"},{"detail":"every schedule a chain depends on is covered.","items":[],"key":"schedule_coverage","severity":"ok","title":"On-call schedules are covered"},{"detail":"team scoping is off: every operator sees and can page through every integration and schedule. Correct for a single trust domain; set NXS_ANOMALY_TEAM_SCOPING=true for a multi-team install.","items":[],"key":"team_scoping","severity":"warning","title":"Team boundaries are decided"},{"detail":"no outbound channel policy is configured: every channel this build supports may be used, to any destination. Set NXS_ANOMALY_BLOCKED_CHANNELS and/or NXS_ANOMALY_EGRESS_ALLOWLIST to state a boundary.","items":[],"key":"channel_policy","severity":"ok","title":"Outbound channels match the installation's policy"},{"detail":"no retention horizon is set for the audit trail, notifications, delivery attempts or web sessions: they are kept indefinitely, including the personal data they carry. See DATA_INVENTORY.md in the documentation.","items":["alert groups: 30 days","audit: kept indefinitely","notifications: kept indefinitely","delivery attempts: kept indefinitely","chatops messages: 30 days","web sessions: kept indefinitely"],"key":"data_retention","severity":"warning","title":"Data retention is decided"},{"detail":"no backup has ever been reported — see BACKUP_RESTORE.md in the documentation for how the backup job reports one.","items":[],"key":"backup","severity":"blocker","title":"A recent backup was reported"}],"production_ready":false,"ready":false,"warnings":2}
+[23:49:18] POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_b23925e57ae9","annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"ends_at":null,"fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","id":"alr_f4ad7fe2b1e7","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"alertmanager":{"common_annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"common_labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","service":"checkout","severity":"critical"},"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","group_labels":{"alertname":"CheckoutHighErrorRate","service":"checkout"},"receiver":"capture","status":"firing","truncated_alerts":0},"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"dedupe_key":"d77e5210e3203776","ends_at":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"endsAt":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generatorURL":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"startsAt":"2026-11-05T23:42:08.516741351Z","status":"firing"},"severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"firing","title":"checkout returns 5xx above 5%"},"received_at":"2026-11-05T23:49:18+00:00","route_id":"route_330bae2ca0e5","severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"f
+[23:50:20] POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1483 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"alert_group_id":"grp_b23925e57ae9","annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"ends_at":null,"fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","id":"alr_d3cb6cf426e5","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"alertmanager":{"common_annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"common_labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","service":"checkout","severity":"critical"},"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","group_labels":{"alertname":"CheckoutHighErrorRate","service":"checkout"},"receiver":"capture","status":"firing","truncated_alerts":0},"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"dedupe_key":"d77e5210e3203776","ends_at":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"endsAt":"0001-01-01T00:00:00Z","fingerprint":"d77e5210e3203776","generatorURL":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"startsAt":"2026-11-05T23:42:08.516741351Z","status":"firing"},"severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"firing","title":"checkout returns 5xx above 5%"},"received_at":"2026-11-05T23:50:20+00:00","route_id":"route_330bae2ca0e5","severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"f
+[23:50:40] $ docker compose -f docker-compose.yml -f override.yml logs worker --tail=30
+[23:50:40] exit=0
+worker-1  | time=2026-11-05T23:48:30.891Z level=INFO msg=listening addr=:8081
+worker-1  | time=2026-11-05T23:48:31.090Z level=WARN msg=ssrf_exemptions_without_guard key=NXS_ANOMALY_BLOCK_PRIVATE_WEBHOOKS_EXCEPT detail="NXS_ANOMALY_BLOCK_PRIVATE_WEBHOOKS is off, so every private destination is reachable anyway"
+worker-1  | time=2026-11-05T23:48:31.090Z level=INFO msg="worker telemetry endpoint started" addr=:8081
+worker-1  | time=2026-11-05T23:48:31.090Z level=INFO msg="worker started" poll_interval=5s telemetry_addr=:8081
+worker-1  | time=2026-11-05T23:49:18.999Z level=WARN msg=duty_shift_without_checkin missing=1 on_call=1
+worker-1  | time=2026-11-05T23:49:19.007Z level=INFO msg=worker_cycle_complete reclaimed_stale_claims=0 processed_alert_groups=0 flushed_notification_batches=0 delivered_notifications=2 retried_notifications=0 failed_notifications=0 archived_alert_groups=0 shift_notifications=0 duration_ms=9
+worker-1  | time=2026-11-05T23:50:19.104Z level=INFO msg=worker_cycle_complete reclaimed_stale_claims=0 processed_alert_groups=2 flushed_notification_batches=0 delivered_notifications=2 retried_notifications=0 failed_notifications=0 archived_alert_groups=0 shift_notifications=0 duration_ms=28
+
+[23:50:40] GET http://localhost:18080/api/v1/notifications body=None
+-> 200 {"items":[{"alert_group_id":"grp_b23925e57ae9","analytics_team_id":"team_2f486111e568","batch_id":null,"batch_key":null,"channel":"webhook","claimed_at":"2026-11-05T23:50:19+00:00","claimed_by":"wkr_338c3b06108a","created_at":"2026-11-05T23:50:19+00:00","episode_id":"epd_32797f0676b4","id":"ntf_a27f48634692","idempotency_key":"grp_b23925e57ae9:epd_32797f0676b4:0:2:0:usr_29e4b452a174:webhook:http://10.1.0.238:9099/nxs/bob:direct user notification","integration_id":"int_d9608e903289","last_error":null,"next_retry_at":null,"payload":{"alert_group_id":"grp_b23925e57ae9","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"reason":"direct user notification","severity":"critical","status":"open","title":"checkout returns 5xx above 5%","user":{"id":"usr_29e4b452a174","name":"bob","username":"bob"}},"provider_status":"http_post","reason":"direct user notification","retry_count":0,"status":"delivered","target":"http://10.1.0.238:9099/nxs/bob","updated_at":"2026-11-05T23:50:19+00:00","user_id":"usr_29e4b452a174"},{"alert_group_id":"grp_c4f0a942f72e","analytics_team_id":"team_2f486111e568","batch_id":null,"batch_key":null,"channel":"webhook","claimed_at":"2026-11-05T23:50:19+00:00","claimed_by":"wkr_338c3b06108a","created_at":"2026-11-05T23:50:19+00:00","episode_id":"epd_13ac77db79ff","id":"ntf_0321aef18f61","idempotency_key":"grp_c4f0a942f72e:epd_13ac77db79ff:0:2:0:usr_29e4b452a174:webhook:http://10.1.0.238:9099/nxs/bob:direct user notification","integration_id":"int_d9608e903289","last_error":null,"next_retry_at":null,"payload":{"alert_group_id":"grp_c4f0a942f72e","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-1","service":"checkout","severity":"critical"},"reason":"direct user notification","severity":"critical","status":"open","title":"checkout returns 5xx above 5%","user":{"id":"usr_29e4b452a174","name":"bob","username":"bob"}},"provider_status":"http_post","reason":"direct user notification","retry_count":0,"status":"delivered","target":"http://10.1.0.238:9099/nxs/bob","updated_at":"2026-11-05T23:50:19+00:00","user_id":"usr_29e4b452a174"},{"alert_group_id":"grp_c4f0a942f72e","analytics_team_id":"team_2f486111e568","batch_id":null,"batch_key":null,"channel":"webhook","claimed_at":"2026-11-05T23:49:18+00:00","claimed_by":"wkr_338c3b06108a","created_at":"2026-11-05T23:49:18+00:00","epi
+[23:50:44] ALERTS during_escalation [{"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_c4f0a942f72e"}, {"title": "checkout returns 5xx above 5%", "status": "open", "alert_count": 2, "id": "grp_b23925e57ae9"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c67e5e10bf38"}]
+[23:50:44] POST http://localhost:18080/integrations/v1/alertmanager/key_7b3a29a4026d body=<1504 bytes>
+-> 202 {"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","processed":2,"receiver":"capture","results":[{"alert":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"ends_at":"2026-11-05T23:42:17.571881Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","id":"alr_b08b01360c43","integration_id":"int_d9608e903289","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"alertmanager":{"common_annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"common_labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","service":"checkout","severity":"critical"},"external_url":"http://ca4b3f2ca228:9093","group_key":"{}:{alertname=\"CheckoutHighErrorRate\", service=\"checkout\"}","group_labels":{"alertname":"CheckoutHighErrorRate","service":"checkout"},"receiver":"capture","status":"resolved","truncated_alerts":0},"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"dedupe_key":"d77e5210e3203776","ends_at":"2026-11-05T23:42:17.571881Z","fingerprint":"d77e5210e3203776","generator_url":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"message":"5xx ratio on checkout is above 5% for 5 minutes","payload":{"annotations":{"description":"5xx ratio on checkout is above 5% for 5 minutes","summary":"checkout returns 5xx above 5%"},"endsAt":"2026-11-05T23:42:17.571881Z","fingerprint":"d77e5210e3203776","generatorURL":"http://prometheus:9090/graph?g0.expr=checkout_5xx_ratio","labels":{"alertname":"CheckoutHighErrorRate","namespace":"shop","pod":"checkout-0","service":"checkout","severity":"critical"},"startsAt":"2026-11-05T23:42:08.516741351Z","status":"resolved"},"severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","status":"resolved","title":"checkout returns 5xx above 5%"},"received_at":"2026-11-05T23:50:44+00:00","route_id":"route_330bae2ca0e5","severity":"critical","source":"alertmanager","starts_at":"2026-11-05T23:42:08.516741351Z","s
+[23:50:50] ALERTS after_final_resolve [{"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c4f0a942f72e"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_b23925e57ae9"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c67e5e10bf38"}]
+[23:50:50] --- E. PagerDuty Events v2 body, as Alertmanager's pagerduty_configs sends it
+[23:50:50] POST http://localhost:18080/api/v1/integrations body={'name': 'pd', 'type': 'pagerduty'}
+-> 201 {"created_at":"2026-11-05T23:50:50+00:00","group_by":["alertname","service"],"heartbeat":{"grace_seconds":0,"interval_seconds":0},"id":"int_e0a9ac186caa","kafka_topic":null,"key":"key_77dc6676e233","legacy_pool":null,"name":"pd","notification_policy":{"batch_deadline_seconds":0,"batch_timeout_seconds":0,"channels":[],"emergency_user_id":null,"epic_threshold_count":0,"epic_threshold_seconds":0,"epic_user_id":null},"pipeline":null,"routes":[{"escalation_chain_id":null,"id":"route_e2643cc3629d","is_default":true,"labels":{},"match_type":"all","name":"default","pattern":""}],"routing_key":"key_77dc6676e233","source_type":"pagerduty","team_id":null,"templates":{},"type":"pagerduty","updated_at":"2026-11-05T23:50:50+00:00","webhook_secret":null,"webhook_secret_set":false}
+[23:50:50] POST http://localhost:18080/integrations/v1/pagerduty/key_77dc6676e233 body=<706 bytes>
+-> 202 {"dedup_key":"a6155e6da321546b81ec701dd0ae11648d37e95e340b8216c7bb9fe1073bf5a6","message":"Event processed","status":"success"}
+[23:50:54] ALERTS after_pagerduty_event [{"title": "[FIRING:1] PagerDutyShape checkout (critical)", "status": "open", "alert_count": 1, "id": "grp_b4a5b52379e9"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c4f0a942f72e"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_b23925e57ae9"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_cc97b74c6278"}, {"title": "checkout returns 5xx above 5%", "status": "resolved", "alert_count": 2, "id": "grp_c67e5e10bf38"}]
+[23:50:54] $ docker stats --no-stream --format '{{.Name}} {{.MemUsage}}'
+[23:50:56] exit=0
+src-frontend-1 4.543MiB / 15.61GiB
+src-worker-1 6.969MiB / 15.61GiB
+src-app-1 7.133MiB / 15.61GiB
+src-postgres-1 45.66MiB / 15.61GiB
+
