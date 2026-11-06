@@ -23,12 +23,16 @@ class LI(Tool):
         rows = [l.split("\t") for l in o.splitlines() if "\t" in l]
         self.app, self.key = rows[0] if rows else ("Autoalerts", "")
         self.base = self.count()
-        c, t = self.post(FIRING)
-        if c == 401:
-            self.note("right after docker compose up the seeded application returns 401 Application not found; restarting iris-web fixes it")
-            self.sh("docker compose restart iris-web", cwd=self.work + "/iris", timeout=120)
-            self.wait_http("http://localhost:16649/", timeout=120, ok=(200, 302, 401, 404))
-            time.sleep(10)
+        self.sh("docker compose restart iris-web", cwd=self.work + "/iris", timeout=120)
+        self.wait_http("http://localhost:16649/", timeout=120, ok=(200, 302, 401, 404))
+        time.sleep(15)
+        self.sh("docker compose exec -T iris-mysql mysql -uroot -p1234 iris -e 'select id,name,auth_only,allow_other_app_incidents from application'", cwd=self.work + "/iris", trim=800)
+        for app, key in rows:
+            self.app, self.key = app, key
+            c, t = self.post(FIRING)
+            self.log("app probe", app, c)
+            if c != 401:
+                self.note(f"seeded application {app} got past auth with HTTP {c}"); break
     def post(self, body):
         c, j, t = self.http("POST", f"http://localhost:16649/v0/webhooks/alertmanager?application={self.app}&key={self.key}", bytes(body)); return c, t
     def count(self):

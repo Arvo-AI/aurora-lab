@@ -56,7 +56,7 @@ class Regen(Tool):
         self.http("POST", B + "/api/v1/routing-rules", {"name": "all", "priority": 1, "match_criteria": {"source": ["prometheus"]}, "actions": {"create_incident": True, "escalation_policy_id": p["id"]}})
         self.log("the earlier incident stays open and a re-fire of the same fingerprints joins it, so this firing uses new fingerprints to open a new incident under the policy")
         fresh = FIRING.replace(b"d77e5210e3203776", b"aaaa5210e3203776").replace(b"5d3b118068113e9d", b"bbbb118068113e9d")
-        t0 = time.time(); self.post(fresh); time.sleep(100)
+        t0 = time.time(); self.post(fresh); time.sleep(240)
         self.sh("docker compose -f docker-compose.yml -f override.yml exec -T db psql -U regen -d regen -c 'select status,current_tier_index,last_notified_at,created_at from escalation_states'", cwd=self.work + "/src")
         self.sh("docker compose -f docker-compose.yml -f override.yml logs app --tail=40 | grep -iE 'escalat|notif|dm' | tail -20", cwd=self.work + "/src")
         self.snap("during_escalation", wait=1); self.post(RESOLVED); self.post(fresh.replace(b'"status":"firing"', b'"status":"resolved"')); self.snap("after_final_resolve", wait=6)
