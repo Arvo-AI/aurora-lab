@@ -1,0 +1,28 @@
+# config: A: exit on SIGTERM, no preStop
+rollouts done at 00:05:38
+--- new connection per request
+    26  error: Post "http://<addr>/slow?ms=200": EOF
+    68  error: Post "http://<addr>/slow?ms=200": dial tcp <addr>: connect: connection refused
+  2778  status 200
+--- keepalive
+    30  error: Post "http://<addr>/slow?ms=200": EOF
+    19  error: Post "http://<addr>/slow?ms=200": dial tcp <addr>: connect: connection refused
+     2  error: Post "http://<addr>/slow?ms=200": read tcp <addr>-><addr>: read: connection reset by peer
+  2778  status 200
+# config: B: graceful Shutdown on SIGTERM, no preStop
+rollouts done at 00:07:25
+--- new connection per request
+     1  error: Post "http://<addr>/slow?ms=200": EOF
+   140  error: Post "http://<addr>/slow?ms=200": dial tcp <addr>: connect: connection refused
+     1  error: Post "http://<addr>/slow?ms=200": read tcp <addr>-><addr>: read: connection reset by peer
+  2784  status 200
+--- keepalive
+    23  error: Post "http://<addr>/slow?ms=200": dial tcp <addr>: connect: connection refused
+  2792  status 200
+deployment.apps/srv patched
+# config: C: graceful Shutdown on SIGTERM, preStop sleep 5
+rollouts done at 00:09:16
+--- new connection per request
+  2784  status 200
+--- keepalive
+  2792  status 200

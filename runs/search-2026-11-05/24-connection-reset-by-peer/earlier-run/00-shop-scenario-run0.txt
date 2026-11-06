@@ -1,0 +1,33 @@
+$ kubectl -n shop logs deploy/uploader --tail=20
+import failed after 4784128 bytes: BrokenPipeError: [Errno 32] Broken pipe
+$ kubectl -n shop get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+api-5446dc4c77-jhs9b        1/1     Running   0          52s
+api-5446dc4c77-rmzdg        1/1     Running   0          51s
+frontend-76d98597b9-hnd85   1/1     Running   0          70s
+frontend-76d98597b9-txr4m   1/1     Running   0          70s
+loadgen-7c6676864-pj7lr     1/1     Running   0          70s
+redis-59458f55d8-qrf5m      1/1     Running   0          70s
+uploader-75b9db87fd-ntpdx   1/1     Running   0          58s
+worker-6cf88d4b58-hqncv     1/1     Running   0          70s
+$ kubectl -n shop get events --sort-by=.lastTimestamp | tail -20
+52s         Warning   Unhealthy           pod/api-5446dc4c77-jhs9b         Readiness probe failed: Get "http://10.244.2.12:8080/healthz": dial tcp 10.244.2.12:8080: connect: connection refused
+52s         Normal    Started             pod/api-5446dc4c77-jhs9b         Container started
+52s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-5446dc4c77 from 0 to 1
+52s         Normal    Created             pod/api-5446dc4c77-jhs9b         Container created
+52s         Normal    SuccessfulCreate    replicaset/api-5446dc4c77        Created pod: api-5446dc4c77-jhs9b
+52s         Normal    Pulled              pod/api-5446dc4c77-jhs9b         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+52s         Normal    Scheduled           pod/api-5446dc4c77-jhs9b         Successfully assigned shop/api-5446dc4c77-jhs9b to aurora-lab-worker
+51s         Normal    Started             pod/api-5446dc4c77-rmzdg         Container started
+51s         Normal    Created             pod/api-5446dc4c77-rmzdg         Container created
+51s         Warning   Unhealthy           pod/api-5446dc4c77-rmzdg         Readiness probe failed: Get "http://10.244.1.22:8080/healthz": dial tcp 10.244.1.22:8080: connect: connection refused
+51s         Normal    SuccessfulCreate    replicaset/api-5446dc4c77        Created pod: api-5446dc4c77-rmzdg
+51s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-7fddfb846 from 2 to 1
+51s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-5446dc4c77 from 1 to 2
+51s         Normal    Pulled              pod/api-5446dc4c77-rmzdg         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+51s         Normal    Scheduled           pod/api-5446dc4c77-rmzdg         Successfully assigned shop/api-5446dc4c77-rmzdg to aurora-lab-worker2
+51s         Normal    Killing             pod/api-7fddfb846-7ccfx          Stopping container api
+51s         Normal    SuccessfulDelete    replicaset/api-7fddfb846         Deleted pod: api-7fddfb846-7ccfx
+50s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-7fddfb846 from 1 to 0
+50s         Normal    SuccessfulDelete    replicaset/api-7fddfb846         Deleted pod: api-7fddfb846-svq7b
+50s         Normal    Killing             pod/api-7fddfb846-svq7b          Stopping container api

@@ -1,0 +1,33 @@
+$ kubectl -n shop logs deploy/uploader --tail=20
+import failed after 3997696 bytes: BrokenPipeError: [Errno 32] Broken pipe
+$ kubectl -n shop get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+api-65db6b8d89-jz4s6        1/1     Running   0          47s
+api-65db6b8d89-ndl67        1/1     Running   0          48s
+frontend-76d98597b9-ppgrf   1/1     Running   0          68s
+frontend-76d98597b9-prlwz   1/1     Running   0          68s
+loadgen-7c6676864-9z77p     1/1     Running   0          68s
+redis-59458f55d8-fhtqz      1/1     Running   0          68s
+uploader-75b9db87fd-lmrw7   1/1     Running   0          54s
+worker-6cf88d4b58-rbsn4     1/1     Running   0          68s
+$ kubectl -n shop get events --sort-by=.lastTimestamp | tail -20
+48s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-65db6b8d89 from 0 to 1
+48s         Normal    Created             pod/api-65db6b8d89-ndl67         Container created
+48s         Normal    Started             pod/api-65db6b8d89-ndl67         Container started
+48s         Normal    Scheduled           pod/api-65db6b8d89-ndl67         Successfully assigned shop/api-65db6b8d89-ndl67 to aurora-lab-worker
+48s         Warning   Unhealthy           pod/api-65db6b8d89-ndl67         Readiness probe failed: Get "http://10.244.1.12:8080/healthz": dial tcp 10.244.1.12:8080: connect: connection refused
+48s         Normal    SuccessfulCreate    replicaset/api-65db6b8d89        Created pod: api-65db6b8d89-ndl67
+48s         Normal    Pulled              pod/api-65db6b8d89-ndl67         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+47s         Normal    SuccessfulCreate    replicaset/api-65db6b8d89        Created pod: api-65db6b8d89-jz4s6
+47s         Normal    Killing             pod/api-59dd75fc4f-z5vbv         Stopping container api
+47s         Normal    SuccessfulDelete    replicaset/api-59dd75fc4f        Deleted pod: api-59dd75fc4f-z5vbv
+47s         Normal    Scheduled           pod/api-65db6b8d89-jz4s6         Successfully assigned shop/api-65db6b8d89-jz4s6 to aurora-lab-worker2
+47s         Normal    Pulled              pod/api-65db6b8d89-jz4s6         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+47s         Normal    Created             pod/api-65db6b8d89-jz4s6         Container created
+47s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-65db6b8d89 from 1 to 2
+47s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-59dd75fc4f from 2 to 1
+46s         Normal    SuccessfulDelete    replicaset/api-59dd75fc4f        Deleted pod: api-59dd75fc4f-nmh8k
+46s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-59dd75fc4f from 1 to 0
+46s         Normal    Killing             pod/api-59dd75fc4f-nmh8k         Stopping container api
+46s         Normal    Started             pod/api-65db6b8d89-jz4s6         Container started
+46s         Warning   Unhealthy           pod/api-65db6b8d89-jz4s6         Readiness probe failed: Get "http://10.244.2.22:8080/healthz": dial tcp 10.244.2.22:8080: connect: connection refused

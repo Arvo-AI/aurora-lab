@@ -1,0 +1,33 @@
+$ kubectl -n shop logs deploy/uploader --tail=20
+import failed after 7667712 bytes: BrokenPipeError: [Errno 32] Broken pipe
+$ kubectl -n shop get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+api-7b548fdc95-d2d6n        1/1     Running   0          56s
+api-7b548fdc95-f7pdj        1/1     Running   0          58s
+frontend-76d98597b9-glsn6   1/1     Running   0          80s
+frontend-76d98597b9-vrv7t   1/1     Running   0          80s
+loadgen-7c6676864-9xd7c     1/1     Running   0          80s
+redis-59458f55d8-64b54      1/1     Running   0          80s
+uploader-75b9db87fd-dhjfd   1/1     Running   0          63s
+worker-6cf88d4b58-vv629     1/1     Running   0          80s
+$ kubectl -n shop get events --sort-by=.lastTimestamp | tail -20
+63s         Normal    Scheduled           pod/uploader-75b9db87fd-dhjfd    Successfully assigned shop/uploader-75b9db87fd-dhjfd to aurora-lab-worker
+58s         Normal    Scheduled           pod/api-7b548fdc95-f7pdj         Successfully assigned shop/api-7b548fdc95-f7pdj to aurora-lab-worker2
+58s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-7b548fdc95 from 0 to 1
+58s         Normal    SuccessfulCreate    replicaset/api-7b548fdc95        Created pod: api-7b548fdc95-f7pdj
+57s         Normal    Created             pod/api-7b548fdc95-f7pdj         Container created
+57s         Normal    Pulled              pod/api-7b548fdc95-f7pdj         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+57s         Warning   Unhealthy           pod/api-7b548fdc95-f7pdj         Readiness probe failed: Get "http://10.244.2.12:8080/healthz": dial tcp 10.244.2.12:8080: connect: connection refused
+57s         Normal    Started             pod/api-7b548fdc95-f7pdj         Container started
+56s         Normal    Killing             pod/api-84774f5755-qfg8d         Stopping container api
+56s         Normal    ScalingReplicaSet   deployment/api                   Scaled up replica set api-7b548fdc95 from 1 to 2
+56s         Normal    SuccessfulDelete    replicaset/api-84774f5755        Deleted pod: api-84774f5755-qfg8d
+56s         Normal    Scheduled           pod/api-7b548fdc95-d2d6n         Successfully assigned shop/api-7b548fdc95-d2d6n to aurora-lab-worker
+56s         Normal    SuccessfulCreate    replicaset/api-7b548fdc95        Created pod: api-7b548fdc95-d2d6n
+56s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-84774f5755 from 2 to 1
+56s         Normal    Started             pod/api-7b548fdc95-d2d6n         Container started
+56s         Normal    Created             pod/api-7b548fdc95-d2d6n         Container created
+56s         Normal    Pulled              pod/api-7b548fdc95-d2d6n         Container image "python:3.12-alpine" already present on machine and can be accessed by the pod
+51s         Normal    SuccessfulDelete    replicaset/api-84774f5755        Deleted pod: api-84774f5755-t4mkr
+51s         Normal    Killing             pod/api-84774f5755-t4mkr         Stopping container api
+51s         Normal    ScalingReplicaSet   deployment/api                   Scaled down replica set api-84774f5755 from 1 to 0

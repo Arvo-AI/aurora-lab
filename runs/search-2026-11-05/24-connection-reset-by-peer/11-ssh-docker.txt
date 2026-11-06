@@ -1,0 +1,79 @@
+# control
+$ ssh -p 2222 root@172.18.0.2 true
+debug1: checking without port identifier
+debug1: ssh_packet_send2_wrapped: resetting send seqnr 3
+debug1: ssh_packet_read_poll2: resetting read seqnr 3
+Authenticated to 172.18.0.2 ([172.18.0.2]:2222) using "publickey".
+Transferred: sent 3556, received 3980 bytes, in 0.0 seconds
+Bytes per second: sent 80670.8, received 90289.6
+exit=0
+
+# firewall resets every non-SYN segment: reset right after the handshake
+$ iptables -I INPUT -p tcp --dport 2222 ! --syn -j REJECT --reject-with tcp-reset
+$ ssh -p 2222 root@172.18.0.2 true
+debug1: connect to address 172.18.0.2 port 2222: Connection reset by peer
+ssh: connect to host 172.18.0.2 port 2222: Connection reset by peer
+exit=255
+--- client capture
+2026-11-06 00:24:17.297085 IP (tos 0x48, ttl 64, id 25495, offset 0, flags [DF], proto TCP (6), length 60)
+    172.18.0.3.35256 > 172.18.0.2.2222: Flags [S], cksum 0x5858 (incorrect -> 0x9e3d), seq 2055011134, win 64240, options [mss 1460,sackOK,TS val 4223226569 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:24:17.297141 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    172.18.0.2.2222 > 172.18.0.3.35256: Flags [S.], cksum 0x5858 (incorrect -> 0xe9e5), seq 1223317407, ack 2055011135, win 65160, options [mss 1460,sackOK,TS val 3501277043 ecr 4223226569,nop,wscale 10], length 0
+2026-11-06 00:24:17.297157 IP (tos 0x48, ttl 64, id 25496, offset 0, flags [DF], proto TCP (6), length 52)
+    172.18.0.3.35256 > 172.18.0.2.2222: Flags [.], cksum 0x5850 (incorrect -> 0x16ff), ack 1, win 63, options [nop,nop,TS val 4223226569 ecr 3501277043], length 0
+2026-11-06 00:24:17.297174 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    172.18.0.2.2222 > 172.18.0.3.35256: Flags [R], cksum 0x5844 (incorrect -> 0x24c6), seq 1223317408, win 0, length 0
+2026-11-06 00:24:18.302499 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    172.18.0.2.2222 > 172.18.0.3.35256: Flags [S.], cksum 0x5858 (incorrect -> 0xe5f7), seq 1223317407, ack 2055011135, win 65160, options [mss 1460,sackOK,TS val 3501278049 ecr 4223226569,nop,wscale 10], length 0
+2026-11-06 00:24:18.302517 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    172.18.0.3.35256 > 172.18.0.2.2222: Flags [R], cksum 0x4f94 (correct), seq 2055011135, win 0, length 0
+
+
+# firewall resets the first segment carrying data
+$ iptables -I INPUT -p tcp --dport 2222 --tcp-flags PSH PSH -j REJECT --reject-with tcp-reset
+$ ssh -p 2222 root@172.18.0.2 true
+kex_exchange_identification: read: Connection reset by peer
+Connection reset by 172.18.0.2 port 2222
+exit=255
+--- client capture
+2026-11-06 00:24:20.560877 IP (tos 0x48, ttl 64, id 61052, offset 0, flags [DF], proto TCP (6), length 60)
+    172.18.0.3.35266 > 172.18.0.2.2222: Flags [S], cksum 0x5858 (incorrect -> 0x22cc), seq 1446881393, win 64240, options [mss 1460,sackOK,TS val 2589566621 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:24:20.560922 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    172.18.0.2.2222 > 172.18.0.3.35266: Flags [S.], cksum 0x5858 (incorrect -> 0x2aa3), seq 3122427281, ack 1446881394, win 65160, options [mss 1460,sackOK,TS val 3289579710 ecr 2589566621,nop,wscale 10], length 0
+2026-11-06 00:24:20.560936 IP (tos 0x48, ttl 64, id 61053, offset 0, flags [DF], proto TCP (6), length 52)
+    172.18.0.3.35266 > 172.18.0.2.2222: Flags [.], cksum 0x5850 (incorrect -> 0x57bc), ack 1, win 63, options [nop,nop,TS val 2589566621 ecr 3289579710], length 0
+2026-11-06 00:24:20.561681 IP (tos 0x48, ttl 64, id 61054, offset 0, flags [DF], proto TCP (6), length 74)
+    172.18.0.3.35266 > 172.18.0.2.2222: Flags [P.], cksum 0x5866 (incorrect -> 0x9cc5), seq 1:23, ack 1, win 63, options [nop,nop,TS val 2589566622 ecr 3289579710], length 22
+2026-11-06 00:24:20.561697 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    172.18.0.2.2222 > 172.18.0.3.35266: Flags [R], cksum 0x5844 (incorrect -> 0x9597), seq 3122427282, win 0, length 0
+2026-11-06 00:24:20.567530 IP (tos 0x0, ttl 64, id 49844, offset 0, flags [DF], proto TCP (6), length 74)
+    172.18.0.2.2222 > 172.18.0.3.35266: Flags [P.], cksum 0x5866 (incorrect -> 0x9cbe), seq 1:23, ack 1, win 64, options [nop,nop,TS val 3289579717 ecr 2589566621], length 22
+2026-11-06 00:24:20.567539 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    172.18.0.3.35266 > 172.18.0.2.2222: Flags [R], cksum 0xc696 (correct), seq 1446881394, win 0, length 0
+
+
+# reset in the middle of a logged-in session
+$ iptables -I INPUT -p tcp --dport 2222 -j REJECT --reject-with tcp-reset
+debug1: checking without port identifier
+debug1: ssh_packet_send2_wrapped: resetting send seqnr 3
+debug1: ssh_packet_read_poll2: resetting read seqnr 3
+Authenticated to 172.18.0.2 ([172.18.0.2]:2222) using "publickey".
+Read from remote host 172.18.0.2: Connection reset by peer
+client_loop: send disconnect: Broken pipe
+exit=255
+--- client capture
+    172.18.0.2.2222 > 172.18.0.3.35276: Flags [P.], cksum 0x586c (incorrect -> 0x0246), seq 4119:4147, ack 3711, win 76, options [nop,nop,TS val 12945711 ecr 3072048307], length 28
+2026-11-06 00:24:25.429474 IP (tos 0x20, ttl 64, id 19434, offset 0, flags [DF], proto TCP (6), length 52)
+    172.18.0.3.35276 > 172.18.0.2.2222: Flags [.], cksum 0x5850 (incorrect -> 0x2e48), ack 4147, win 78, options [nop,nop,TS val 3072048348 ecr 12945711], length 0
+2026-11-06 00:24:27.389532 IP (tos 0x20, ttl 64, id 19435, offset 0, flags [DF], proto TCP (6), length 104)
+    172.18.0.3.35276 > 172.18.0.2.2222: Flags [P.], cksum 0x5884 (incorrect -> 0x647c), seq 3711:3763, ack 4147, win 78, options [nop,nop,TS val 3072050308 ecr 12945711], length 52
+2026-11-06 00:24:27.389656 IP (tos 0x20, ttl 64, id 59865, offset 0, flags [DF], proto TCP (6), length 80)
+    172.18.0.2.2222 > 172.18.0.3.35276: Flags [P.], cksum 0x586c (incorrect -> 0x6c6b), seq 4147:4175, ack 3763, win 76, options [nop,nop,TS val 12947712 ecr 3072050308], length 28
+2026-11-06 00:24:27.389667 IP (tos 0x20, ttl 64, id 19436, offset 0, flags [DF], proto TCP (6), length 52)
+    172.18.0.3.35276 > 172.18.0.2.2222: Flags [.], cksum 0x5850 (incorrect -> 0x1e7f), ack 4175, win 78, options [nop,nop,TS val 3072050308 ecr 12947712], length 0
+2026-11-06 00:24:29.389539 IP (tos 0x20, ttl 64, id 19437, offset 0, flags [DF], proto TCP (6), length 104)
+    172.18.0.3.35276 > 172.18.0.2.2222: Flags [P.], cksum 0x5884 (incorrect -> 0x908d), seq 3763:3815, ack 4175, win 78, options [nop,nop,TS val 3072052308 ecr 12947712], length 52
+2026-11-06 00:24:29.389572 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    172.18.0.2.2222 > 172.18.0.3.35276: Flags [R], cksum 0x5844 (incorrect -> 0x46a8), seq 1794839449, win 0, length 0
+
+OpenSSH_10.0p2, OpenSSL 3.5.9 29 Sep 2026

@@ -1,0 +1,125 @@
+FAIL local=10.244.1.13:37468 offset=-269.272µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:37488 offset=-413.569µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:37584 offset=-396.842µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:55064 offset=-309.933µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:55080 offset=-210.01µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:55164 offset=-86.54µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:56842 offset=200.359µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:57298 offset=298.843µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:57384 offset=-87.112µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:57554 offset=27.732µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:57554->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:57634 offset=-698.808µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:57634->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:46436 offset=993.769µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46974 offset=72.441µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47878 offset=-220.556µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:48302 offset=305.752µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:48308 offset=342.726µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:48660 offset=355.397µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:48660->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:48908 offset=173.151µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:48908->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:49184 offset=357.58µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:49566 offset=-788.036µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:49566->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:44538 offset=-660.425µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44744 offset=365.949µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44960 offset=504.237µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45126 offset=-314.255µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45170 offset=-358.144µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45544 offset=1.499µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45568 offset=147.987µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45596 offset=-616.777µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45770 offset=-646.24µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45970 offset=-326ns reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:45998 offset=156.243µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46610 offset=102.44µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47450 offset=650.636µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59176 offset=415.306µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59392 offset=287.65µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59574 offset=-131.166µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59954 offset=-410.661µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:60528 offset=708.717µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:60728 offset=-136.861µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44174 offset=906.457µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44326 offset=-176.525µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44838 offset=857.228µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45446 offset=-926.358µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45714 offset=532.041µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46202 offset=-727.673µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46352 offset=231.273µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46600 offset=201.853µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46724 offset=775.885µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46764 offset=964.292µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47182 offset=-436.491µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47184 offset=-376.697µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:43888 offset=670.744µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:43906 offset=388.9µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44202 offset=-978.273µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44422 offset=-261.984µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44702 offset=-452.706µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44930 offset=-588.509µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44958 offset=-751.618µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45524 offset=297.961µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45960 offset=71.427µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46900 offset=-127.385µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47030 offset=178.997µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:51558 offset=-90.446µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:51568 offset=-254.817µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:51616 offset=-747.425µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:51616->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:52026 offset=10.468µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:52518 offset=746.287µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:52546 offset=501.937µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:52612 offset=-726.338µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:53032 offset=-567.558µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:53266 offset=-73.114µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:53430 offset=-304.314µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:53574 offset=-662.804µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:54206 offset=-338.796µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:54770 offset=-863.725µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:58638 offset=43.413µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:58756 offset=-33.717µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:58970 offset=616.75µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59800 offset=-145.82µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59816 offset=353.957µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:59816->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:60502 offset=-137.284µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:32850 offset=4.433µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:32912 offset=5.284µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:32918 offset=-7.934µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:33106 offset=-227.401µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:33420 offset=674.808µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:33420->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:39852 offset=-782.97µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:39852->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:40466 offset=-112.159µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:40634 offset=511.363µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:41118 offset=-455.237µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:41118->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:42404 offset=-615.625µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:42552 offset=286.626µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:42788 offset=-941.7µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:45420 offset=579.534µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45694 offset=219.286µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:45694->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:46146 offset=137.975µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:46146->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:46584 offset=-494.08µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46878 offset=67.807µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47276 offset=-98.339µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47576 offset=211.284µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:48048 offset=-645.86µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:48048->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:58622 offset=239.693µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:58782 offset=538.867µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:58782->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:59176 offset=-3.7µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:59176->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:59242 offset=117.598µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59428 offset=-32.964µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59876 offset=-14.111µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:60448 offset=-220.312µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:60498 offset=120.074µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:60612 offset=155.513µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:60926 offset=382.579µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:33252 offset=-715.337µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:39198 offset=32.343µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:39492 offset=-514.948µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:39492->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:39776 offset=188.347µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:39832 offset=-177.98µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:40152 offset=956.424µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:40460 offset=-295.549µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:40842 offset=135.749µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+summary:
+  1522  reused=false ok
+    95  reused=true error: Post "http://<addr>/ok": EOF
+     8  reused=true error: Post "http://<addr>/ok": http: server closed idle connection
+    16  reused=true error: Post "http://<addr>/ok": read tcp <addr>-><addr>: read: connection reset by peer
+  1359  reused=true ok

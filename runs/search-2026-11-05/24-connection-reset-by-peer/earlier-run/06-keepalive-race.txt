@@ -1,0 +1,66 @@
+# Go client, POST (not replayable), reuse at 2 s +/- 5 ms, IdleTimeout 2 s
+
+$ rstclient sweep -X POST -idle 2s -window 5ms -c 50 -n 60 http://10.96.175.45:8080/ok
+summary:
+  1522  reused=false ok
+    95  reused=true error: Post "http://<addr>/ok": EOF
+     8  reused=true error: Post "http://<addr>/ok": http: server closed idle connection
+    16  reused=true error: Post "http://<addr>/ok": read tcp <addr>-><addr>: read: connection reset by peer
+  1359  reused=true ok
+119
+FAIL local=10.244.1.13:37468 offset=-269.272µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:37488 offset=-413.569µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:37584 offset=-396.842µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:55064 offset=-309.933µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:55080 offset=-210.01µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:55164 offset=-86.54µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:56842 offset=200.359µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:57298 offset=298.843µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:57384 offset=-87.112µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:57554 offset=27.732µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:57554->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:57634 offset=-698.808µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:57634->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:46436 offset=993.769µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46974 offset=72.441µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47878 offset=-220.556µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:48302 offset=305.752µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:48308 offset=342.726µs reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:48660 offset=355.397µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:48660->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:48908 offset=173.151µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:48908->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:49184 offset=357.58µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:49566 offset=-788.036µs reused=true err=Post "http://10.96.175.45:8080/ok": read tcp 10.244.1.13:49566->10.96.175.45:8080: read: connection reset by peer
+FAIL local=10.244.1.13:44538 offset=-660.425µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44744 offset=365.949µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44960 offset=504.237µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45126 offset=-314.255µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45170 offset=-358.144µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45544 offset=1.499µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45568 offset=147.987µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45596 offset=-616.777µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45770 offset=-646.24µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:45970 offset=-326ns reused=true err=Post "http://10.96.175.45:8080/ok": http: server closed idle connection
+FAIL local=10.244.1.13:45998 offset=156.243µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:46610 offset=102.44µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:47450 offset=650.636µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59176 offset=415.306µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59392 offset=287.65µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59574 offset=-131.166µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:59954 offset=-410.661µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:60528 offset=708.717µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:60728 offset=-136.861µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+FAIL local=10.244.1.13:44174 offset=906.457µs reused=true err=Post "http://10.96.175.45:8080/ok": EOF
+175837 /tmp/cap.txt
+122
+
+# Go client, GET (replayable), same timing
+
+$ rstclient sweep -X GET -idle 2s -window 5ms -c 50 -n 30 http://10.96.175.45:8080/ok
+summary:
+   775  reused=false ok
+   725  reused=true ok
+
+# Python requests.Session, POST, same timing
+
+$ python3 /app/py_sweep.py http://10.96.175.45:8080/ok 2 0.005 30 40
+     2  ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))
+    18  ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  1180  ok

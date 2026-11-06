@@ -1,0 +1,39 @@
+# nothing listening: port 9 on the server pod IP
+
+$ curl -sS http://10.244.1.23:9/
+curl: (7) Failed to connect to 10.244.1.23 port 9 after 0 ms: Could not connect to server
+command terminated with exit code 7
+python requests error: requests.exceptions.ConnectionError: HTTPConnectionPool(host='10.244.1.23', port=9): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7efc444cc920>: Failed to establish a new connection: [Errno 111] Connection refused'))
+go net/http error: Get "http://10.244.1.23:9/": dial tcp 10.244.1.23:9: connect: connection refused
+node error: code=ECONNREFUSED message=connect ECONNREFUSED 10.244.1.23:9
+--- client capture
+2026-11-06 00:03:37.328398 IP (tos 0x0, ttl 64, id 25297, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.48784 > 10.244.1.23.9: Flags [S], cksum 0x193a (incorrect -> 0xe934), seq 703332923, win 64240, options [mss 1460,sackOK,TS val 1196234942 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:03:37.328491 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    10.244.1.23.9 > 10.244.2.13.48784: Flags [R.], cksum 0xac03 (correct), seq 0, ack 703332924, win 0, length 0
+2026-11-06 00:03:37.547552 IP (tos 0x0, ttl 64, id 16259, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.48792 > 10.244.1.23.9: Flags [S], cksum 0x193a (incorrect -> 0xfe6f), seq 3790879511, win 64240, options [mss 1460,sackOK,TS val 852567826 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:03:37.547644 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    10.244.1.23.9 > 10.244.2.13.48792: Flags [R.], cksum 0xbb16 (correct), seq 0, ack 3790879512, win 0, length 0
+2026-11-06 00:03:37.671593 IP (tos 0x0, ttl 64, id 15369, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.48806 > 10.244.1.23.9: Flags [S], cksum 0x193a (incorrect -> 0x6ec5), seq 3753248950, win 64240, options [mss 1460,sackOK,TS val 777252811 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:03:37.671669 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    10.244.1.23.9 > 10.244.2.13.48806: Flags [R.], cksum 0xefa7 (correct), seq 0, ack 3753248951, win 0, length 0
+2026-11-06 00:03:37.809957 IP (tos 0x0, ttl 64, id 50763, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.48812 > 10.244.1.23.9: Flags [S], cksum 0x193a (incorrect -> 0x7840), seq 473787744, win 64240, options [mss 1460,sackOK,TS val 1454316734 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:03:37.810038 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    10.244.1.23.9 > 10.244.2.13.48812: Flags [R.], cksum 0x4e71 (correct), seq 0, ack 473787745, win 0, length 0
+
+# ClusterIP with no endpoints
+
+$ curl -sS --max-time 5 http://10.96.227.193:8080/
+curl: (7) Failed to connect to 10.96.227.193 port 8080 after 0 ms: Could not connect to server
+command terminated with exit code 7
+--- client capture
+2026-11-06 00:03:43.274588 IP (tos 0x0, ttl 64, id 25540, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.37556 > 10.96.227.193.8080: Flags [S], cksum 0xfb50 (incorrect -> 0x9229), seq 858699361, win 64240, options [mss 1460,sackOK,TS val 143792986 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:03:43.274641 IP (tos 0xc0, ttl 64, id 46083, offset 0, flags [none], proto ICMP (1), length 88)
+    10.244.2.1 > 10.244.2.13: ICMP 10.96.227.193 tcp port 8080 unreachable, length 68
+	IP (tos 0x0, ttl 63, id 25540, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.37556 > 10.96.227.193.8080: Flags [S], cksum 0xfb50 (incorrect -> 0x9229), seq 858699361, win 64240, options [mss 1460,sackOK,TS val 143792986 ecr 0,nop,wscale 10], length 0
+

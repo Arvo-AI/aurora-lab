@@ -1,0 +1,90 @@
+# server IdleTimeout 2 s. Client writes 3 s after the last response
+
+$ python3 /app/raw_idle.py 10.96.132.149 8080 3
+first response: b'HTTP/1.1 200 OK'
+write after idle -> 29
+second write -> BrokenPipeError: [Errno 32] Broken pipe
+third write -> BrokenPipeError: [Errno 32] Broken pipe
+read -> b''
+--- client capture
+2026-11-06 00:10:48.769225 IP (tos 0x0, ttl 64, id 14582, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.55902 > 10.96.132.149.8080: Flags [S], cksum 0x9c24 (incorrect -> 0x9ea6), seq 2163014561, win 64240, options [mss 1460,sackOK,TS val 2678389837 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:10:48.769318 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    10.96.132.149.8080 > 10.244.2.13.55902: Flags [S.], cksum 0x9c24 (incorrect -> 0x16ac), seq 3279974801, ack 2163014562, win 65160, options [mss 1460,sackOK,TS val 946280152 ecr 2678389837,nop,wscale 10], length 0
+2026-11-06 00:10:48.769327 IP (tos 0x0, ttl 64, id 14583, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.55902 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0x43c5), ack 1, win 63, options [nop,nop,TS val 2678389837 ecr 946280152], length 0
+2026-11-06 00:10:48.769365 IP (tos 0x0, ttl 64, id 14584, offset 0, flags [DF], proto TCP (6), length 81)
+    10.244.2.13.55902 > 10.96.132.149.8080: Flags [P.], cksum 0x9c39 (incorrect -> 0x847b), seq 1:30, ack 1, win 63, options [nop,nop,TS val 2678389837 ecr 946280152], length 29: HTTP, length: 29
+	GET /ok HTTP/1.1
+	Host: x
+	
+2026-11-06 00:10:48.769390 IP (tos 0x0, ttl 62, id 19725, offset 0, flags [DF], proto TCP (6), length 52)
+    10.96.132.149.8080 > 10.244.2.13.55902: Flags [.], cksum 0x9c1c (incorrect -> 0x43a7), ack 30, win 64, options [nop,nop,TS val 946280152 ecr 2678389837], length 0
+2026-11-06 00:10:48.769525 IP (tos 0x0, ttl 62, id 19726, offset 0, flags [DF], proto TCP (6), length 171)
+    10.96.132.149.8080 > 10.244.2.13.55902: Flags [P.], cksum 0x9c93 (incorrect -> 0xcfcd), seq 1:120, ack 30, win 64, options [nop,nop,TS val 946280152 ecr 2678389837], length 119: HTTP, length: 119
+	HTTP/1.1 200 OK
+	Date: Fri, 06 Nov 2026 00:10:48 GMT
+	Content-Length: 3
+	Content-Type: text/plain; charset=utf-8
+	
+	ok
+2026-11-06 00:10:48.769532 IP (tos 0x0, ttl 64, id 14585, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.55902 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0x4331), ack 120, win 63, options [nop,nop,TS val 2678389837 ecr 946280152], length 0
+2026-11-06 00:10:50.770475 IP (tos 0x0, ttl 62, id 19727, offset 0, flags [DF], proto TCP (6), length 52)
+    10.96.132.149.8080 > 10.244.2.13.55902: Flags [F.], cksum 0x9c1c (incorrect -> 0x3b5e), seq 120, ack 30, win 64, options [nop,nop,TS val 946282153 ecr 2678389837], length 0
+2026-11-06 00:10:50.811136 IP (tos 0x0, ttl 64, id 14586, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.55902 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0x3365), ack 121, win 63, options [nop,nop,TS val 2678391879 ecr 946282153], length 0
+2026-11-06 00:10:51.769669 IP (tos 0x0, ttl 64, id 14587, offset 0, flags [DF], proto TCP (6), length 81)
+    10.244.2.13.55902 > 10.96.132.149.8080: Flags [P.], cksum 0x9c39 (incorrect -> 0x705d), seq 30:59, ack 121, win 63, options [nop,nop,TS val 2678392837 ecr 946282153], length 29: HTTP, length: 29
+	GET /ok HTTP/1.1
+	Host: x
+	
+2026-11-06 00:10:51.769737 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    10.96.132.149.8080 > 10.244.2.13.55902: Flags [R], cksum 0xe470 (correct), seq 3279974922, win 0, length 0
+
+
+# same, but the client reads before it writes again
+
+$ python3 /app/raw_idle.py 10.96.132.149 8080 3 read-first
+first response: b'HTTP/1.1 200 OK'
+write after idle -> 29
+read -> b''
+second write -> BrokenPipeError: [Errno 32] Broken pipe
+third write -> BrokenPipeError: [Errno 32] Broken pipe
+read -> b''
+--- client capture
+2026-11-06 00:10:55.338844 IP (tos 0x0, ttl 64, id 17650, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.33500 > 10.96.132.149.8080: Flags [S], cksum 0x9c24 (incorrect -> 0xaca3), seq 4118911751, win 64240, options [mss 1460,sackOK,TS val 2606315043 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:10:55.338928 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    10.96.132.149.8080 > 10.244.2.13.33500: Flags [S.], cksum 0x9c24 (incorrect -> 0x824c), seq 2557022957, ack 4118911752, win 65160, options [mss 1460,sackOK,TS val 164983170 ecr 2606315043,nop,wscale 10], length 0
+2026-11-06 00:10:55.338937 IP (tos 0x0, ttl 64, id 17651, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.33500 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0xaf65), ack 1, win 63, options [nop,nop,TS val 2606315043 ecr 164983170], length 0
+2026-11-06 00:10:55.338971 IP (tos 0x0, ttl 64, id 17652, offset 0, flags [DF], proto TCP (6), length 81)
+    10.244.2.13.33500 > 10.96.132.149.8080: Flags [P.], cksum 0x9c39 (incorrect -> 0xf01b), seq 1:30, ack 1, win 63, options [nop,nop,TS val 2606315043 ecr 164983170], length 29: HTTP, length: 29
+	GET /ok HTTP/1.1
+	Host: x
+	
+2026-11-06 00:10:55.338989 IP (tos 0x0, ttl 62, id 11772, offset 0, flags [DF], proto TCP (6), length 52)
+    10.96.132.149.8080 > 10.244.2.13.33500: Flags [.], cksum 0x9c1c (incorrect -> 0xaf47), ack 30, win 64, options [nop,nop,TS val 164983170 ecr 2606315043], length 0
+2026-11-06 00:10:55.339176 IP (tos 0x0, ttl 62, id 11773, offset 0, flags [DF], proto TCP (6), length 171)
+    10.96.132.149.8080 > 10.244.2.13.33500: Flags [P.], cksum 0x9c93 (incorrect -> 0x3a70), seq 1:120, ack 30, win 64, options [nop,nop,TS val 164983171 ecr 2606315043], length 119: HTTP, length: 119
+	HTTP/1.1 200 OK
+	Date: Fri, 06 Nov 2026 00:10:55 GMT
+	Content-Length: 3
+	Content-Type: text/plain; charset=utf-8
+	
+	ok
+2026-11-06 00:10:55.339183 IP (tos 0x0, ttl 64, id 17653, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.33500 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0xaecf), ack 120, win 63, options [nop,nop,TS val 2606315044 ecr 164983171], length 0
+2026-11-06 00:10:57.340308 IP (tos 0x0, ttl 62, id 11774, offset 0, flags [DF], proto TCP (6), length 52)
+    10.96.132.149.8080 > 10.244.2.13.33500: Flags [F.], cksum 0x9c1c (incorrect -> 0xa6fc), seq 120, ack 30, win 64, options [nop,nop,TS val 164985172 ecr 2606315044], length 0
+2026-11-06 00:10:57.381139 IP (tos 0x0, ttl 64, id 17654, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.33500 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0x9f03), ack 121, win 63, options [nop,nop,TS val 2606317086 ecr 164985172], length 0
+2026-11-06 00:10:58.339304 IP (tos 0x0, ttl 64, id 17655, offset 0, flags [DF], proto TCP (6), length 81)
+    10.244.2.13.33500 > 10.96.132.149.8080: Flags [P.], cksum 0x9c39 (incorrect -> 0xdbfb), seq 30:59, ack 121, win 63, options [nop,nop,TS val 2606318044 ecr 164985172], length 29: HTTP, length: 29
+	GET /ok HTTP/1.1
+	Host: x
+	
+2026-11-06 00:10:58.339362 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+    10.96.132.149.8080 > 10.244.2.13.33500: Flags [R], cksum 0xc5ae (correct), seq 2557023078, win 0, length 0
+

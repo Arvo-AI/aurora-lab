@@ -1,0 +1,4 @@
+NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE                 NOMINATED NODE   READINESS GATES
+client                 1/1     Running   0          18m   10.244.2.13   aurora-lab-worker2   <none>           <none>
+srv-6b9c74f58c-zzdzf   3/3     Running   0          56s   10.244.1.68   aurora-lab-worker    <none>           <none>
+sshbox                 1/1     Running   0          18m   10.244.2.14   aurora-lab-worker2   <none>           <none>

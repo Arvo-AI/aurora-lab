@@ -1,0 +1,25 @@
+Fri Nov  6 00:03:31 UTC 2026
+Client Version: v1.37.2
+Kustomize Version: v5.8.1
+Server Version: v1.37.0
+NAME                       STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION             CONTAINER-RUNTIME
+aurora-lab-control-plane   Ready    control-plane   5m23s   v1.37.0   172.18.0.4    <none>        Debian GNU/Linux 13 (trixie)   7.0.0-1017-azure (amd64)   containerd://2.3.4
+aurora-lab-worker          Ready    <none>          5m8s    v1.37.0   172.18.0.3    <none>        Debian GNU/Linux 13 (trixie)   7.0.0-1017-azure (amd64)   containerd://2.3.4
+aurora-lab-worker2         Ready    <none>          5m8s    v1.37.0   172.18.0.2    <none>        Debian GNU/Linux 13 (trixie)   7.0.0-1017-azure (amd64)   containerd://2.3.4
+3.22.8
+7.0.0-1017-azure
+curl 8.14.1 (x86_64-alpine-linux-musl) libcurl/8.14.1 OpenSSL/3.5.9 zlib/1.3.2 brotli/1.1.1 zstd/1.5.7 c-ares/1.34.9 libidn2/2.3.7 libpsl/0.21.5 nghttp2/1.69.0
+Python 3.12.16
+requests 2.33.1 urllib3 1.26.20
+go version go1.25.14 linux/amd64
+v22.23.4
+tcpdump version 4.99.5
+libpcap version 1.10.7 (64-bit time_t, with TPACKET_V3)
+OpenSSH_10.0p2, OpenSSL 3.5.9 29 Sep 2026
+NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE                 NOMINATED NODE   READINESS GATES
+client                 1/1     Running   0          3s    10.244.2.13   aurora-lab-worker2   <none>           <none>
+srv-7446bd6d99-7ck9g   3/3     Running   0          3s    10.244.1.23   aurora-lab-worker    <none>           <none>
+sshbox                 1/1     Running   0          3s    10.244.2.14   aurora-lab-worker2   <none>           <none>
+NAME    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
+empty   ClusterIP   10.96.227.193   <none>        8080/TCP            3s
+srv     ClusterIP   10.96.132.149   <none>        8080/TCP,8081/TCP   3s

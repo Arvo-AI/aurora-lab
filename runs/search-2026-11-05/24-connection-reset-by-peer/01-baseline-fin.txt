@@ -1,0 +1,37 @@
+# healthy request: normal close uses FIN
+
+$ curl -sS -o /dev/null -w %{http_code}\n http://10.96.132.149:8080/ok
+200
+--- client capture
+2026-11-06 00:03:32.801557 IP (tos 0x0, ttl 64, id 48310, offset 0, flags [DF], proto TCP (6), length 60)
+    10.244.2.13.33896 > 10.96.132.149.8080: Flags [S], cksum 0x9c24 (incorrect -> 0x56c9), seq 3084620780, win 64240, options [mss 1460,sackOK,TS val 619660701 ecr 0,nop,wscale 10], length 0
+2026-11-06 00:03:32.801624 IP (tos 0x0, ttl 62, id 0, offset 0, flags [DF], proto TCP (6), length 60)
+    10.96.132.149.8080 > 10.244.2.13.33896: Flags [S.], cksum 0x9c24 (incorrect -> 0x140f), seq 2862744123, ack 3084620781, win 65160, options [mss 1460,sackOK,TS val 2332231472 ecr 619660701,nop,wscale 10], length 0
+2026-11-06 00:03:32.801631 IP (tos 0x0, ttl 64, id 48311, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.33896 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0x4128), ack 1, win 63, options [nop,nop,TS val 619660701 ecr 2332231472], length 0
+2026-11-06 00:03:32.801687 IP (tos 0x0, ttl 64, id 48312, offset 0, flags [DF], proto TCP (6), length 136)
+    10.244.2.13.33896 > 10.96.132.149.8080: Flags [P.], cksum 0x9c70 (incorrect -> 0xeb90), seq 1:85, ack 1, win 63, options [nop,nop,TS val 619660701 ecr 2332231472], length 84: HTTP, length: 84
+	GET /ok HTTP/1.1
+	Host: 10.96.132.149:8080
+	User-Agent: curl/8.14.1
+	Accept: */*
+	
+2026-11-06 00:03:32.801717 IP (tos 0x0, ttl 62, id 55169, offset 0, flags [DF], proto TCP (6), length 52)
+    10.96.132.149.8080 > 10.244.2.13.33896: Flags [.], cksum 0x9c1c (incorrect -> 0x40d3), ack 85, win 64, options [nop,nop,TS val 2332231472 ecr 619660701], length 0
+2026-11-06 00:03:32.801868 IP (tos 0x0, ttl 62, id 55170, offset 0, flags [DF], proto TCP (6), length 171)
+    10.96.132.149.8080 > 10.244.2.13.33896: Flags [P.], cksum 0x9c93 (incorrect -> 0xcb00), seq 1:120, ack 85, win 64, options [nop,nop,TS val 2332231472 ecr 619660701], length 119: HTTP, length: 119
+	HTTP/1.1 200 OK
+	Date: Fri, 06 Nov 2026 00:03:32 GMT
+	Content-Length: 3
+	Content-Type: text/plain; charset=utf-8
+	
+	ok
+2026-11-06 00:03:32.801876 IP (tos 0x0, ttl 64, id 48313, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.33896 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0x405d), ack 120, win 63, options [nop,nop,TS val 619660701 ecr 2332231472], length 0
+2026-11-06 00:03:32.801982 IP (tos 0x0, ttl 64, id 48314, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.33896 > 10.96.132.149.8080: Flags [F.], cksum 0x9c1c (incorrect -> 0x405c), seq 85, ack 120, win 63, options [nop,nop,TS val 619660701 ecr 2332231472], length 0
+2026-11-06 00:03:32.802060 IP (tos 0x0, ttl 62, id 55171, offset 0, flags [DF], proto TCP (6), length 52)
+    10.96.132.149.8080 > 10.244.2.13.33896: Flags [F.], cksum 0x9c1c (incorrect -> 0x405a), seq 120, ack 86, win 64, options [nop,nop,TS val 2332231472 ecr 619660701], length 0
+2026-11-06 00:03:32.802066 IP (tos 0x0, ttl 64, id 48315, offset 0, flags [DF], proto TCP (6), length 52)
+    10.244.2.13.33896 > 10.96.132.149.8080: Flags [.], cksum 0x9c1c (incorrect -> 0x405b), ack 121, win 63, options [nop,nop,TS val 619660701 ecr 2332231472], length 0
+
